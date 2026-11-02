@@ -10,7 +10,7 @@ For each question:
 1. Verify the engineering. Derive the equations and compute every number with `node -e`. Check units and signs. Never fabricate references, part numbers, app-note IDs, standard clauses or statistics. Flag genuinely uncertain or vendor-dependent facts with `> [!UNCERTAIN]`.
 2. Write the page with all required sections, tailored to the exact wording. Duplicates get distinct, standalone pages that cross-link. Include teaching diagrams and a catalog sim where it genuinely helps. Follow-ups should span basic → advanced and include a scenario question.
 3. `node scripts/validate-content.mjs <id>` must report 0 errors for your file.
-4. If the page has circuit blocks: `node scripts/preview-circuit.mjs content/questions/<id>.md <scratch>/<id>.png` (private scratch dir via mktemp -d). Read the PNG and fix overlaps, label placement, junction dots and electrical errors.
+4. If the page has circuit blocks: `node scripts/preview-circuit.mjs content/questions/<id>.md <scratch>/<id>.png` (private scratch dir via mktemp -d). Read the PNG and fix overlaps, label placement, junction dots and electrical errors. If the page has `svg`, `mermaid`, `timing` or `plot` figures, screenshot the real page with `node scripts/shot.mjs /q/<id> <scratch>/<id>.png --full` (dev server at http://localhost:5173), Read it, and fix anything that renders wrong. The validator evaluates plot/bode expressions but can't see layout.
 
 Rules: only create/modify content/questions/<id>.md for your ids. Don't edit platform code, docs or other pages. Work around any renderer bug and report it. No placeholders, and don't stop early. The spoken answers should sound like a sharp engineering student, not a textbook.
 
