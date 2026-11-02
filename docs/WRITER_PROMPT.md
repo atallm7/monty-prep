@@ -15,3 +15,4 @@ For each question:
 Rules: never put scratch or test files in content/ (use your mktemp dir). Only create/modify content/questions/<id>.md for your ids. Don't edit platform code, docs or other pages. Work around any renderer bug and report it. No placeholders, and don't stop early. The spoken answers should sound like a sharp engineering student, not a textbook.
 
 Final message: ids completed, the validator summary line, a short list of uncertain points flagged, interpretation decisions, and any platform bugs.
+Mermaid tip: prefer flowchart TB or ≤6 nodes per row; wide LR charts become unreadably small.
