@@ -14,6 +14,7 @@ const errors = [];
 p.on('pageerror', e => errors.push('pageerror: ' + e.message));
 p.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 await p.goto(`${base}/#${route}`, { waitUntil: 'networkidle' });
+await p.addStyleTag({ content: '.topbar{position:static !important}' });
 await p.waitForTimeout(1200);
 await p.waitForFunction(() => !document.body.innerText.includes('Rendering diagram') && !document.body.innerText.includes('Loading simulation'), null, { timeout: 15000 }).catch(() => {});
 const click = opt('--click'); if (click) { await p.getByText(click, { exact: false }).first().click(); await p.waitForTimeout(600); }
