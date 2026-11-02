@@ -303,3 +303,9 @@ text.ck-c-accent, .ck-fill-ink.ck-c-accent { fill: var(--d-accent); stroke: none
 .tm-mark { stroke: var(--d-accent); stroke-width: 1.2; stroke-dasharray: 4 3; }
 .tm-marklabel { fill: var(--d-accent); font-size: 11px; font-weight: 600; }
 .tm-span { stroke: var(--d-accent); stroke-width: 1.3; fill: none; }
+.search-trigger > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
+.search-trigger svg { flex: none; width: 16px; height: 16px; }
+@media (max-width: 560px) {
+  .stat-grid .card { padding: 14px; }
+  .stat-num { font-size: 24px; }
+}

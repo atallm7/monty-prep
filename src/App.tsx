@@ -79,7 +79,7 @@ export default function App() {
       <div className="main">
         <header className="topbar">
           <button className="icon-btn menu-btn" aria-label="Open navigation" onClick={() => setNav(true)}><IMenu /></button>
-          <button className="search-trigger" onClick={() => setSearch(true)}><ISearch size={16} /><span>Search questions, concepts, terms…</span><kbd>Ctrl K</kbd></button>
+          <button className="search-trigger" onClick={() => setSearch(true)}><ISearch size={16} /><span>Search questions, concepts…</span><kbd>Ctrl K</kbd></button>
           <span className="topbar-spacer" />
           <button className="icon-btn" aria-label="Toggle theme" title="Toggle light/dark" onClick={() => setMode(effective === 'dark' ? 'light' : 'dark')}>{effective === 'dark' ? <ISun /> : <IMoon />}</button>
         </header>

@@ -35,7 +35,7 @@ export function Slider(p: { label: ReactNode; value: number; onChange: (v: numbe
   const fmt = p.format ?? ((v: number) => p.unit !== undefined ? si(v, p.unit, 3) : num(v, 4));
   return (
     <label className="ctl">
-      <span className="ctl-head"><span className="ctl-label">{p.label}</span><span className="ctl-val">{fmt(p.value)}</span></span>
+      <span className="ctl-head"><span className="ctl-label">{p.label}</span><span className="ctl-val" role="button" tabIndex={0} title="Click to type a value" style={{ cursor: 'text' }} onClick={e => { e.preventDefault(); setTxt(String(p.value)); }}>{fmt(p.value)}</span></span>
       <input type="range" disabled={p.disabled} min={p.log ? 0 : p.min} max={p.log ? 1000 : p.max} step={p.log ? 1 : (p.step ?? (p.max - p.min) / 200)}
         value={toPos(p.value)} onChange={e => p.onChange(fromPos(parseFloat(e.target.value)))} aria-label={typeof p.label === 'string' ? p.label : undefined} />
       {txt !== null && <input className="ctl-num" autoFocus value={txt} onChange={e => setTxt(e.target.value)} onBlur={() => { const v = parseFloat(txt); if (isFinite(v)) p.onChange(Math.min(p.max, Math.max(p.min, v))); setTxt(null); }} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />}
