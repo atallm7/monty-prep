@@ -73,8 +73,6 @@ export default function Plot(p: PlotProps) {
   }, []);
   const H = p.height ?? Math.round(Math.min(340, Math.max(200, W * (p.aspect ?? 0.5))));
   const narrow = W < 440;
-  const M = { l: p.yLabel ? (narrow ? 50 : 62) : 46, r: 26, t: p.title ? 26 : 12, b: p.xLabel ? 44 : 28 };
-  const iw = W - M.l - M.r, ih = H - M.t - M.b;
 
   const { xr, yr } = useMemo(() => {
     let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
@@ -90,9 +88,6 @@ export default function Plot(p: PlotProps) {
     return { xr: (p.xRange ?? [x0, x1]) as [number, number], yr: (p.yRange ?? [y0, y1]) as [number, number] };
   }, [p.series, p.xRange, p.yRange, p.xLog, p.yLog, p.hlines]);
 
-  const tx = (x: number) => p.xLog ? M.l + (Math.log10(x) - Math.log10(xr[0])) / (Math.log10(xr[1]) - Math.log10(xr[0])) * iw : M.l + (x - xr[0]) / (xr[1] - xr[0]) * iw;
-  const ty = (y: number) => p.yLog ? M.t + ih - (Math.log10(y) - Math.log10(yr[0])) / (Math.log10(yr[1]) - Math.log10(yr[0])) * ih : M.t + ih - (y - yr[0]) / (yr[1] - yr[0]) * ih;
-  const invx = (px: number) => p.xLog ? 10 ** (Math.log10(xr[0]) + (px - M.l) / iw * (Math.log10(xr[1]) - Math.log10(xr[0]))) : xr[0] + (px - M.l) / iw * (xr[1] - xr[0]);
 
   // SI prefixes only make sense for SI units; anything else (%, °C, dB, rpm, "periods") prints plain numbers + unit
   const SI_UNITS = /^(V|A|W|Ω|F|H|Hz|s|J|C|T|Wb|S|N|N·m|N⋅m|m|g|Wh|Ah|VA|V\/s|A\/s|W\/K|K\/W|bit\/s|b\/s|B|Sa\/s|rad\/s|Ω·m|V\/A|A\/V|lx|Pa|kg·m²)$/;
@@ -101,6 +96,13 @@ export default function Plot(p: PlotProps) {
   const fy = p.yTickFormat ?? ((v: number) => fmtU(v, p.yUnit));
   const xt = p.xLog ? logTicks(xr[0], xr[1]) : { major: linTicks(xr[0], xr[1], narrow ? 4 : 7), minor: [] as number[] };
   const yt = p.yLog ? logTicks(yr[0], yr[1]) : { major: linTicks(yr[0], yr[1], 5), minor: [] as number[] };
+  // left margin grows with the widest y tick label so the rotated axis title never overlaps it
+  const yTickW = Math.max(18, ...yt.major.map(v => fy(v).length * 6.6));
+  const M = { l: Math.round(yTickW + (p.yLabel ? 30 : 12)), r: 26, t: p.title ? 26 : 12, b: p.xLabel ? 44 : 28 };
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  const tx = (x: number) => p.xLog ? M.l + (Math.log10(x) - Math.log10(xr[0])) / (Math.log10(xr[1]) - Math.log10(xr[0])) * iw : M.l + (x - xr[0]) / (xr[1] - xr[0]) * iw;
+  const ty = (y: number) => p.yLog ? M.t + ih - (Math.log10(y) - Math.log10(yr[0])) / (Math.log10(yr[1]) - Math.log10(yr[0])) * ih : M.t + ih - (y - yr[0]) / (yr[1] - yr[0]) * ih;
+  const invx = (px: number) => p.xLog ? 10 ** (Math.log10(xr[0]) + (px - M.l) / iw * (Math.log10(xr[1]) - Math.log10(xr[0]))) : xr[0] + (px - M.l) / iw * (xr[1] - xr[0]);
 
   const paths = p.series.map((s, si_) => {
     let d = ''; let pen = false;
