@@ -11,6 +11,8 @@ export default function GroundBounce({ params }: SimProps) {
   const upd = (k: keyof typeof s) => (v: number) => set(p => ({ ...p, [k]: v }));
   const r = useMemo(() => simulate(s), [s]);
   const ns = (x: number[]) => x.map(v => v * 1e9);
+  const slow = useMemo(() => { const tr = s.tr * 3; return { tr, r: simulate({ ...s, tr }) }; }, [s]);
+  const pin4 = useMemo(() => simulate({ ...s, pins: 4 }), [s]);
   const worst = Math.max(r.peak, -r.trough);
 
   const schematic = useMemo(() => renderCircuit({
@@ -40,7 +42,7 @@ export default function GroundBounce({ params }: SimProps) {
 
   return (
     <SimShell title="Ground bounce (simultaneous switching)" onReset={() => set(init)}
-      tryThis={<>with the defaults, 8 outputs falling together push the on-chip ground up by about {si(r.peak, 'V')}, enough to flip a quiet-low line (threshold 0.3·V<sub>DD</sub> = {si(r.vil, 'V')}). Slow the edge from 1 ns to 3 ns: bounce falls steeply (open-loop it scales as 1/t<sub>r</sub>²). Then raise “ground pins” to 4: the parallel bond wires cut L by 4×. Compare with the open-loop estimate N·L·di/dt ({si(r.openLoop, 'V')}): the driver’s own feedback means the real bounce is lower.</>}
+      tryThis={<>with the current settings, {s.n} outputs falling together push the on-chip ground up by {si(r.peak, 'V')}; the quiet-low threshold is 0.3·V<sub>DD</sub> = {si(r.vil, 'V')}, so it {r.falseTrigger ? 'flips' : 'does not flip'} the line. Experiment 1: with the same settings but edge time slowed to {si(slow.tr, 's')}, the bounce becomes {si(slow.r.peak, 'V')} ({slow.r.falseTrigger ? 'still above' : 'below'} the threshold; open-loop it scales as 1/t<sub>r</sub>²). Experiment 2: with 4 parallel ground pins (L/4 = {si(s.l / 4, 'H')}) the bounce is {si(pin4.peak, 'V')}. Compare with the open-loop estimate N·L·di/dt ({si(r.openLoop, 'V')}): the driver’s own feedback makes the real bounce lower.</>}
       controls={<>
         <Slider label="Simultaneous outputs N" value={s.n} min={1} max={32} step={1} format={v => v.toFixed(0)} onChange={upd('n')} />
         <Slider label="Ground inductance L" value={s.l} min={0.2e-9} max={20e-9} log unit="H" onChange={upd('l')} />

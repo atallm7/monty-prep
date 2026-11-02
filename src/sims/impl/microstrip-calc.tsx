@@ -30,8 +30,8 @@ function CrossSection({ p, h2 }: { p: TraceIn; h2?: boolean }) {
       <text x={26} y={yPlane + 20} fontSize={10.5} fill="var(--d-muted)">ground plane</text>
       <text x={W - 26} y={(strip ? yTop : yTraceBot) + 14} textAnchor="end" fontSize={10.5} fill="var(--d-muted)">εr = {p.er.toFixed(2)}</text>
       {/* height dimension */}
-      <line x1={xs[0] - 22} x2={xs[0] - 22} y1={yTraceBot} y2={yPlane} stroke="var(--d-ink)" strokeWidth={0.8} markerStart="url(#dimA)" markerEnd="url(#dimA)" />
-      <text x={xs[0] - 26} y={(yTraceBot + yPlane) / 2 + 4} textAnchor="end" fontSize={11} fill="var(--d-ink)">h = {mm(h)}{h2 ? ' (2×)' : ''}</text>
+      <line x1={30} x2={30} y1={yTraceBot} y2={yPlane} stroke="var(--d-ink)" strokeWidth={0.8} markerStart="url(#dimA)" markerEnd="url(#dimA)" />
+      <text x={36} y={(yTraceBot + yPlane) / 2 + 4} textAnchor="start" fontSize={11} fill="var(--d-ink)">h = {mm(h)}{h2 ? ' (2×)' : ''}</text>
       {/* width */}
       <line x1={xs[0]} x2={xs[0] + wp} y1={yTrace - 9} y2={yTrace - 9} stroke="var(--d-ink)" strokeWidth={0.8} markerStart="url(#dimA)" markerEnd="url(#dimA)" />
       <text x={xs[0] + wp / 2} y={yTrace - 13} textAnchor="middle" fontSize={11} fill="var(--d-ink)">w = {mm(p.w)}</text>

@@ -69,6 +69,7 @@ export default function StepperLab({ params }: SimProps) {
         <Slider label="Holding torque Th (2 phases on)" value={s.th} min={0.05} max={1.5} step={0.01} unit="N·m" onChange={upd('th')} />
         <Slider label="Load torque" value={s.tload} min={0} max={1} step={0.005} unit="N·m" onChange={upd('tload')} />
         <Slider label="Step rate (dynamic run)" value={s.rate} min={10} max={10000} log unit="step/s" format={v => `${v.toFixed(0)} step/s`} onChange={upd('rate')} />
+        <Note>Why √2: the rated (peak) current {si(s.irated, 'A')} in ONE phase gives torque T<sub>m</sub> = T<sub>h</sub>/√2 = {si(s.th / Math.SQRT2, 'N·m')}. Full-step holding torque T<sub>h</sub> has both phases at rated current, so the two torque vectors (90° apart) add as √(1²+1²) = √2. Sine/cosine microstepping with peak current {si(s.irated, 'A')} keeps |I| = I<sub>rated</sub> (not √2 larger), so torque is a constant T<sub>h</sub>/√2 = 71 %. To get T<sub>h</sub> in microstep mode, raise the peak current by √2 (to {si(s.irated * Math.SQRT2, 'A')}), within the winding's RMS/thermal limit.</Note>
         <Note>200 steps/rev ({STEP_DEG}°); N<sub>r</sub> = {NR} rotor teeth, so 4 full steps = 1 electrical cycle = {(4 * STEP_DEG).toFixed(1)}° of shaft. The drawing shows the electrical angle (1 turn = 4 full steps).</Note>
       </>}>
       <svg viewBox="0 0 260 260" width="100%" style={{ maxWidth: 300, display: 'block', margin: '0 auto' }} role="img" aria-label={`Stepper rotor at position ${idx}, field angle ${deg(pos.phi).toFixed(0)} degrees`}>
@@ -103,6 +104,7 @@ export default function StepperLab({ params }: SimProps) {
         <Readout k="Step size" v={`${(STEP_DEG / spf).toFixed(3)}°`} />
         <Readout k="Steps per revolution" v={String(200 * spf)} />
         <Readout k="Holding torque here" v={si(sd.peak, 'N·m')} tone={sd.stalled ? 'bad' : undefined} />
+        <Readout k={`One phase at rated peak ${si(s.irated, 'A')} (Th/√2)`} v={si(s.th / Math.SQRT2, 'N·m')} />
         <Readout k="Deflection under load" v={sd.stalled ? 'stalled' : `${sd.mechDeg.toFixed(3)}° (${(sd.fullSteps * 100).toFixed(0)} % of a step)`} />
         <Readout k="Torque min / max over cycle" v={`${si(tmin, 'N·m')} / ${si(tmax, 'N·m')}`} />
         <Readout k="Resonance (√(Th·Nr/J))" v={si(reso, 'Hz')} />

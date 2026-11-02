@@ -31,13 +31,14 @@ export default function GateDrive({ params }: SimProps) {
     : r.reTurnOn ? { l: 'Ringing re-crosses Vth after turn-off (false turn-on)', c: 'bad' as const }
     : ringing ? { l: `Gate loop underdamped (ζ = ${r.zeta.toFixed(2)})`, c: 'warn' as const }
     : { l: 'Clean switching', c: 'ok' as const };
+  const srcName = Math.abs(s.rsrc - 25) < 1 ? 'GPIO ~25 Ω' : Math.abs(s.rsrc - 1.5) < 0.1 ? 'Driver IC ~1.5 Ω' : 'custom';
   const rCrit = 2 * Math.sqrt(s.lg / r.cissOff);
 
   const schematic = useMemo(() => renderCircuit({
     elements: [
       { t: 'Vsq', a: [0, 10], b: [0, 14], label: 'driver', value: si(s.vdrive, 'V'), labelSide: 'other' },
       { t: 'wire', pts: [[0, 10], [0, 8], [1, 8]] },
-      { t: 'R', a: [1, 8], b: [4, 8], label: 'R_{src}', value: si(s.rsrc, 'Ω') },
+      { t: 'R', a: [1, 8], b: [4, 8], label: 'R_{src}', value: srcName === 'custom' ? si(s.rsrc, 'Ω') : srcName },
       { t: 'R', a: [4, 8], b: [7, 8], label: 'R_G', value: si(s.rg, 'Ω'), color: ringing ? 'red' : 'accent' },
       { t: 'L', a: [7, 8], b: [10, 8], label: 'L_G', value: si(s.lg, 'H'), color: 'orange' },
       { t: 'wire', pts: [[10, 8], [10, 10], [12, 10]] }, { t: 'dot', at: [10, 10] },
@@ -52,7 +53,7 @@ export default function GateDrive({ params }: SimProps) {
       { t: 'text', at: [19, 10], text: `C_{iss} ≈ ${si(r.cissOff, 'F')}`, anchor: 'start', color: 'blue' },
       { t: 'text', at: [19, 11.4], text: `Q_G = ${si(s.qg, 'C')}`, anchor: 'start', muted: true },
     ],
-  }).svg, [s, r.cissOff, ringing]);
+  }).svg, [s, r.cissOff, ringing, srcName]);
 
   const nsx = (v: number) => si(v, 's');
   return (
@@ -62,8 +63,8 @@ export default function GateDrive({ params }: SimProps) {
         <Slider label="Drive voltage Vdrive" value={s.vdrive} min={1} max={15} step={0.1} unit="V" onChange={upd('vdrive')} />
         <Slider label="Driver source resistance Rsrc" value={s.rsrc} min={0.5} max={100} log unit="Ω" onChange={upd('rsrc')} />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button type="button" className="btn btn-sm" onClick={() => set(p => ({ ...p, rsrc: 25, vdrive: 3.3 }))}>MCU GPIO (25 Ω, 3.3 V)</button>
-          <button type="button" className="btn btn-sm" onClick={() => set(p => ({ ...p, rsrc: 1.5, vdrive: 12 }))}>Gate-driver IC (1.5 Ω, 12 V)</button>
+          <button type="button" className="btn btn-sm" aria-pressed={srcName === 'GPIO ~25 Ω'} style={srcName === 'GPIO ~25 Ω' ? { outline: '2px solid var(--d-accent)' } : undefined} onClick={() => set(p => ({ ...p, rsrc: 25, vdrive: 3.3 }))}>MCU GPIO (25 Ω, 3.3 V)</button>
+          <button type="button" className="btn btn-sm" aria-pressed={srcName === 'Driver IC ~1.5 Ω'} style={srcName === 'Driver IC ~1.5 Ω' ? { outline: '2px solid var(--d-accent)' } : undefined} onClick={() => set(p => ({ ...p, rsrc: 1.5, vdrive: 12 }))}>Gate-driver IC (1.5 Ω, 12 V)</button>
         </div>
         <Slider label="Gate resistor Rg" value={s.rg} min={0.1} max={1000} log unit="Ω" onChange={upd('rg')} />
         <Slider label="Gate loop inductance Lg" value={s.lg} min={1e-9} max={100e-9} log unit="H" onChange={upd('lg')} />
@@ -90,6 +91,7 @@ export default function GateDrive({ params }: SimProps) {
       ]} xUnit="s" xLabel="time" yLabel="V_DS (V), I_D (A)" height={200} />
       <Plot series={[{ x: r.t, y: r.ig, label: 'gate current i_G', color: 'purple' }]} xUnit="s" yUnit="A" xLabel="time" yLabel="i_G" height={150} />
       <Readouts>
+        <Readout k="Driver source R_src" v={srcName === 'custom' ? si(s.rsrc, 'Ω') : srcName} />
         <Readout k="Miller plateau (√(IL/K)+Vth)" v={si(r.vplTheory, 'V')} hl />
         <Readout k="Peak gate current" v={si(r.iPeak, 'A')} />
         <Readout k="Ciss (high / low Vds)" v={`${si(r.cissOff, 'F')} / ${si(r.cissOn, 'F')}`} />

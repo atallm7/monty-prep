@@ -150,7 +150,7 @@ export default function DmmLab({ params }: SimProps) {
         <Readout k="4-wire error" v={pc(e4, 6)} tone="ok" />
         <Readout k="Lead + contact drop" v={si(W.vleads, 'V')} />
       </Readouts>
-      <EqBox>{String.raw`R_{2w}=R_{DUT}+2R_{lead}+2R_{c}=${num(W.r2, 4)}\,\Omega,\qquad R_{4w}=\frac{V_{sense}}{I}=R_{DUT}\frac{R_{in}}{R_{in}+2R_{sense}}\approx R_{DUT}`}</EqBox>
+      <EqBox>{String.raw`\begin{gathered}R_{2w}=R_{DUT}+2R_{lead}+2R_{c}=${num(W.r2, 4)}\,\Omega\\ R_{4w}=\frac{V_{sense}}{I}=R_{DUT}\frac{R_{in}}{R_{in}+2R_{sense}}\approx R_{DUT}\end{gathered}`}</EqBox>
       <Plot series={[{ x: xs, y: xs, label: 'True R_DUT', color: 'muted', dashed: true }, { x: xs, y: xs.map(r => fourWire(r, s.rlead, s.rcon, s.itest, 1e10, s.rlead).r2), label: '2-wire reading', color: 'red' }, { x: xs, y: xs.map(r => fourWire(r, s.rlead, s.rcon, s.itest, 1e10, s.rlead).r4), label: '4-wire reading', color: 'green' }]}
         xLog yLog xUnit="Ω" yUnit="Ω" xLabel="True DUT resistance" yLabel="Meter reading" height={250}
         hlines={[{ at: 2 * s.rlead + 2 * s.rcon, label: 'lead + contact R (2-wire floor)', color: 'orange' }]} points={[{ x: s.rdut, y: W.r2, label: '2-wire now', color: 'red' }, { x: s.rdut, y: W.r4, label: '4-wire now', color: 'green' }]} />
