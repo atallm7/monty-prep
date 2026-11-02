@@ -569,7 +569,9 @@
    "r": "Ω (default 1)",
    "l": "H (default 1e-3)",
    "kt": "N·m/A (default 0.02)",
-   "load": "N·m (default 0.01)"
+   "load": "N·m (default 0.01)",
+   "j": "kg·m² rotor inertia (default 2e-5)",
+   "b": "N·m·s viscous friction (sim default)"
   },
   "presets": {}
  },

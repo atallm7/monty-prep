@@ -17,7 +17,7 @@ export default function DcMotorLab({ params }: SimProps) {
     l: clamp(Number(params.l ?? 1e-3) || 1e-3, 1e-5, 0.1),
     kt: clamp(Number(params.kt ?? 0.02) || 0.02, 0.002, 0.5),
     load: clamp(Number(params.load ?? 0.01), 0, 2),
-    duty: 1, j: DEF_J, b: DEF_B, fpwm: 20000, loadStep: false,
+    duty: 1, j: clamp(Number(params.j ?? DEF_J) || DEF_J, 1e-7, 1e-2), b: clamp(Number(params.b ?? DEF_B), 0, 1e-2), fpwm: 20000, loadStep: false,
   };
   const [s, set] = useState(init);
   const upd = <K extends keyof typeof s>(k: K) => (v: (typeof s)[K]) => set(p => ({ ...p, [k]: v }));
