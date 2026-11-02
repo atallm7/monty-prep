@@ -121,7 +121,7 @@ Colors: `"color"` ∈ accent, red, blue, green, orange, purple, muted.
  "hlines":[{"at":"0.632*vs","label":"63.2% at t = τ"}],"vlines":[{"at":"tau","label":"τ"}],
  "points":[{"x":"tau","y":"0.632*vs","label":"(τ, 3.16 V)"}],"xspans":[{"from":0,"to":"tau","label":"first τ"}]}
 ```
-`fn` is a JS-style expression in `x` using vars and helpers: `sin cos tan exp log ln log10 sqrt abs pow min max floor ceil round sign atan atan2 sinh cosh tanh PI pi`, plus `step(x)` (Heaviside), `sqw(t,duty)` (period-1 0/1 square), `tri(t)`, `saw(t)`, `mod(a,b)`, `clamp(x,a,b)`, `sinc(x)`, `db(x)`; `^` means power. Use `"x":{"log":true}` / `"y":{"log":true}` for log axes. Optional per-series `"points":[[x,y],...]` (data instead of fn), `"step":true`, `"fill":true`, `"n":1200` samples. Axis `unit` makes ticks print with SI prefixes (`1 kHz`, `4.7 µs`). Use `vars` so the numbers in your text and the plot agree.
+`fn` is a JS-style expression in `x` using vars and helpers: `sin cos tan exp log ln log10 sqrt abs pow min max floor ceil round sign atan atan2 sinh cosh tanh PI pi`, plus `step(x)` (Heaviside), `sqw(t,duty)` (period-1 0/1 square), `tri(t)`, `saw(t)`, `mod(a,b)`, `clamp(x,a,b)`, `sinc(x)`, `db(x)`, `ite(cond,a,b)` (piecewise, e.g. `ite(x<1, x, 1)`); `^` means power. Use `"x":{"log":true}` / `"y":{"log":true}` for log axes. Optional per-series `"points":[[x,y],...]` (data instead of fn), `"step":true`, `"fill":true`, `"n":1200` samples. Axis `unit` makes ticks print with SI prefixes (`1 kHz`, `4.7 µs`). Use `vars` so the numbers in your text and the plot agree.
 
 ### 4.3 `bode`: frequency response from a transfer function
 ```json

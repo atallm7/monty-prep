@@ -15,6 +15,7 @@ export const HELPERS: Record<string, unknown> = {
   sinc: (x: number) => (x === 0 ? 1 : Math.sin(Math.PI * x) / (Math.PI * x)),
   db: (x: number) => 20 * Math.log10(Math.abs(x)),
   hypot: Math.hypot,
+  ite: (c: number | boolean, a: number, b: number) => (c ? a : b), // piecewise: ite(x < 1, f1, f2)
 };
 const BAD = /\b(window|document|globalThis|Function|constructor|prototype|__proto__|import|fetch|eval|while|for)\b|=>|[;{}`\[\]]/;
 const cache = new Map<string, (...a: number[]) => number>();
