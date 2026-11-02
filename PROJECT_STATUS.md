@@ -26,3 +26,8 @@
 2. Implement the 22 missing sims (Sonnet), then run an Opus verification pass on the sim physics.
 3. Opus QA for each completed batch.
 4. Final: `npm run build`, then `e2e.mjs --all-sims --all-questions`.
+
+## Known issues / polish backlog
+- Some sims expose fewer params than pages would like: dc-motor-lab J, lipo-lab rint/temperature per preset, rc-transient. Captions note the default differences. Possible future enhancement.
+- Circuit DSL: no wire-crossing hop or transistor vertical flip; `vmark` minus sign hides on ground wires.
+- Long top-to-bottom mermaid flowcharts are readable but tall.
