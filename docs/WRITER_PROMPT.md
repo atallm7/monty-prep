@@ -12,6 +12,6 @@ For each question:
 3. `node scripts/validate-content.mjs <id>` must report 0 errors for your file.
 4. If the page has circuit blocks: `node scripts/preview-circuit.mjs content/questions/<id>.md <scratch>/<id>.png` (private scratch dir via mktemp -d). Read the PNG and fix overlaps, label placement, junction dots and electrical errors. If the page has `svg`, `mermaid`, `timing` or `plot` figures, screenshot the real page with `node scripts/shot.mjs /q/<id> <scratch>/<id>.png --full` (dev server at http://localhost:5173), Read it, and fix anything that renders wrong. The validator evaluates plot/bode expressions but can't see layout.
 
-Rules: only create/modify content/questions/<id>.md for your ids. Don't edit platform code, docs or other pages. Work around any renderer bug and report it. No placeholders, and don't stop early. The spoken answers should sound like a sharp engineering student, not a textbook.
+Rules: never put scratch or test files in content/ (use your mktemp dir). Only create/modify content/questions/<id>.md for your ids. Don't edit platform code, docs or other pages. Work around any renderer bug and report it. No placeholders, and don't stop early. The spoken answers should sound like a sharp engineering student, not a textbook.
 
 Final message: ids completed, the validator summary line, a short list of uncertain points flagged, interpretation decisions, and any platform bugs.
