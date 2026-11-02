@@ -1,27 +1,27 @@
 # Build progress checklist
 
-_Generated 2026-11-02T05:50:16.465Z by scripts/progress-report.mjs_
+_Generated 2026-11-02T06:32:49.191Z by scripts/progress-report.mjs_
 
 ## Question pages
-**55/1005 pages written, 0 QA-reviewed.** (q0008 is the hand-written reference page.)
+**194/1005 pages written, 50 QA-reviewed.** (q0008 is the hand-written reference page.)
 
 
 | Batch | Questions | Written | QA reviewed |
 |---|---|---|---|
-| b01 | q0001–q0020 (19) | ⬜ 9/19 | ⬜ 0/19 |
-| b02 | q0021–q0037 (17) | ⬜ 8/17 | ⬜ 0/17 |
-| b03 | q0038–q0054 (17) | ⬜ 9/17 | ⬜ 0/17 |
-| b04 | q0055–q0071 (17) | ⬜ 7/17 | ⬜ 0/17 |
-| b05 | q0072–q0088 (17) | ⬜ 8/17 | ⬜ 0/17 |
-| b06 | q0089–q0104 (16) | ⬜ 8/16 | ⬜ 0/16 |
-| b07 | q0105–q0120 (16) | ⬜ 5/16 | ⬜ 0/16 |
-| b08 | q0121–q0139 (19) | ⬜ 0/19 | ⬜ 0/19 |
-| b09 | q0140–q0155 (16) | ⬜ 0/16 | ⬜ 0/16 |
-| b10 | q0156–q0172 (17) | ⬜ 0/17 | ⬜ 0/17 |
-| b11 | q0173–q0184 (12) | ⬜ 0/12 | ⬜ 0/12 |
-| b12 | q0185–q0200 (16) | ⬜ 0/16 | ⬜ 0/16 |
-| b13 | q0201–q0220 (20) | ⬜ 0/20 | ⬜ 0/20 |
-| b14 | q0221–q0235 (15) | ⬜ 0/15 | ⬜ 0/15 |
+| b01 | q0001–q0020 (19) | ✅ 19/19 | ⬜ 0/19 |
+| b02 | q0021–q0037 (17) | ✅ 17/17 | ⬜ 0/17 |
+| b03 | q0038–q0054 (17) | ✅ 17/17 | ⬜ 0/17 |
+| b04 | q0055–q0071 (17) | ✅ 17/17 | ✅ 17/17 |
+| b05 | q0072–q0088 (17) | ✅ 17/17 | ✅ 17/17 |
+| b06 | q0089–q0104 (16) | ✅ 16/16 | ⬜ 0/16 |
+| b07 | q0105–q0120 (16) | ✅ 16/16 | ⬜ 0/16 |
+| b08 | q0121–q0139 (19) | ✅ 19/19 | ⬜ 0/19 |
+| b09 | q0140–q0155 (16) | ✅ 16/16 | ✅ 16/16 |
+| b10 | q0156–q0172 (17) | ⬜ 13/17 | ⬜ 0/17 |
+| b11 | q0173–q0184 (12) | ⬜ 11/12 | ⬜ 0/12 |
+| b12 | q0185–q0200 (16) | ⬜ 7/16 | ⬜ 0/16 |
+| b13 | q0201–q0220 (20) | ⬜ 5/20 | ⬜ 0/20 |
+| b14 | q0221–q0235 (15) | ⬜ 3/15 | ⬜ 0/15 |
 | b15 | q0236–q0255 (20) | ⬜ 0/20 | ⬜ 0/20 |
 | b16 | q0256–q0269 (14) | ⬜ 0/14 | ⬜ 0/14 |
 | b17 | q0270–q0289 (20) | ⬜ 0/20 | ⬜ 0/20 |
@@ -67,7 +67,7 @@ _Generated 2026-11-02T05:50:16.465Z by scripts/progress-report.mjs_
 
 ## Simulations
 
-**68/90 implemented.**
+**90/90 implemented.**
 
 | Sim | Implemented | Model test |
 |---|---|---|
@@ -86,17 +86,17 @@ _Generated 2026-11-02T05:50:16.465Z by scripts/progress-report.mjs_
 | diode-iv | ✅ | ✅ pass |
 | pn-junction | ✅ | ✅ pass |
 | doping-lab | ✅ | ✅ pass |
-| bjt-lab | ✅ | — |
-| mosfet-lab | ✅ | — |
-| cmos-inverter | ✅ | — |
+| bjt-lab | ✅ | ✅ pass |
+| mosfet-lab | ✅ | ✅ pass |
+| cmos-inverter | ✅ | ✅ pass |
 | opamp-lab | ✅ | ✅ pass |
 | amp-bandwidth | ✅ | ✅ pass |
 | diff-amp-cmrr | ✅ | ✅ pass |
 | pll-lab | ✅ | ✅ pass |
 | current-mirror | ✅ | ✅ pass |
 | ldo-lab | ✅ | ✅ pass |
-| charge-pump | ⬜ | — |
-| level-shifter | ⬜ | — |
+| charge-pump | ✅ | ✅ pass |
+| level-shifter | ✅ | ✅ pass |
 | buck-lab | ✅ | ✅ pass |
 | buck-control | ✅ | ✅ pass |
 | boost-lab | ✅ | ✅ pass |
@@ -107,57 +107,57 @@ _Generated 2026-11-02T05:50:16.465Z by scripts/progress-report.mjs_
 | subharmonic | ✅ | ✅ pass |
 | power-sequencing | ✅ | ✅ pass |
 | inductor-saturation | ✅ | ✅ pass |
-| flyback-protection | ⬜ | ✅ pass |
+| flyback-protection | ✅ | ✅ pass |
 | lipo-lab | ✅ | ✅ pass |
 | soc-estimator | ✅ | ✅ pass |
 | cell-balancing | ✅ | ✅ pass |
 | dc-motor-lab | ✅ | ✅ pass |
-| h-bridge-lab | ⬜ | — |
-| stepper-lab | ⬜ | — |
+| h-bridge-lab | ✅ | ✅ pass |
+| stepper-lab | ✅ | ✅ pass |
 | servo-lab | ✅ | ✅ pass |
 | encoder-lab | ✅ | ✅ pass |
 | current-sense | ✅ | ✅ pass |
 | gate-drive | ✅ | ✅ pass |
-| bootstrap-driver | ⬜ | ❌ fail |
-| opto-isolator | ⬜ | — |
+| bootstrap-driver | ✅ | ✅ pass |
+| opto-isolator | ✅ | ✅ pass |
 | fourier-synth | ✅ | ✅ pass |
 | sampling-aliasing | ✅ | ✅ pass |
 | tline-lab | ✅ | ✅ pass |
 | microstrip-calc | ✅ | ✅ pass |
 | eye-diagram | ✅ | ✅ pass |
-| diff-signaling | ⬜ | — |
-| crosstalk | ⬜ | — |
-| ground-bounce | ⬜ | — |
-| skin-effect | ⬜ | — |
-| ringing-lc | ⬜ | — |
+| diff-signaling | ✅ | ✅ pass |
+| crosstalk | ✅ | ✅ pass |
+| ground-bounce | ✅ | ✅ pass |
+| skin-effect | ✅ | ✅ pass |
+| ringing-lc | ✅ | ✅ pass |
 | logic-lab | ✅ | ✅ pass |
 | kmap-lab | ✅ | ✅ pass |
 | base-converter | ✅ | ✅ pass |
 | register-decoder | ✅ | ✅ pass |
 | flipflop-lab | ✅ | ✅ pass |
-| fsm-lab | ⬜ | — |
-| clock-divider | ⬜ | — |
-| adc-lab | ⬜ | — |
-| dac-lab | ⬜ | — |
+| fsm-lab | ✅ | ✅ pass |
+| clock-divider | ✅ | ✅ pass |
+| adc-lab | ✅ | ✅ pass |
+| dac-lab | ✅ | ✅ pass |
 | sample-hold | ✅ | ✅ pass |
 | uart-frame | ✅ | ✅ pass |
 | spi-modes | ✅ | ✅ pass |
 | i2c-bus | ✅ | ✅ pass |
 | i2c-pullup | ✅ | ✅ pass |
 | gpio-lab | ✅ | ✅ pass |
-| timer-lab | ⬜ | — |
-| interrupt-lab | ⬜ | — |
+| timer-lab | ✅ | ✅ pass |
+| interrupt-lab | ✅ | ✅ pass |
 | pipeline-lab | ✅ | ✅ pass |
 | branch-predictor | ✅ | ✅ pass |
 | cache-lab | ✅ | ✅ pass |
 | asm-stepper | ✅ | ✅ pass |
 | pvt-power | ✅ | ✅ pass |
-| ecc-lab | ⬜ | ✅ pass |
+| ecc-lab | ✅ | ✅ pass |
 | imu-lab | ✅ | ✅ pass |
 | photodiode-lab | ✅ | ✅ pass |
 | lidar-tof | ✅ | ✅ pass |
 | scope-probe | ✅ | ✅ pass |
 | scope-trigger | ✅ | ✅ pass |
-| measurement-bw | ⬜ | — |
-| sensor-calibration | ⬜ | — |
-| dmm-lab | ⬜ | — |
+| measurement-bw | ✅ | ✅ pass |
+| sensor-calibration | ✅ | ✅ pass |
+| dmm-lab | ✅ | ✅ pass |
