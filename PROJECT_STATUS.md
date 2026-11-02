@@ -13,13 +13,13 @@
 - Tests: `node scripts/e2e.mjs [--all-sims --all-questions]` (dev server must be running). Checklist: `node scripts/progress-report.mjs` → `docs/PROGRESS.md`.
 
 ## Status (update after each batch)
-- Question pages: see `node scripts/progress-report.mjs` (169+ written at last update, b04–b09 done, b10–b16 in progress, b17–b56 not started). Opus QA is reviewing b04/b05/b09.
+- Question pages: 312/1005 written (0 validator errors). Done: b01–b12 and b14. Partial: b13 and b15–b23 (resumable agents; new agents skip existing files). Not started: b24–b56. QA-reviewed (Opus, see docs/reviews/): b01–b12 (199 pages). Reviews correct errors on about 60% of pages, so keep reviewing every batch.
 - Sims: **90/90 implemented** with model tests passing; all render (e2e --all-sims 126/126). bjt/mosfet/cmos were rebuilt and verified by Opus.
 - Platform: all pages done; 36/36 e2e checks pass.
 
 ## Process
 - Writers use Sonnet subagents, one batch file each, skipping existing files. Opus QA reviewers check each finished batch and write `docs/reviews/bNN.md`.
-- Hit a usage limit with 20 concurrent agents. Keep ≤8 concurrent.
+- Hit 5-hour usage limits twice. Keep ≤8 concurrent. Interrupted agents can be resumed with SendMessage (cheaper than starting new ones).
 
 ## Next tasks
 1. Finish b01–b07, then b08–b56 (Sonnet writers).
