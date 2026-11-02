@@ -13,3 +13,4 @@ For each page, check and fix:
 
 Make targeted edits; don't rewrite good pages. Only edit content/questions files in your scope.
 Finally, write docs/reviews/bNN.md (one per batch): for each id, either "OK" or a one-line list of corrections made, plus any remaining concerns. Return a short summary: number of pages reviewed, number with corrections, and the most serious errors found.
+Screenshot tip: full-page shots are too tall to read. Capture individual figures with `node scripts/shot.mjs /q/<id> out.png --selector .figure --nth N` (or `--selector .sim`).

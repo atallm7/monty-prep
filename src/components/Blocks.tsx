@@ -85,7 +85,7 @@ export function PlotBlock({ code, caption }: { code: string; caption?: string })
   return <figure className="figure" style={{ margin: '6px 0 20px' }}>
     <div className="figure-body" style={{ display: 'block' }}>
       <Plot series={res.series} xRange={res.xRange} yRange={res.yRange} xLog={spec!.x?.log} yLog={spec!.y?.log}
-        xLabel={spec!.x?.label} yLabel={spec!.y?.label} xUnit={spec!.x?.unit} yUnit={spec!.y?.unit} title={spec!.title}
+        xLabel={spec!.x?.label} yLabel={spec!.y?.label} xUnit={spec!.x?.unit || undefined} yUnit={spec!.y?.unit || undefined} title={spec!.title}
         hlines={res.hlines} vlines={res.vlines} points={res.points} xspans={res.xspans} height={spec!.height} />
     </div>
     <Caption text={caption || spec!.caption} />
