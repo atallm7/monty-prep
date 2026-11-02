@@ -18,7 +18,7 @@ await p.waitForTimeout(1200);
 await p.waitForFunction(() => !document.body.innerText.includes('Rendering diagram'), null, { timeout: 15000 }).catch(() => {});
 const click = opt('--click'); if (click) { await p.getByText(click, { exact: false }).first().click(); await p.waitForTimeout(600); }
 const sec = opt('--section'); if (sec) { await p.evaluate(s => document.getElementById('sec-' + s)?.scrollIntoView(), sec); await p.waitForTimeout(800); }
-const selq = opt('--selector'); if (selq) { const el = p.locator(selq).nth(+opt('--nth', '0')); await el.scrollIntoViewIfNeeded(); await p.waitForTimeout(700); await el.screenshot({ path: out }); } else
+const selq = opt('--selector'); if (selq) { const cnt = await p.locator(selq).count(); if (+opt('--nth', '0') >= cnt) { console.log(`only ${cnt} elements match ${selq}`); await b.close(); process.exit(1); } const el = p.locator(selq).nth(+opt('--nth', '0')); await el.scrollIntoViewIfNeeded(); await p.waitForTimeout(700); await el.screenshot({ path: out }); } else
 await p.screenshot({ path: out, fullPage: flag('--full') });
 await b.close();
 console.log('wrote', out); if (errors.length) console.log(errors.join('\n'));
