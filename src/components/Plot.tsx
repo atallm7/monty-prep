@@ -94,8 +94,11 @@ export default function Plot(p: PlotProps) {
   const ty = (y: number) => p.yLog ? M.t + ih - (Math.log10(y) - Math.log10(yr[0])) / (Math.log10(yr[1]) - Math.log10(yr[0])) * ih : M.t + ih - (y - yr[0]) / (yr[1] - yr[0]) * ih;
   const invx = (px: number) => p.xLog ? 10 ** (Math.log10(xr[0]) + (px - M.l) / iw * (Math.log10(xr[1]) - Math.log10(xr[0]))) : xr[0] + (px - M.l) / iw * (xr[1] - xr[0]);
 
-  const fx = p.xTickFormat ?? ((v: number) => p.xUnit !== undefined ? si(v, p.xUnit, 3) : num(v, 3));
-  const fy = p.yTickFormat ?? ((v: number) => p.yUnit !== undefined ? si(v, p.yUnit, 3) : num(v, 3));
+  // SI prefixes only make sense for SI units; anything else (%, °C, dB, rpm, "periods") prints plain numbers + unit
+  const SI_UNITS = /^(V|A|W|Ω|F|H|Hz|s|J|C|T|Wb|S|N|N·m|N⋅m|m|g|Wh|Ah|VA|V\/s|A\/s|W\/K|K\/W|bit\/s|b\/s|B|Sa\/s|rad\/s|Ω·m|V\/A|A\/V|lx|Pa|kg·m²)$/;
+  const fmtU = (v: number, u?: string) => u === undefined ? num(v, 3) : SI_UNITS.test(u) ? si(v, u, 3) : `${num(v, 3)}${u ? ' ' + u : ''}`;
+  const fx = p.xTickFormat ?? ((v: number) => fmtU(v, p.xUnit));
+  const fy = p.yTickFormat ?? ((v: number) => fmtU(v, p.yUnit));
   const xt = p.xLog ? logTicks(xr[0], xr[1]) : { major: linTicks(xr[0], xr[1], narrow ? 4 : 7), minor: [] as number[] };
   const yt = p.yLog ? logTicks(yr[0], yr[1]) : { major: linTicks(yr[0], yr[1], 5), minor: [] as number[] };
 
