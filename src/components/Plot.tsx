@@ -36,7 +36,7 @@ export function Lbl({ t }: { t?: string }) {
   return <>{parts.map((p, k) => typeof p === 'string' ? <tspan key={k}>{p}</tspan> : <tspan key={k} baselineShift={p.sub ? 'sub' : 'super'} fontSize="75%">{p.s}</tspan>)}</>;
 }
 
-export const PALETTE = ['var(--d-accent)', 'var(--d-red)', 'var(--d-blue)', 'var(--d-green)', 'var(--d-orange)', 'var(--d-purple)', 'var(--d-muted)'];
+export const PALETTE = ['var(--d-accent)', 'var(--d-orange)', 'var(--d-green)', 'var(--d-red)', 'var(--d-purple)', 'var(--d-blue)', 'var(--d-muted)'];
 export function colorOf(c: string | undefined, i: number) {
   if (!c) return PALETTE[i % PALETTE.length];
   if (/^(accent|red|blue|green|orange|purple|muted|ink)$/.test(c)) return `var(--d-${c})`;
