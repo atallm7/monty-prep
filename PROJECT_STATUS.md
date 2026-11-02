@@ -13,7 +13,7 @@
 - Tests: `node scripts/e2e.mjs [--all-sims --all-questions]` (dev server must be running). Checklist: `node scripts/progress-report.mjs` → `docs/PROGRESS.md`.
 
 ## Status (update after each batch)
-- Question pages: **55/1005 written** (0 validator errors), 0 QA-reviewed. Batches: `docs/batches/b01–b56.md`. b01–b07 are partial; b08–b56 haven't started.
+- Question pages: see `node scripts/progress-report.mjs` (169+ written at last update, b04–b09 done, b10–b16 in progress, b17–b56 not started). Opus QA is reviewing b04/b05/b09.
 - Sims: **90/90 implemented** with model tests passing; all render (e2e --all-sims 126/126). bjt/mosfet/cmos were rebuilt and verified by Opus.
 - Platform: all pages done; 36/36 e2e checks pass.
 
