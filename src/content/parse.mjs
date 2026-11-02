@@ -173,6 +173,8 @@ export function validateQuestion(parsed, ctx = {}) {
   const dd = (all.replace(/```[\s\S]*?```/g, '').match(/\$\$/g) || []).length;
   if (dd % 2) errors.push('Unbalanced $$ display math');
   const words = all.replace(/```[\s\S]*?```/g, '').split(/\s+/).length;
+  const deepWords = (sections.deep || '').replace(/```[\s\S]*?```/g, ' ').split(/\s+/).length;
+  if (deepWords < 800) warnings.push(`deep section only ~${deepWords} words; target 900–2,500 (first principles, derivation, worked numbers, real hardware)`);
   if (words < 900) warnings.push(`Only ~${words} words; pages should be comprehensive`);
   if (!/```(circuit|plot|bode|timing|mermaid|svg|logic|sim)/.test(all)) warnings.push('No diagram or simulation embedded');
   return { errors, warnings, words };

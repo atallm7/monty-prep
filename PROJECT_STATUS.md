@@ -31,3 +31,4 @@
 - Some sims expose fewer params than pages would like: dc-motor-lab J, lipo-lab rint/temperature per preset, rc-transient. Captions note the default differences. Possible future enhancement.
 - Circuit DSL: no wire-crossing hop or transistor vertical flip; `vmark` minus sign hides on ground wires.
 - Long top-to-bottom mermaid flowcharts are readable but tall.
+- Depth audit: ~25 pages have deep sections under 500 words (worst: q0582–q0592, q0284–q0288, q0240–q0255 range). Plan: once all pages exist, run a Sonnet "deepen" pass on pages whose deep section is under 600 words (`deep section only` validator warning), then Opus QA. The validator now warns below 800.
