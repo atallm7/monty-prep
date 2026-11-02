@@ -102,6 +102,7 @@ export default function MosfetLab({ params }: SimProps) {
       { t: 'term', at: [9, 7], label: `V_{out} = ${si(s.vdd + op.vds, 'V')}`, side: 'right' },
       { t: 'R', a: [6, 7], b: [6, 11], label: 'R_D', value: si(s.rd, 'Ω') }, { t: 'gnd', at: [6, 11] },
     ];
+    els.push({ t: 'text', at: [-2.5, 4], text: ' ', anchor: 'start' }, { t: 'text', at: [15, 4], text: ' ', anchor: 'end' });
     return renderCircuit({ elements: els }).svg;
   }, [s, op]);
 
@@ -156,8 +157,8 @@ export default function MosfetLab({ params }: SimProps) {
   const eq = op.region === 'cutoff'
     ? String.raw`|V_{GS}| = ${s.vgs.toFixed(2)} \le |V_t| = ${s.vt.toFixed(2)}\,\text{V} \;\Rightarrow\; I_D = 0`
     : op.region === 'triode'
-      ? String.raw`|I_D| = k'\tfrac{W}{L}\Big(V_{ov}|V_{DS}| - \tfrac{V_{DS}^2}{2}\Big)(1+\lambda|V_{DS}|) = ${si(beta, '\\text{A/V}^2')}\big(${vov.toFixed(2)}\cdot${Math.abs(op.vds).toFixed(3)} - \tfrac{${Math.abs(op.vds).toFixed(3)}^2}{2}\big)(1+${s.lambda}\cdot${Math.abs(op.vds).toFixed(2)}) = ${si(Math.abs(op.id), '\\text{A}')}`
-      : String.raw`|I_D| = \tfrac12 k'\tfrac{W}{L}V_{ov}^2(1+\lambda|V_{DS}|) = \tfrac12\cdot${si(beta, '\\text{A/V}^2')}\cdot${vov.toFixed(2)}^2\,(1+${s.lambda}\cdot${Math.abs(op.vds).toFixed(2)}) = ${si(Math.abs(op.id), '\\text{A}')}`;
+      ? String.raw`|I_D| = k'\tfrac{W}{L}\Big(V_{ov}|V_{DS}| - \tfrac{V_{DS}^2}{2}\Big)(1+\lambda|V_{DS}|) \\ = ${si(beta, '\\text{A/V}^2')}\big(${vov.toFixed(2)}\cdot${Math.abs(op.vds).toFixed(3)} - \tfrac{${Math.abs(op.vds).toFixed(3)}^2}{2}\big)(1+${s.lambda}\cdot${Math.abs(op.vds).toFixed(2)}) = ${si(Math.abs(op.id), '\\text{A}')}`
+      : String.raw`|I_D| = \tfrac12 k'\tfrac{W}{L}V_{ov}^2(1+\lambda|V_{DS}|) \\ = \tfrac12\cdot${si(beta, '\\text{A/V}^2')}\cdot${vov.toFixed(2)}^2\,(1+${s.lambda}\cdot${Math.abs(op.vds).toFixed(2)}) = ${si(Math.abs(op.id), '\\text{A}')}`;
 
   const tryThis = s.view === 'output' ? <>set V<sub>gs</sub> = 3 V and λ = 0: the plateau is ½·k'(W/L)·(2 V)² = 4 mA with k'(W/L) = 2 mA/V². Drag V<sub>ds</sub> below 2 V and the badge flips to triode exactly at V<sub>ds</sub> = V<sub>gs</sub> − V<sub>t</sub> (orange dashed locus). Then raise λ and watch the plateau tilt; extrapolated back, every curve meets the axis at −1/λ.</>
     : s.view === 'transfer' ? <>with V<sub>ds</sub> large the curve is a parabola starting at V<sub>t</sub>; doubling the overdrive quadruples I<sub>d</sub> but only doubles g<sub>m</sub> = 2I<sub>d</sub>/V<sub>ov</sub>. Drop V<sub>ds</sub> to 0.5 V and the curve straightens above V<sub>t</sub> + V<sub>ds</sub>: the device is in triode and acts as a resistor.</>
@@ -198,7 +199,7 @@ export default function MosfetLab({ params }: SimProps) {
         {ll && <Readout k="Device dissipation" v={si(Math.abs(op.id * op.vds), 'W')} tone={s.view === 'switch' && op.region === 'saturation' ? 'bad' : undefined} />}
         {ll && <Readout k="Triode edge at |Vgs|" v={si(edgeVgs, 'V')} />}
       </Readouts>
-      <EqBox>{eq}</EqBox>
+      <EqBox>{String.raw`\begin{gathered}` + eq + String.raw`\end{gathered}`}</EqBox>
       {plot}
     </SimShell>
   );

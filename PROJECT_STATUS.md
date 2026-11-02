@@ -14,7 +14,7 @@
 
 ## Status (update after each batch)
 - Question pages: **55/1005 written** (0 validator errors), 0 QA-reviewed. Batches: `docs/batches/b01–b56.md`. b01–b07 are partial; b08–b56 haven't started.
-- Sims: **68/90 implemented**. Missing: charge-pump, level-shifter, flyback-protection (model done), h-bridge-lab, stepper-lab, bootstrap-driver (model done, test failing), opto-isolator, diff-signaling (model done), crosstalk, ground-bounce, skin-effect, ringing-lc, fsm-lab, clock-divider, adc-lab, dac-lab, timer-lab, interrupt-lab, ecc-lab (model done), measurement-bw, sensor-calibration, dmm-lab. bjt-lab, mosfet-lab and cmos-inverter have no model/test files (physics is inline) and still need verification.
+- Sims: **90/90 implemented** with model tests passing; all render (e2e --all-sims 126/126). bjt/mosfet/cmos were rebuilt and verified by Opus.
 - Platform: all pages done; 36/36 e2e checks pass.
 
 ## Process

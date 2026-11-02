@@ -49,6 +49,7 @@ export default function CmosInverter({ params }: SimProps) {
     if (tr) els.push({ t: 'R', a: [10, 4], b: [14, 4], label: 'R_S', value: si(s.rs, 'Ω') }, { t: 'C', a: [14, 4], b: [14, 8], label: 'C_L', value: si(s.cl, 'F') }, { t: 'wire', pts: [[14, 8], [14, 9]] }, { t: 'gnd', at: [14, 9] }, { t: 'wire', pts: [[9, 4], [10, 4]] }, { t: 'dot', at: [9, 4] }, { t: 'text', at: [8.6, 5.4], text: 'V_{out}', size: 12 });
     else if (s.view === 'power') els.push({ t: 'C', a: [9, 4], b: [9, 8], label: 'C_L', value: si(s.cl, 'F') }, { t: 'wire', pts: [[9, 8], [9, 9]] }, { t: 'gnd', at: [9, 9] }, { t: 'dot', at: [9, 4] }, { t: 'wire', pts: [[9, 4], [11, 4]] }, { t: 'term', at: [11, 4], label: 'V_{out}', side: 'right' });
     else els.push({ t: 'term', at: [9, 4], label: `V_{out} = ${si(pv, 'V')}`, side: 'right' });
+    els.push({ t: 'text', at: [-6, 4], text: ' ', anchor: 'start' }, { t: 'text', at: [15.5, 4], text: ' ', anchor: 'end' });
     return renderCircuit({ elements: els }).svg;
   }, [s, probe, pv, nReg, pReg, pc.in, pc.ip]);
 

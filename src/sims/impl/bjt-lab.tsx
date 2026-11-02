@@ -60,6 +60,7 @@ export default function BjtLab({ params }: SimProps) {
       { t: 'term', at: [10, 7], label: `V_C = ${si(s.vcc + op.vce, 'V')}`, side: 'right' },
       { t: 'R', a: [7, 7], b: [7, 11], label: 'R_C', value: si(s.rc, 'Ω') }, { t: 'gnd', at: [7, 11] }, ...drv,
     ];
+    els.push({ t: 'text', at: [-3.5, 4], text: ' ', anchor: 'start' }, { t: 'text', at: [15.5, 4], text: ' ', anchor: 'end' });
     return renderCircuit({ elements: els }).svg;
   }, [s, op, ibMag]);
 
