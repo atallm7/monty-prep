@@ -4,6 +4,7 @@ import fs from 'node:fs'; import path from 'node:path';
 import { parseQuestion, validateQuestion } from '../src/content/parse.mjs';
 import { renderCircuit } from '../src/diagrams/circuit.mjs';
 import { renderTiming } from '../src/diagrams/timing.mjs';
+import { compile, evalNum } from '../src/lib/expr.ts';
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const args = process.argv.slice(2); const quiet = args.includes('--quiet'); const only = args.filter(a => /^q\d{4}$/.test(a));
 const index = JSON.parse(fs.readFileSync(path.join(root, 'src/data/index.generated.json'), 'utf8'));
@@ -23,6 +24,17 @@ for (const f of files) {
   const all = Object.values(p.sections).join('\n');
   for (const m of all.matchAll(/```circuit\n([\s\S]*?)\n```/g)) { try { const r = renderCircuit(JSON.parse(m[1])); for (const e of r.errors) v.errors.push('circuit: ' + e); } catch { /* reported by validator */ } }
   for (const m of all.matchAll(/```timing\n([\s\S]*?)\n```/g)) { try { const r = renderTiming(JSON.parse(m[1])); for (const e of r.errors) v.errors.push('timing: ' + e); } catch { /* reported */ } }
+  // evaluate plot/bode expressions so broken formulas are caught at build time
+  const ev = (spec, kind) => {
+    const vars = {}; for (const [k, val] of Object.entries(spec.vars || {})) vars[k] = evalNum(val, vars);
+    if (kind === 'plot') {
+      const a = evalNum(spec.x?.min ?? 0, vars), b = evalNum(spec.x?.max ?? 1, vars);
+      for (const sr of spec.series || []) { if (!sr.fn) continue; const f = compile(sr.fn, ['x'], vars); let fin = 0; for (let i = 0; i < 50; i++) { const y = f(a + (b - a) * i / 49); if (Number.isFinite(y)) fin++; } if (fin < 10) v.errors.push(`plot series "${sr.label || sr.fn}" is non-finite over the x range`); }
+      for (const k of ['hlines', 'vlines']) for (const h of spec[k] || []) evalNum(h.at, vars);
+      for (const pt of spec.points || []) { evalNum(pt.x, vars); evalNum(pt.y, vars); }
+    } else { for (const sy of spec.systems || []) [...sy.num, ...sy.den].forEach(c => { if (!Number.isFinite(evalNum(c, vars))) throw new Error('non-finite coefficient ' + c); }); evalNum(spec.f.min, vars); evalNum(spec.f.max, vars); }
+  };
+  for (const kind of ['plot', 'bode']) for (const m of all.matchAll(new RegExp('```' + kind + '\\n([\\s\\S]*?)\\n```', 'g'))) { try { ev(JSON.parse(m[1]), kind); } catch (e) { v.errors.push(`${kind}: ${e.message}`); } }
   for (const m of all.matchAll(/```sim\n([\s\S]*?)\n```/g)) { try { const o = JSON.parse(m[1]); const c = catalog.find(s => s.id === o.id); if (c) for (const k of Object.keys(o)) if (!['id', 'title'].includes(k) && !(k in c.params)) v.warnings.push(`sim ${o.id}: param "${k}" not in catalog params`); if (c && o.preset && c.presets && Object.keys(c.presets).length && !(o.preset in c.presets)) v.errors.push(`sim ${o.id}: unknown preset "${o.preset}"`); } catch { /* reported */ } }
   if (only.length && !only.includes(id)) { /* still include meta */ }
   nErr += v.errors.length; nWarn += v.warnings.length;

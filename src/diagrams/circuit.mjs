@@ -15,7 +15,7 @@ export function richText(t) {
     if ((c === '_' || c === '^') && i + 1 < t.length) {
       let content; let j;
       if (t[i + 1] === '{') { j = t.indexOf('}', i + 2); if (j < 0) j = t.length; content = t.slice(i + 2, j); i = j + 1; }
-      else { content = t[i + 1]; i += 2; }
+      else { const m = t.slice(i + 1).match(/^[A-Za-z0-9]+/); content = m ? m[0] : t[i + 1]; i += 1 + content.length; }
       flush();
       const dy = c === '_' ? '0.3em' : '-0.45em';
       const back = c === '_' ? '-0.3em' : '0.45em';
