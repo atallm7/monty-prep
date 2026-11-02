@@ -11,7 +11,9 @@ import SimErrorBoundary from './SimErrorBoundary';
 
 function Caption({ text }: { text?: string }) {
   if (!text) return null;
-  return <div className="figure-cap" dangerouslySetInnerHTML={{ __html: mdInline(text) }} />;
+  // captions often use plain-text subscripts (V_M, R_{th}); render them outside $math$
+  const t = text.split(/(\$[^$]*\$)/).map(seg => seg.startsWith('$') ? seg : seg.replace(/\b([A-Za-zΩτωφθλμ])_(?:\{([^}]+)\}|([A-Za-z0-9]{1,4}))\b/g, (_, a, b, c) => `${a}<sub>${b || c}</sub>`)).join('');
+  return <div className="figure-cap" dangerouslySetInnerHTML={{ __html: mdInline(t) }} />;
 }
 function BlockError({ msg }: { msg: string }) { return <div className="figure"><div className="figure-error">{msg}</div></div>; }
 
