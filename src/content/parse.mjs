@@ -55,7 +55,7 @@ export function parseQuestion(src) {
 
   const sections = {};
   const lines = body.split('\n');
-  let cur = null; let buf = []; let inFence = false;
+  let cur = null; let buf = []; let inFence = false; const stray = [];
   for (const line of lines) {
     if (/^(```|~~~)/.test(line.trim())) inFence = !inFence;
     if (!inFence) {
@@ -69,7 +69,9 @@ export function parseQuestion(src) {
       if (open && cur !== null) errors.push(`Section "${open[1]}" opened inside "${cur}" (missing closing :::)`);
     }
     if (cur !== null) buf.push(line);
+    else if (!inFence && line.trim() && !/^:::/.test(line) && !/^(```|~~~)/.test(line.trim())) stray.push(line.trim().slice(0, 60));
   }
+  if (stray.length) errors.push(`Text outside any ::: section is dropped from the page: "${stray[0]}"${stray.length > 1 ? ` (+${stray.length - 1} more lines)` : ''}`);
   if (cur !== null) errors.push(`Unclosed section: ${cur}`);
 
   for (const k of Object.keys(sections)) if (!SECTION_KEYS.includes(k)) errors.push(`Unknown section: ${k}`);
