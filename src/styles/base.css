@@ -309,3 +309,6 @@ text.ck-c-accent, .ck-fill-ink.ck-c-accent { fill: var(--d-accent); stroke: none
   .stat-grid .card { padding: 14px; }
   .stat-num { font-size: 24px; }
 }
+.eq-box { max-width: 100%; }
+.eq-box .katex-display { overflow-x: auto; overflow-y: hidden; margin: 0; padding: 4px 0; }
+@media (max-width: 560px) { .eq-box { font-size: 12.5px; padding: 8px; } .eq-box .katex { font-size: 1em; } }

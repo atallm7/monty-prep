@@ -24,10 +24,18 @@ near(m.tHold, 100e3 * C * Math.log((Vs100 + a) / (8 + a)), 1e-12, 'hold time');
 // Without Rgs, linear droop: t = C·ΔV/Iq
 const m2 = metrics({ ...base, rgs: Infinity });
 near(m2.tHold, C * (Vfull * 100e-9 / C - 8) / 150e-6, 1e-12, 'linear hold');
-// Max duty is below 100 % and grows with Cboot and with lower frequency
-assert.ok(m.dMax > 0.5 && m.dMax < 1, 'dMax in range ' + m.dMax);
-assert.ok(metrics({ ...base, cboot: 1e-6 }).dMax > m.dMax, 'bigger Cboot → higher Dmax');
-assert.ok(metrics({ ...base, fsw: 10e3 }).dMax < m.dMax, 'lower fsw (longer on-time) → lower Dmax, more droop');
+// Max duty is below 100 %. The binding limit is the minimum low-side (refill) time, which scales with Rb, not with Cboot
+// (a bigger Cboot droops less per cycle but also refills more slowly: both scale with Cb). So Dmax is ~independent of Cboot
+// while the minimum off-time (1-Dmax)/fsw is ~constant vs fsw, and grows with Rb and with gate charge.
+assert.ok(m.dMax > 0.9 && m.dMax < 1, 'dMax in range ' + m.dMax);
+const toffMin = (mm: { dMax: number }, f: number) => (1 - mm.dMax) / f;
+near(toffMin(metrics({ ...base, cboot: 1e-6 }), 100e3), toffMin(m, 100e3), 5e-9, 'toff_min independent of Cboot');
+assert.ok(metrics({ ...base, rb: 20 }).dMax < m.dMax, 'bigger Rb → lower Dmax');
+assert.ok(metrics({ ...base, qg: 100e-9 }).dMax < m.dMax, 'more gate charge → lower Dmax');
+assert.ok(metrics({ ...base, fsw: 1e6 }).dMax < m.dMax, 'higher fsw (shorter off-time) → lower Dmax');
+assert.ok(metrics({ ...base, fsw: 10e3 }).dMax > m.dMax, 'lower fsw → higher Dmax');
+// Hold time (100 % duty) grows with Cboot
+assert.ok(metrics({ ...base, cboot: 1e-6 }).tHold > 5 * m.tHold, 'bigger Cboot → longer hold');
 // Above Dmax the steady state trips UVLO
 const over = run({ ...base, d: Math.min(0.9999, m.dMax + 0.02) });
 assert.ok(!over.steady || over.last.tripped || !over.last.enabled, 'above Dmax → UVLO');
