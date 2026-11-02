@@ -1,20 +1,20 @@
 # Build progress checklist
 
-_Generated 2026-11-02T04:19:57.699Z by scripts/progress-report.mjs_
+_Generated 2026-11-02T05:50:16.465Z by scripts/progress-report.mjs_
 
 ## Question pages
-**1/1005 pages written, 0 QA-reviewed.** (q0008 is the hand-written reference page.)
+**55/1005 pages written, 0 QA-reviewed.** (q0008 is the hand-written reference page.)
 
 
 | Batch | Questions | Written | QA reviewed |
 |---|---|---|---|
-| b01 | q0001–q0020 (19) | ⬜ 0/19 | ⬜ 0/19 |
-| b02 | q0021–q0037 (17) | ⬜ 0/17 | ⬜ 0/17 |
-| b03 | q0038–q0054 (17) | ⬜ 0/17 | ⬜ 0/17 |
-| b04 | q0055–q0071 (17) | ⬜ 0/17 | ⬜ 0/17 |
-| b05 | q0072–q0088 (17) | ⬜ 0/17 | ⬜ 0/17 |
-| b06 | q0089–q0104 (16) | ⬜ 0/16 | ⬜ 0/16 |
-| b07 | q0105–q0120 (16) | ⬜ 0/16 | ⬜ 0/16 |
+| b01 | q0001–q0020 (19) | ⬜ 9/19 | ⬜ 0/19 |
+| b02 | q0021–q0037 (17) | ⬜ 8/17 | ⬜ 0/17 |
+| b03 | q0038–q0054 (17) | ⬜ 9/17 | ⬜ 0/17 |
+| b04 | q0055–q0071 (17) | ⬜ 7/17 | ⬜ 0/17 |
+| b05 | q0072–q0088 (17) | ⬜ 8/17 | ⬜ 0/17 |
+| b06 | q0089–q0104 (16) | ⬜ 8/16 | ⬜ 0/16 |
+| b07 | q0105–q0120 (16) | ⬜ 5/16 | ⬜ 0/16 |
 | b08 | q0121–q0139 (19) | ⬜ 0/19 | ⬜ 0/19 |
 | b09 | q0140–q0155 (16) | ⬜ 0/16 | ⬜ 0/16 |
 | b10 | q0156–q0172 (17) | ⬜ 0/17 | ⬜ 0/17 |
@@ -67,97 +67,97 @@ _Generated 2026-11-02T04:19:57.699Z by scripts/progress-report.mjs_
 
 ## Simulations
 
-**2/90 implemented.**
+**68/90 implemented.**
 
 | Sim | Implemented | Model test |
 |---|---|---|
 | ohms-law | ✅ | ✅ pass |
-| circuit-lab | ⬜ | — |
+| circuit-lab | ✅ | ✅ pass |
 | divider | ✅ | ✅ pass |
-| power-loss | ⬜ | — |
-| rlc-transient | ⬜ | — |
-| rc-transient | ⬜ | — |
-| filter-lab | ⬜ | — |
-| impedance-explorer | ⬜ | ✅ pass |
-| decap-network | ⬜ | — |
-| phasor-viewer | ⬜ | — |
-| max-power-transfer | ⬜ | — |
-| e-series | ⬜ | — |
-| diode-iv | ⬜ | — |
-| pn-junction | ⬜ | — |
-| doping-lab | ⬜ | — |
-| bjt-lab | ⬜ | — |
-| mosfet-lab | ⬜ | — |
-| cmos-inverter | ⬜ | — |
-| opamp-lab | ⬜ | — |
-| amp-bandwidth | ⬜ | — |
-| diff-amp-cmrr | ⬜ | — |
-| pll-lab | ⬜ | — |
-| current-mirror | ⬜ | — |
-| ldo-lab | ⬜ | — |
+| power-loss | ✅ | ✅ pass |
+| rlc-transient | ✅ | ✅ pass |
+| rc-transient | ✅ | ✅ pass |
+| filter-lab | ✅ | ✅ pass |
+| impedance-explorer | ✅ | ✅ pass |
+| decap-network | ✅ | ✅ pass |
+| phasor-viewer | ✅ | ✅ pass |
+| max-power-transfer | ✅ | ✅ pass |
+| e-series | ✅ | ✅ pass |
+| diode-iv | ✅ | ✅ pass |
+| pn-junction | ✅ | ✅ pass |
+| doping-lab | ✅ | ✅ pass |
+| bjt-lab | ✅ | — |
+| mosfet-lab | ✅ | — |
+| cmos-inverter | ✅ | — |
+| opamp-lab | ✅ | ✅ pass |
+| amp-bandwidth | ✅ | ✅ pass |
+| diff-amp-cmrr | ✅ | ✅ pass |
+| pll-lab | ✅ | ✅ pass |
+| current-mirror | ✅ | ✅ pass |
+| ldo-lab | ✅ | ✅ pass |
 | charge-pump | ⬜ | — |
 | level-shifter | ⬜ | — |
-| buck-lab | ⬜ | — |
-| buck-control | ⬜ | — |
-| boost-lab | ⬜ | — |
-| regulator-compare | ⬜ | — |
-| multiphase-buck | ⬜ | — |
-| pwm-lab | ⬜ | — |
-| rectifier-lab | ⬜ | — |
-| subharmonic | ⬜ | — |
-| power-sequencing | ⬜ | — |
-| inductor-saturation | ⬜ | — |
-| flyback-protection | ⬜ | — |
-| lipo-lab | ⬜ | — |
-| soc-estimator | ⬜ | — |
-| cell-balancing | ⬜ | — |
-| dc-motor-lab | ⬜ | — |
+| buck-lab | ✅ | ✅ pass |
+| buck-control | ✅ | ✅ pass |
+| boost-lab | ✅ | ✅ pass |
+| regulator-compare | ✅ | ✅ pass |
+| multiphase-buck | ✅ | ✅ pass |
+| pwm-lab | ✅ | ✅ pass |
+| rectifier-lab | ✅ | ✅ pass |
+| subharmonic | ✅ | ✅ pass |
+| power-sequencing | ✅ | ✅ pass |
+| inductor-saturation | ✅ | ✅ pass |
+| flyback-protection | ⬜ | ✅ pass |
+| lipo-lab | ✅ | ✅ pass |
+| soc-estimator | ✅ | ✅ pass |
+| cell-balancing | ✅ | ✅ pass |
+| dc-motor-lab | ✅ | ✅ pass |
 | h-bridge-lab | ⬜ | — |
 | stepper-lab | ⬜ | — |
-| servo-lab | ⬜ | — |
-| encoder-lab | ⬜ | — |
-| current-sense | ⬜ | — |
-| gate-drive | ⬜ | — |
-| bootstrap-driver | ⬜ | — |
+| servo-lab | ✅ | ✅ pass |
+| encoder-lab | ✅ | ✅ pass |
+| current-sense | ✅ | ✅ pass |
+| gate-drive | ✅ | ✅ pass |
+| bootstrap-driver | ⬜ | ❌ fail |
 | opto-isolator | ⬜ | — |
-| fourier-synth | ⬜ | — |
-| sampling-aliasing | ⬜ | — |
-| tline-lab | ⬜ | — |
-| microstrip-calc | ⬜ | — |
-| eye-diagram | ⬜ | — |
+| fourier-synth | ✅ | ✅ pass |
+| sampling-aliasing | ✅ | ✅ pass |
+| tline-lab | ✅ | ✅ pass |
+| microstrip-calc | ✅ | ✅ pass |
+| eye-diagram | ✅ | ✅ pass |
 | diff-signaling | ⬜ | — |
 | crosstalk | ⬜ | — |
 | ground-bounce | ⬜ | — |
 | skin-effect | ⬜ | — |
 | ringing-lc | ⬜ | — |
-| logic-lab | ⬜ | — |
-| kmap-lab | ⬜ | — |
-| base-converter | ⬜ | — |
-| register-decoder | ⬜ | — |
-| flipflop-lab | ⬜ | — |
+| logic-lab | ✅ | ✅ pass |
+| kmap-lab | ✅ | ✅ pass |
+| base-converter | ✅ | ✅ pass |
+| register-decoder | ✅ | ✅ pass |
+| flipflop-lab | ✅ | ✅ pass |
 | fsm-lab | ⬜ | — |
 | clock-divider | ⬜ | — |
 | adc-lab | ⬜ | — |
 | dac-lab | ⬜ | — |
-| sample-hold | ⬜ | — |
-| uart-frame | ⬜ | — |
-| spi-modes | ⬜ | — |
-| i2c-bus | ⬜ | — |
-| i2c-pullup | ⬜ | — |
-| gpio-lab | ⬜ | — |
+| sample-hold | ✅ | ✅ pass |
+| uart-frame | ✅ | ✅ pass |
+| spi-modes | ✅ | ✅ pass |
+| i2c-bus | ✅ | ✅ pass |
+| i2c-pullup | ✅ | ✅ pass |
+| gpio-lab | ✅ | ✅ pass |
 | timer-lab | ⬜ | — |
 | interrupt-lab | ⬜ | — |
-| pipeline-lab | ⬜ | — |
-| branch-predictor | ⬜ | — |
-| cache-lab | ⬜ | — |
-| asm-stepper | ⬜ | — |
-| pvt-power | ⬜ | — |
-| ecc-lab | ⬜ | — |
-| imu-lab | ⬜ | — |
-| photodiode-lab | ⬜ | — |
-| lidar-tof | ⬜ | — |
-| scope-probe | ⬜ | — |
-| scope-trigger | ⬜ | — |
+| pipeline-lab | ✅ | ✅ pass |
+| branch-predictor | ✅ | ✅ pass |
+| cache-lab | ✅ | ✅ pass |
+| asm-stepper | ✅ | ✅ pass |
+| pvt-power | ✅ | ✅ pass |
+| ecc-lab | ⬜ | ✅ pass |
+| imu-lab | ✅ | ✅ pass |
+| photodiode-lab | ✅ | ✅ pass |
+| lidar-tof | ✅ | ✅ pass |
+| scope-probe | ✅ | ✅ pass |
+| scope-trigger | ✅ | ✅ pass |
 | measurement-bw | ⬜ | — |
 | sensor-calibration | ⬜ | — |
 | dmm-lab | ⬜ | — |
