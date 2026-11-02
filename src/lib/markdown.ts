@@ -45,7 +45,7 @@ export function splitSegments(src: string): Segment[] {
 const marked = new Marked({ gfm: true, breaks: false });
 
 function renderMath(tex: string, display: boolean) {
-  try { return katex.renderToString(tex, { displayMode: display, throwOnError: false, strict: 'ignore', trust: false, output: 'html' }); }
+  try { return katex.renderToString(tex.replace(/·/g, '⋅').replace(/µ/g, 'μ'), { displayMode: display, throwOnError: false, strict: 'ignore', trust: false, output: 'html' }); }
   catch (e) { return `<code class="math-error">${tex}</code>`; }
 }
 
