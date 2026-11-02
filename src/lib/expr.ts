@@ -26,7 +26,8 @@ export function compile(expr: string, args: string[] = ['x'], vars: Record<strin
   const names = Object.keys(HELPERS).filter(n => !args.includes(n) && !(n in vars));
   const vnames = Object.keys(vars);
   // eslint-disable-next-line no-new-func
-  const fn = new Function('H', 'V', ...args, `const {${names.join(',')}} = H; ${vnames.length ? `const {${vnames.join(',')}} = V;` : ''} return (${expr.replace(/\^/g, '**')});`) as (...a: unknown[]) => number;
+  const src = expr.replace(/\^/g, '**').replace(/--(?=\s*[\d.(a-zA-Z])/g, '+ ');
+  const fn = new Function('H', 'V', ...args, `const {${names.join(',')}} = H; ${vnames.length ? `const {${vnames.join(',')}} = V;` : ''} return (${src});`) as (...a: unknown[]) => number;
   const f = (...a: number[]) => Number(fn(HELPERS, vars, ...a));
   cache.set(key, f);
   return f;

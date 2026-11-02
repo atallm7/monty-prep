@@ -15,6 +15,7 @@ p.on('pageerror', e => errors.push('pageerror: ' + e.message));
 p.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 await p.goto(`${base}/#${route}`, { waitUntil: 'networkidle' });
 await p.waitForTimeout(1200);
+await p.waitForFunction(() => !document.body.innerText.includes('Rendering diagram'), null, { timeout: 15000 }).catch(() => {});
 const click = opt('--click'); if (click) { await p.getByText(click, { exact: false }).first().click(); await p.waitForTimeout(600); }
 const sec = opt('--section'); if (sec) { await p.evaluate(s => document.getElementById('sec-' + s)?.scrollIntoView(), sec); await p.waitForTimeout(800); }
 const selq = opt('--selector'); if (selq) { const el = p.locator(selq).nth(+opt('--nth', '0')); await el.scrollIntoViewIfNeeded(); await p.waitForTimeout(700); await el.screenshot({ path: out }); } else
