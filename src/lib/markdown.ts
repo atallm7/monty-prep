@@ -16,11 +16,13 @@ export function splitSegments(src: string): Segment[] {
     const m = lines[i].match(/^```([a-z-]+)\s*$/);
     if (m && (BLOCK_LANGS as readonly string[]).includes(m[1])) {
       const lang = m[1] as BlockLang; const code: string[] = []; i++;
-      while (i < lines.length && !/^```\s*$/.test(lines[i])) { code.push(lines[i]); i++; }
+      while (i < lines.length && !/^```/.test(lines[i])) { code.push(lines[i]); i++; }
+      // tolerate text after the closing fence on the same line (treated as the caption)
+      const trailing = i < lines.length ? lines[i].replace(/^```\s*/, '').replace(/^(?:Figure|Caption):\s*/i, '').trim() : '';
       i++; // closing fence
       flush();
       // optional caption: following line(s) starting with "Figure:" / "Caption:"
-      let caption: string | undefined;
+      let caption: string | undefined = trailing || undefined;
       let j = i; while (j < lines.length && !lines[j].trim()) j++;
       const cm = j < lines.length ? lines[j].match(/^(?:Figure|Caption):\s*(.*)$/i) : null;
       if (cm) { caption = cm[1]; i = j + 1; }
