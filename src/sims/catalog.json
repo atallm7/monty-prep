@@ -1,0 +1,1171 @@
+[
+ {
+  "id": "ohms-law",
+  "title": "Ohm's law explorer",
+  "category": "Circuits",
+  "description": "Adjust V and R (or I) and watch current, power and the V–I line update; water-pipe analogy panel shows pressure/flow/restriction.",
+  "params": {
+   "v": "number, volts (default 5)",
+   "r": "number, ohms (default 1000)",
+   "solve": "'I'|'V'|'R' which quantity is computed (default 'I')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "circuit-lab",
+  "title": "Circuit lab (build & solve)",
+  "category": "Circuits",
+  "description": "Grid-based circuit editor with a real Modified Nodal Analysis solver. Place/remove wires, R, C, L, DC voltage/current sources, switches, diodes, LEDs, ground. Shows node voltages, branch currents (animated flow), element power, equivalent resistance between two probe nodes, and a transient mode (backward-Euler) for RC/RL circuits.",
+  "params": {
+   "preset": "string preset name (see presets)",
+   "editable": "boolean (default true)"
+  },
+  "presets": {
+   "ohm": "single source + resistor",
+   "series": "3 resistors in series",
+   "parallel": "3 resistors in parallel",
+   "series-parallel": "mixed network with Req readout",
+   "divider": "two-resistor divider",
+   "kcl": "one node with three branches, currents shown",
+   "kvl": "two-loop circuit for KVL",
+   "wheatstone": "Wheatstone bridge",
+   "superposition": "two sources",
+   "rc-charge": "switch + R + C (transient)",
+   "rl-charge": "switch + R + L (transient)",
+   "led-resistor": "LED with current-limiting resistor",
+   "pullup": "pull-up resistor + switch to ground"
+  }
+ },
+ {
+  "id": "divider",
+  "title": "Voltage divider (loaded & unloaded)",
+  "category": "Circuits",
+  "description": "Vin, R1, R2 and optional load RL. Shows Vout, divider current, power in each resistor, loading error, and Thevenin equivalent.",
+  "params": {
+   "vin": "V (default 12)",
+   "r1": "Ω (default 10000)",
+   "r2": "Ω (default 4700)",
+   "rl": "Ω load (default 10000)",
+   "load": "boolean load connected (default false)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "power-loss",
+  "title": "Why power loss is about current (I²R)",
+  "category": "Circuits",
+  "description": "Deliver a fixed power P to a load through wiring with resistance Rw at different transmission voltages; plots loss vs voltage and shows I²R vs V²/R confusion.",
+  "params": {
+   "p": "W delivered (default 100)",
+   "rw": "Ω wire resistance (default 0.5)",
+   "v": "V transmission voltage (default 12)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "rlc-transient",
+  "title": "RLC step & natural response",
+  "category": "Circuits",
+  "description": "Series or parallel RLC step response with R, L, C sliders. Computes α, ω0, ζ, classifies over/critical/under-damped, plots capacitor voltage and inductor current, shows overshoot and settling.",
+  "params": {
+   "topology": "'series'|'parallel' (default 'series')",
+   "r": "Ω (default 20)",
+   "l": "H (default 1e-3)",
+   "c": "F (default 1e-6)",
+   "vs": "V step (default 5)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "rc-transient",
+  "title": "RC / RL charging & continuity",
+  "category": "Circuits",
+  "description": "Square-wave or step drive into RC or RL. Shows τ, the 63%/5τ rule, and demonstrates continuity: capacitor voltage cannot jump, inductor current cannot jump. Marks initial and DC-steady-state behaviour.",
+  "params": {
+   "kind": "'rc'|'rl' (default 'rc')",
+   "r": "Ω (default 1000)",
+   "c": "F (default 1e-6)",
+   "l": "H (default 1e-3)",
+   "vs": "V (default 5)",
+   "f": "Hz drive frequency for square wave (default 100)",
+   "drive": "'step'|'square' (default 'square')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "filter-lab",
+  "title": "Passive filter lab",
+  "category": "Circuits",
+  "description": "Choose a filter topology, set component values, see the schematic, Bode magnitude/phase, cutoff/center frequency, Q, and a time-domain sine at a chosen frequency showing output attenuation and phase shift.",
+  "params": {
+   "type": "'rc-lpf'|'rc-hpf'|'rl-lpf'|'rl-hpf'|'rlc-bpf'|'rlc-bsf'|'rlc-lpf'|'rlc-hpf' (default 'rc-lpf')",
+   "r": "Ω",
+   "c": "F",
+   "l": "H",
+   "f": "Hz test-signal frequency"
+  },
+  "presets": {}
+ },
+ {
+  "id": "impedance-explorer",
+  "title": "Impedance vs frequency: ideal vs real parts",
+  "category": "Circuits",
+  "description": "|Z| and phase vs frequency for an ideal R, C or L and for its realistic model (resistor: series L + parallel C; capacitor: ESR + ESL; inductor: DCR + parallel winding C + core loss R). Marks the self-resonant frequency and shows where the part stops behaving like itself.",
+  "params": {
+   "part": "'capacitor'|'inductor'|'resistor' (default 'capacitor')",
+   "c": "F",
+   "l": "H",
+   "r": "Ω",
+   "esr": "Ω",
+   "esl": "H",
+   "cp": "F parasitic capacitance",
+   "showIdeal": "boolean (default true)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "decap-network",
+  "title": "Decoupling network (PDN) impedance",
+  "category": "Circuits",
+  "description": "Add parallel decoupling capacitors (value, count, ESR, ESL incl. mounting/via inductance) plus a bulk cap; plots combined PDN impedance vs a target impedance, showing anti-resonance peaks and why multiple values / low inductance matter.",
+  "params": {
+   "preset": "'single'|'many-same'|'mixed'|'far-placement' (default 'mixed')",
+   "ztarget": "Ω target impedance (default 0.05)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "phasor-viewer",
+  "title": "Phasors, phase shift & reactance",
+  "category": "Circuits",
+  "description": "Rotating phasors and time-domain sinusoids. Mode 'compare' shows two sinusoids with adjustable amplitude, frequency, phase, offset and their sum. Mode 'rlc' shows voltage vs current for a pure R, L or C at a chosen frequency (current leads in C, lags in L) with reactance readout.",
+  "params": {
+   "mode": "'compare'|'rlc' (default 'compare')",
+   "element": "'R'|'L'|'C' for rlc mode",
+   "f": "Hz"
+  },
+  "presets": {}
+ },
+ {
+  "id": "max-power-transfer",
+  "title": "Maximum power transfer",
+  "category": "Circuits",
+  "description": "Source Vs with internal Rs drives RL. Sweep RL: plots load power and efficiency; marks RL = Rs (max power, 50% efficiency). Optional complex mode with reactances showing conjugate match.",
+  "params": {
+   "vs": "V (default 10)",
+   "rs": "Ω (default 50)",
+   "rl": "Ω (default 50)",
+   "complex": "boolean (default false)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "e-series",
+  "title": "Standard resistor values & tolerance",
+  "category": "Circuits",
+  "description": "Pick any target value: nearest E6/E12/E24/E96 values, % error, color code bands, and a Monte-Carlo of a divider built from toleranced parts.",
+  "params": {
+   "value": "Ω target (default 4700)",
+   "series": "'E6'|'E12'|'E24'|'E96'",
+   "tol": "fraction tolerance (default 0.05)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "diode-iv",
+  "title": "Diode I–V curve & operating point",
+  "category": "Semiconductors",
+  "description": "Shockley equation with Is, n, temperature, series resistance and reverse breakdown. Presets for silicon, Schottky, germanium, red/blue LED, Zener. Load-line mode solves a source + resistor + diode circuit by Newton iteration, marks the operating point and region (forward, reverse, breakdown).",
+  "params": {
+   "device": "'si'|'schottky'|'ge'|'led-red'|'led-blue'|'zener' (default 'si')",
+   "vs": "V source (default 5)",
+   "r": "Ω series resistor (default 1000)",
+   "view": "'curve'|'loadline' (default 'loadline')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "pn-junction",
+  "title": "PN junction & depletion region",
+  "category": "Semiconductors",
+  "description": "Set acceptor/donor doping and applied bias: computes built-in potential, depletion widths on each side, peak field, and plots charge density, electric field and potential across the junction. Shows how forward bias narrows and reverse bias widens the depletion region.",
+  "params": {
+   "na": "cm^-3 (default 1e17)",
+   "nd": "cm^-3 (default 1e16)",
+   "vbias": "V (default 0, + = forward)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "doping-lab",
+  "title": "Doping, carriers & conductivity",
+  "category": "Semiconductors",
+  "description": "Choose material (Si, Ge, GaAs, SiC, GaN), donor/acceptor concentration and temperature. Computes ni, majority/minority carriers (mass-action law n·p = ni²), mobilities, conductivity and resistivity; compares N-type vs P-type at equal doping to show why electron mobility gives N-type lower resistance.",
+  "params": {
+   "material": "'si'|'ge'|'gaas'|'sic'|'gan' (default 'si')",
+   "nd": "cm^-3",
+   "na": "cm^-3",
+   "t": "K (default 300)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "bjt-lab",
+  "title": "BJT characteristics & load line",
+  "category": "Semiconductors",
+  "description": "NPN or PNP Ic–Vce family curves (with Early effect), base current/Vbe control, Vcc and Rc load line, operating point, region (cut-off, forward-active, saturation), β and switching use.",
+  "params": {
+   "type": "'npn'|'pnp' (default 'npn')",
+   "beta": "default 100",
+   "vcc": "V (default 10)",
+   "rc": "Ω (default 1000)",
+   "ib": "A (default 20e-6)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "mosfet-lab",
+  "title": "MOSFET operating regions & load line",
+  "category": "Semiconductors",
+  "description": "NMOS/PMOS square-law model with Vt, k'(W/L), λ. Views: output curves (Id vs Vds family), transfer curve (Id vs Vgs), and load-line (VDD, RD) with operating point. Region readout (cut-off / triode / saturation), Ron in triode, gm, and switching-use interpretation.",
+  "params": {
+   "type": "'nmos'|'pmos' (default 'nmos')",
+   "view": "'output'|'transfer'|'loadline'|'switch' (default 'output')",
+   "vt": "V (default 1)",
+   "k": "A/V² process kn' (default 200e-6)",
+   "wl": "W/L (default 10)",
+   "vgs": "V",
+   "vds": "V",
+   "vdd": "V",
+   "rd": "Ω",
+   "lambda": "1/V (default 0.02)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "cmos-inverter",
+  "title": "CMOS inverter / buffer",
+  "category": "Semiconductors",
+  "description": "Voltage transfer curve with noise margins and switching threshold (kn/kp ratio), shoot-through current vs Vin, dynamic power P = αCV²f + short-circuit + leakage, and a transient view of a buffer driving a series-RC load showing which FET conducts on rising/falling edges.",
+  "params": {
+   "view": "'vtc'|'power'|'transient' (default 'vtc')",
+   "vdd": "V (default 3.3)",
+   "ratio": "kp/kn ratio (default 1)",
+   "cl": "F load (default 10e-12)",
+   "f": "Hz switching frequency"
+  },
+  "presets": {}
+ },
+ {
+  "id": "opamp-lab",
+  "title": "Op-amp configurations lab",
+  "category": "Analog",
+  "description": "Pick a configuration (inverting, non-inverting, buffer, difference, summing, integrator, differentiator, open-loop comparator, Schmitt trigger). Set resistor/capacitor values, input waveform (DC, sine, square, triangle) and supply rails; optional real-op-amp effects: finite open-loop gain A0, GBW, slew rate, rail limits. Shows schematic, input/output waveforms, ideal vs actual gain, saturation/clipping and virtual-short voltages.",
+  "params": {
+   "config": "'inverting'|'noninverting'|'buffer'|'difference'|'summing'|'integrator'|'differentiator'|'comparator'|'schmitt' (default 'inverting')",
+   "r1": "Ω",
+   "r2": "Ω (feedback)",
+   "c": "F",
+   "vin": "V amplitude",
+   "wave": "'dc'|'sine'|'square'|'triangle'",
+   "f": "Hz",
+   "vpos": "V positive rail (default 12)",
+   "vneg": "V negative rail (default -12)",
+   "real": "boolean enable non-idealities"
+  },
+  "presets": {}
+ },
+ {
+  "id": "amp-bandwidth",
+  "title": "Gain-bandwidth & slew rate",
+  "category": "Analog",
+  "description": "Single-pole op-amp open-loop Bode (A0, GBW). Set closed-loop gain: closed-loop bandwidth = GBW/noise-gain shown on the Bode. Second view: sine output limited by slew rate (full-power bandwidth SR/(2πVp)) and step response rise time vs bandwidth (tr ≈ 0.35/BW).",
+  "params": {
+   "view": "'bode'|'slew'|'step' (default 'bode')",
+   "gbw": "Hz (default 1e6)",
+   "a0": "V/V (default 1e5)",
+   "gain": "closed-loop noise gain (default 10)",
+   "sr": "V/s (default 0.5e6)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "diff-amp-cmrr",
+  "title": "Differential vs common-mode gain",
+  "category": "Analog",
+  "description": "Difference amplifier with a differential signal plus common-mode noise. Resistor mismatch slider shows how Acm grows and CMRR falls; displays Ad, Acm, CMRR (dB) and output waveforms.",
+  "params": {
+   "vd": "V differential amplitude",
+   "vcm": "V common-mode noise amplitude",
+   "mismatch": "fraction resistor mismatch (default 0.01)",
+   "gain": "differential gain (default 10)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "pll-lab",
+  "title": "Phase-locked loop",
+  "category": "Analog",
+  "description": "Behavioral charge-pump PLL: reference frequency, feedback divider N, VCO gain and loop bandwidth/damping. Shows VCO frequency settling to N·fref, phase error, lock time, overshoot, and the effect of a reference phase step or a too-fast/too-slow loop.",
+  "params": {
+   "fref": "Hz (default 10e6)",
+   "n": "divider (default 10)",
+   "bw": "Hz loop bandwidth (default 100e3)",
+   "zeta": "damping (default 0.7)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "current-mirror",
+  "title": "Current mirror",
+  "category": "Analog",
+  "description": "Two-transistor (BJT or MOSFET) mirror: set reference current and output voltage; shows output current vs Vout including Early/λ effect, compliance voltage, mirror ratio from sizing, and β error for BJTs.",
+  "params": {
+   "type": "'bjt'|'mos' (default 'mos')",
+   "iref": "A (default 1e-3)",
+   "ratio": "output/reference size ratio (default 1)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "ldo-lab",
+  "title": "LDO regulator",
+  "category": "Analog",
+  "description": "Pass FET + error amp + feedback divider. Sweep Vin and load current: shows Vout regulation, dropout region, efficiency ≈ Vout/Vin, pass-element power dissipation and temperature rise (θJA), quiescent current, and a PSRR-vs-frequency sketch.",
+  "params": {
+   "vin": "V (default 5)",
+   "vout": "V (default 3.3)",
+   "iout": "A (default 0.2)",
+   "vdo": "V dropout (default 0.2)",
+   "iq": "A (default 50e-6)",
+   "theta": "°C/W (default 60)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "charge-pump",
+  "title": "Charge pump (switched-capacitor)",
+  "category": "Analog",
+  "description": "Voltage doubler / inverter with flying and output capacitors. Animated two-phase switching shows charge transfer; set switching frequency, C values, switch resistance and load: shows output voltage, droop (Iout/(f·C)), ripple and efficiency.",
+  "params": {
+   "mode": "'doubler'|'inverter' (default 'doubler')",
+   "vin": "V (default 3.3)",
+   "f": "Hz (default 500e3)",
+   "cfly": "F (default 1e-6)",
+   "cout": "F (default 10e-6)",
+   "iout": "A (default 0.02)",
+   "rsw": "Ω (default 1)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "level-shifter",
+  "title": "Single-FET bidirectional level shifter",
+  "category": "Analog",
+  "description": "BSS138-style NMOS level shifter between a low-voltage and high-voltage side with pull-ups. Toggle which side drives low or releases; shows gate-source voltage, FET state, body diode conduction and both bus voltages.",
+  "params": {
+   "vlow": "V (default 3.3)",
+   "vhigh": "V (default 5)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "buck-lab",
+  "title": "Buck converter (switching simulation)",
+  "category": "Power",
+  "description": "Cycle-by-cycle time-domain simulation of a buck: Vin, duty cycle (or target Vout), L, C, ESR, fsw, load current, synchronous vs asynchronous (diode) rectification, dead time with body-diode conduction, Rds(on), diode Vf. Plots switch node, inductor current, capacitor current, output ripple, diode/low-side current, input current; detects CCM/DCM; efficiency breakdown (conduction, switching, diode, DCR, gate). Compares simulated ripple with analytic ΔI = (Vin−Vout)·D/(L·fsw) and ΔV.",
+  "params": {
+   "vin": "V (default 12)",
+   "vout": "V target (default 3.3)",
+   "l": "H (default 4.7e-6)",
+   "c": "F (default 22e-6)",
+   "esr": "Ω (default 0.005)",
+   "fsw": "Hz (default 500e3)",
+   "iout": "A (default 2)",
+   "sync": "boolean (default true)",
+   "view": "'waveforms'|'efficiency'|'ripple' (default 'waveforms')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "buck-control",
+  "title": "Buck control loop & load transients",
+  "category": "Power",
+  "description": "Averaged closed-loop buck with LC output filter (double pole), ESR zero and a type-II/III compensator. Shows loop-gain Bode with crossover and phase margin, plus the time-domain response to a load step (undershoot, overshoot, settling). Lets you push phase margin low to see ringing and instability; optional feed-forward cap.",
+  "params": {
+   "l": "H",
+   "c": "F",
+   "esr": "Ω",
+   "fc": "Hz target crossover",
+   "pm": "degrees target phase margin",
+   "istep": "A load step"
+  },
+  "presets": {}
+ },
+ {
+  "id": "boost-lab",
+  "title": "Boost converter (switching simulation)",
+  "category": "Power",
+  "description": "Time-domain boost: Vin, D, L, C, load, fsw. Shows inductor current, switch node, diode current, output ripple; ideal Vout = Vin/(1−D) vs actual with losses; input vs output current; CCM/DCM; efficiency and why diode current is pulsed.",
+  "params": {
+   "vin": "V (default 3.7)",
+   "d": "duty (default 0.3)",
+   "l": "H",
+   "c": "F",
+   "iout": "A",
+   "fsw": "Hz"
+  },
+  "presets": {}
+ },
+ {
+  "id": "regulator-compare",
+  "title": "LDO vs buck efficiency & power calculators",
+  "category": "Power",
+  "description": "Mode 'compare': efficiency of an LDO (Vout/Vin minus Iq) vs a buck (loss model with fixed + conduction + switching losses) across load current and Vin, highlighting where an LDO wins (low dropout, very light load). Mode 'viio': give any three of Vin, Iin, Vout, Iout (+ efficiency) and compute the fourth. Mode 'eff': give two of Pin, Pout, η and compute the third plus loss.",
+  "params": {
+   "mode": "'compare'|'viio'|'eff' (default 'compare')",
+   "vin": "V",
+   "vout": "V",
+   "iout": "A"
+  },
+  "presets": {}
+ },
+ {
+  "id": "multiphase-buck",
+  "title": "Multiphase (interleaved) buck",
+  "category": "Power",
+  "description": "1–6 interleaved phases: per-phase and summed inductor current, ripple cancellation vs duty cycle, effective ripple frequency N·fsw, per-phase current, conduction-loss scaling (I²R/N), and transient response comparison.",
+  "params": {
+   "phases": "1..6 (default 2)",
+   "vin": "V",
+   "vout": "V",
+   "iout": "A",
+   "l": "H",
+   "fsw": "Hz"
+  },
+  "presets": {}
+ },
+ {
+  "id": "pwm-lab",
+  "title": "PWM explorer",
+  "category": "Power",
+  "description": "Duty cycle, frequency and amplitude of a PWM signal: average and RMS values, harmonic spectrum, RC-filtered output with ripple, and LED/motor equivalent output.",
+  "params": {
+   "duty": "0..1 (default 0.3)",
+   "f": "Hz (default 1000)",
+   "amp": "V (default 5)",
+   "view": "'time'|'spectrum'|'filter' (default 'time')",
+   "rc": "s filter time constant"
+  },
+  "presets": {}
+ },
+ {
+  "id": "rectifier-lab",
+  "title": "Rectifiers & bridge rectifier",
+  "category": "Power",
+  "description": "AC source into half-wave, center-tap or bridge rectifier with diode drops, filter capacitor and load: output waveform, ripple (≈ I/(f·C) or I/(2fC)), diode conduction intervals and peak diode currents.",
+  "params": {
+   "type": "'half'|'bridge' (default 'bridge')",
+   "vpk": "V peak (default 17)",
+   "f": "Hz (default 60)",
+   "c": "F",
+   "rl": "Ω",
+   "vf": "V diode drop (default 0.7)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "subharmonic",
+  "title": "Peak-current-mode: subharmonic oscillation & slope compensation",
+  "category": "Power",
+  "description": "Iterated inductor-current map for peak current mode control. Inject a perturbation and watch it decay (D<50%) or grow cycle by cycle (D>50%); add slope compensation to stabilize. Plots current waveform and perturbation ratio −(m2−ma)/(m1+ma).",
+  "params": {
+   "d": "duty (default 0.6)",
+   "ma": "compensation slope as fraction of m2 (default 0)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "power-sequencing",
+  "title": "Power sequencing timeline",
+  "category": "Power",
+  "description": "3–4 rails each with enable delay and soft-start ramp, power-good thresholds and a set of sequencing rules (e.g., core before I/O, I/O never exceeds core by > 0.5 V). Shows voltage traces, PG signals and rule violations; supports power-down sequence.",
+  "params": {
+   "preset": "'fpga'|'soc' (default 'soc')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "inductor-saturation",
+  "title": "Inductor saturation & core materials",
+  "category": "Power",
+  "description": "Choose core (air, ferrite, powder iron, nanocrystalline) and current: plots inductance vs DC current (soft vs hard saturation), and the current ramp under a voltage pulse showing the runaway slope once L collapses.",
+  "params": {
+   "core": "'ferrite'|'powder'|'air' (default 'ferrite')",
+   "l0": "H (default 10e-6)",
+   "isat": "A (default 3)",
+   "v": "V applied"
+  },
+  "presets": {}
+ },
+ {
+  "id": "flyback-protection",
+  "title": "Inductive kick & flyback protection",
+  "category": "Power",
+  "description": "A switch interrupts current in an inductive load. Compare no protection (huge spike set by parasitic C, ringing), flyback diode, diode + Zener, RC snubber and TVS: switch voltage, inductor current decay time and energy dissipated.",
+  "params": {
+   "protection": "'none'|'diode'|'zener'|'rc'|'tvs' (default 'none')",
+   "l": "H (default 10e-3)",
+   "i0": "A (default 1)",
+   "vsupply": "V (default 12)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "lipo-lab",
+  "title": "LiPo charge & discharge",
+  "category": "Batteries & Motors",
+  "description": "Single-cell Li-ion/LiPo model (OCV vs SoC, internal resistance, temperature). 'discharge': terminal voltage vs capacity at selectable C-rates and temperatures, energy delivered, I²R heat. 'charge': CC/CV profile (current, voltage, SoC vs time) with termination current; shows why the last 20% is slow.",
+  "params": {
+   "view": "'discharge'|'charge' (default 'discharge')",
+   "capacity": "Ah (default 2)",
+   "crate": "C (default 1)",
+   "temp": "°C (default 25)",
+   "rint": "Ω (default 0.05)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "soc-estimator",
+  "title": "State-of-charge estimation",
+  "category": "Batteries & Motors",
+  "description": "Simulated drive cycle: compares true SoC with coulomb counting (with current-sensor offset/gain error drifting over time), OCV-lookup (flat curve + IR error under load), and a blended estimator that corrects with OCV at rest.",
+  "params": {
+   "offset": "A sensor offset (default 0.01)",
+   "gainErr": "fraction (default 0.01)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "cell-balancing",
+  "title": "Series cell balancing",
+  "category": "Batteries & Motors",
+  "description": "2–6 series cells with capacity / initial-SoC mismatch. Charge the pack with and without passive (bleed resistor) balancing: shows each cell voltage, the first cell hitting 4.2 V, usable pack capacity lost, and balancing current/heat.",
+  "params": {
+   "cells": "2..6 (default 4)",
+   "mismatch": "fraction capacity spread (default 0.05)",
+   "balance": "'none'|'passive' (default 'none')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "dc-motor-lab",
+  "title": "Brushed DC motor",
+  "category": "Batteries & Motors",
+  "description": "Electro-mechanical model (R, L, Kt=Ke, J, friction, load torque). 'transient': apply a voltage step: inrush/stall current, back-EMF rising with speed, current settling. 'curves': torque–speed, current–torque, power and efficiency curves with stall torque and no-load speed. PWM duty scales voltage.",
+  "params": {
+   "view": "'transient'|'curves' (default 'transient')",
+   "v": "V (default 12)",
+   "r": "Ω (default 1)",
+   "l": "H (default 1e-3)",
+   "kt": "N·m/A (default 0.02)",
+   "load": "N·m (default 0.01)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "h-bridge-lab",
+  "title": "H-bridge & half-bridge",
+  "category": "Batteries & Motors",
+  "description": "Click each of the four switches (or two for a half-bridge) to turn it on/off. Highlights the current path, motor direction, coast, brake (both low-sides), shoot-through (with fault warning and current), freewheeling through body diodes after turn-off, and a dead-time timing view.",
+  "params": {
+   "mode": "'h'|'half' (default 'h')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "stepper-lab",
+  "title": "Stepper motor driving",
+  "category": "Batteries & Motors",
+  "description": "Two-phase bipolar stepper: full-step, half-step and microstepping (sin/cos currents). Shows coil currents, rotor angle, step sequence table, and holding torque vs microstep position.",
+  "params": {
+   "mode": "'full'|'half'|'micro' (default 'full')",
+   "microsteps": "default 8"
+  },
+  "presets": {}
+ },
+ {
+  "id": "servo-lab",
+  "title": "Hobby servo & position control",
+  "category": "Batteries & Motors",
+  "description": "50 Hz PWM pulse width (1–2 ms) maps to target angle; internal P/PD loop drives the motor toward the potentiometer feedback angle. Adjust gains to see overshoot, steady-state error and ringing.",
+  "params": {
+   "pulse": "ms (default 1.5)",
+   "kp": "default 4",
+   "kd": "default 0.2"
+  },
+  "presets": {}
+ },
+ {
+  "id": "encoder-lab",
+  "title": "Quadrature encoder",
+  "category": "Batteries & Motors",
+  "description": "Rotating disk with A/B channels 90° apart: direction from phase order, 1×/2×/4× decoding, counts per revolution → RPM, and the speed measurement trade-off between counting over a window and timing between edges.",
+  "params": {
+   "cpr": "counts per rev (default 64)",
+   "rpm": "default 600"
+  },
+  "presets": {}
+ },
+ {
+  "id": "current-sense",
+  "title": "Current sensing chain (Rsense → CSA → ADC)",
+  "category": "Batteries & Motors",
+  "description": "Choose current range, sense resistor, amplifier gain, ADC bits and reference. Computes sense voltage, power dissipated in Rsense, amplified voltage vs ADC range (clipping/headroom), resolution in mA/LSB, recommended Rsense or gain, and high-side vs low-side common-mode considerations.",
+  "params": {
+   "imax": "A (default 5)",
+   "imin": "A (default 0.01)",
+   "rsense": "Ω (default 0.01)",
+   "gain": "V/V (default 50)",
+   "bits": "default 12",
+   "vref": "V (default 3.3)",
+   "side": "'low'|'high' (default 'low')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "gate-drive",
+  "title": "MOSFET gate drive, Miller plateau & gate resistor",
+  "category": "Batteries & Motors",
+  "description": "GPIO/driver voltage and source resistance + gate resistor into Ciss/Crss with gate-loop inductance. Shows Vgs(t) with Miller plateau, Vds and Id switching transitions, switching loss, and parasitic ringing when Rg is too small; pull-down resistor behavior when the GPIO floats.",
+  "params": {
+   "vdrive": "V (default 3.3)",
+   "rg": "Ω (default 10)",
+   "qg": "C total gate charge (default 20e-9)",
+   "lg": "H gate loop inductance (default 10e-9)",
+   "vth": "V (default 1.5)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "bootstrap-driver",
+  "title": "High-side NFET bootstrap driver",
+  "category": "Batteries & Motors",
+  "description": "Half-bridge with bootstrap diode and capacitor: shows switch node, bootstrap cap voltage charging when the low side is on, high-side Vgs = Vboot − Vsw, droop during long on-times, and the maximum-duty limitation.",
+  "params": {
+   "vin": "V (default 24)",
+   "vdrv": "V (default 12)",
+   "cboot": "F (default 100e-9)",
+   "d": "duty (default 0.5)",
+   "fsw": "Hz (default 100e3)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "opto-isolator",
+  "title": "Opto-isolator design",
+  "category": "Batteries & Motors",
+  "description": "LED drive current from a GPIO resistor, current transfer ratio (CTR, with ageing/temperature), output pull-up: checks saturated low level, and shows output rise time vs pull-up value (speed vs current tradeoff).",
+  "params": {
+   "vgpio": "V (default 3.3)",
+   "rled": "Ω (default 330)",
+   "ctr": "fraction (default 0.5)",
+   "rpull": "Ω (default 4700)",
+   "vcc": "V (default 5)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "fourier-synth",
+  "title": "Fourier synthesis & spectrum",
+  "category": "Signals",
+  "description": "Build square, triangle, sawtooth or pulse-train waves from N harmonics; shows Gibbs ringing, harmonic amplitudes (1/n for square, sinc envelope for pulse trains with duty D), and how finite rise time adds a second roll-off at the knee frequency ≈ 0.35/tr (or 1/(π·tr)).",
+  "params": {
+   "wave": "'square'|'triangle'|'sawtooth'|'pulse' (default 'square')",
+   "harmonics": "default 9",
+   "duty": "0..1 for pulse (default 0.25)",
+   "tr": "fraction of period rise time for trapezoid view (default 0.02)",
+   "view": "'time'|'spectrum'|'edges' (default 'time')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "sampling-aliasing",
+  "title": "Sampling & aliasing",
+  "category": "Signals",
+  "description": "Signal frequency vs sample rate: shows samples, reconstructed waveform and the apparent (aliased) frequency |f − k·fs|, the Nyquist frequency fs/2, and spectrum folding; optional anti-alias filter.",
+  "params": {
+   "f": "Hz signal (default 900)",
+   "fs": "Hz sample rate (default 1000)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "tline-lab",
+  "title": "Transmission line reflections",
+  "category": "Signals",
+  "description": "Source (Vs, Rs, rise time) → line (Z0, delay) → load (RL, open, short, capacitive). Computes Γs, ΓL, draws the bounce (lattice) diagram and the voltage at source and load vs time; toggles series, parallel, Thevenin and AC termination.",
+  "params": {
+   "z0": "Ω (default 50)",
+   "rs": "Ω (default 10)",
+   "rl": "Ω or 'open'|'short' (default 'open')",
+   "td": "s line delay (default 1e-9)",
+   "tr": "s rise time (default 100e-12)",
+   "term": "'none'|'series'|'parallel'|'thevenin'|'ac' (default 'none')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "microstrip-calc",
+  "title": "Trace impedance calculator",
+  "category": "Signals",
+  "description": "Microstrip and stripline characteristic impedance (Hammerstad–Jensen / IPC-2141 style formulas) from trace width, dielectric height, copper thickness and εr; effective εr, propagation delay per length; edge-coupled differential impedance. Includes the 'substrate twice as thick' scenario.",
+  "params": {
+   "type": "'microstrip'|'stripline'|'diff-microstrip' (default 'microstrip')",
+   "w": "mm (default 0.3)",
+   "h": "mm (default 0.2)",
+   "t": "mm (default 0.035)",
+   "er": "default 4.3",
+   "s": "mm diff spacing"
+  },
+  "presets": {}
+ },
+ {
+  "id": "eye-diagram",
+  "title": "Eye diagram",
+  "category": "Signals",
+  "description": "PRBS data through a lossy channel (bandwidth limit) with random noise and jitter, folded into an eye. Shows eye height/width, a mask with violations counted, and the effect of pre-emphasis/de-emphasis or CTLE equalization.",
+  "params": {
+   "rate": "bit/s (default 5e9)",
+   "bw": "Hz channel -3 dB bandwidth (default 2.5e9)",
+   "noise": "V rms (default 0.02)",
+   "jitter": "UI rms (default 0.02)",
+   "preemph": "dB (default 0)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "diff-signaling",
+  "title": "Differential vs single-ended signaling",
+  "category": "Signals",
+  "description": "Two lines carry +V/−V around a common-mode level; inject common-mode noise and see it cancel at a differential receiver, unlike a single-ended receiver. Shows Vdiff, Vcm, skew-induced mode conversion and ground offset immunity.",
+  "params": {
+   "noise": "V common-mode noise (default 0.5)",
+   "skew": "fraction of bit (default 0)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "crosstalk",
+  "title": "Crosstalk between traces",
+  "category": "Signals",
+  "description": "Aggressor edge couples into a victim trace via mutual C and L. Spacing, height above plane, coupled length and rise time set near-end (backward) and far-end (forward) crosstalk amplitude; shows the 3W rule and effect of a guard trace/ground plane.",
+  "params": {
+   "spacing": "mm (default 0.2)",
+   "h": "mm height above plane (default 0.1)",
+   "len": "mm coupled length (default 50)",
+   "tr": "s rise time (default 200e-12)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "ground-bounce",
+  "title": "Ground bounce (simultaneous switching)",
+  "category": "Signals",
+  "description": "N outputs switch simultaneously through shared package ground inductance: V = N·L·di/dt. Set N, L, load C, edge rate and decoupling; shows the bounce waveform, a false-trigger threshold on a quiet input, and mitigations.",
+  "params": {
+   "n": "outputs (default 8)",
+   "l": "H (default 2e-9)",
+   "cl": "F per output (default 15e-12)",
+   "tr": "s (default 1e-9)",
+   "vdd": "V (default 3.3)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "skin-effect",
+  "title": "Skin effect",
+  "category": "Signals",
+  "description": "Skin depth δ = sqrt(ρ/(π f μ)) vs frequency for copper, aluminium, gold, silver; AC resistance of a round wire or PCB trace vs frequency; animated current-density cross-section.",
+  "params": {
+   "material": "'cu'|'al'|'au'|'ag' (default 'cu')",
+   "f": "Hz (default 1e6)",
+   "shape": "'wire'|'trace' (default 'trace')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "ringing-lc",
+  "title": "Ringing from parasitic L and C",
+  "category": "Signals",
+  "description": "A fast edge drives a parasitic series L into a C (trace stub, probe ground lead, gate loop). Shows ringing frequency 1/(2π√LC), damping, overshoot, and how series resistance or shorter loops fix it.",
+  "params": {
+   "context": "'probe'|'trace'|'gate' (default 'probe')",
+   "l": "H",
+   "c": "F",
+   "r": "Ω",
+   "tr": "s"
+  },
+  "presets": {}
+ },
+ {
+  "id": "logic-lab",
+  "title": "Digital logic simulator",
+  "category": "Digital & Embedded",
+  "description": "Drag-and-drop gate-level simulator: AND, OR, NOT, NAND, NOR, XOR, XNOR, buffer, toggle inputs, output LEDs. Wire gates, toggle inputs and see outputs propagate immediately; auto-generates the truth table and a Boolean expression; detects combinational loops.",
+  "params": {
+   "preset": "'blank'|'and'|'half-adder'|'full-adder'|'mux2'|'nand-universal'|'xor-from-nand'|'majority'|'decoder2' (default 'blank')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "kmap-lab",
+  "title": "Truth table → K-map → minimal logic",
+  "category": "Digital & Embedded",
+  "description": "Edit a 2–4 variable truth table (0/1/don't-care); renders the Karnaugh map with Gray-code ordering and prime-implicant groups; minimal SOP and POS via Quine–McCluskey; gate count.",
+  "params": {
+   "vars": "2..4 (default 3)",
+   "minterms": "array of ints",
+   "dontcares": "array of ints"
+  },
+  "presets": {}
+ },
+ {
+  "id": "base-converter",
+  "title": "Number bases, two's complement & endianness",
+  "category": "Digital & Embedded",
+  "description": "Convert between binary, octal, decimal and hex with step-by-step working (repeated division / positional expansion), two's complement for signed values, bit-field with MSB/LSB highlighted, and big- vs little-endian byte layout in memory.",
+  "params": {
+   "value": "string e.g. '0x1F' or '175' (default '0xBEEF')",
+   "bits": "8|16|32 (default 16)",
+   "view": "'convert'|'endian' (default 'convert')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "register-decoder",
+  "title": "Register map decoder",
+  "category": "Digital & Embedded",
+  "description": "Define register fields (name, msb, lsb) and enter a hex value: shows each field's binary and decimal value, and lets you compose a new value with mask/shift operations (with the C expression).",
+  "params": {
+   "preset": "'ctrl'|'status'|'imu-config' (default 'ctrl')",
+   "value": "hex string"
+  },
+  "presets": {}
+ },
+ {
+  "id": "flipflop-lab",
+  "title": "Latches, flip-flops, setup/hold & metastability",
+  "category": "Digital & Embedded",
+  "description": "Edit D and CLK waveforms by clicking: compare a level-sensitive D latch (transparent while CLK high) with an edge-triggered D flip-flop. Setup/hold window shown around each active edge; D changes inside the window cause a metastable (randomly resolving, delayed) output. Also SR latch mode.",
+  "params": {
+   "mode": "'latch-vs-ff'|'setup-hold'|'sr' (default 'latch-vs-ff')",
+   "tsu": "fraction of period (default 0.1)",
+   "th": "fraction (default 0.05)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "fsm-lab",
+  "title": "Finite state machines (Moore vs Mealy)",
+  "category": "Digital & Embedded",
+  "description": "Step an input bit stream through a sequence detector or traffic light FSM; animated state diagram highlights the current state/transition; outputs shown for Moore (state-based) and Mealy (input-based) versions side by side to show the one-cycle difference.",
+  "params": {
+   "preset": "'detect-101'|'detect-110'|'traffic'|'vending' (default 'detect-101')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "clock-divider",
+  "title": "Clock divider",
+  "category": "Digital & Embedded",
+  "description": "Counter-based clock divider: divide by any N; shows counter value, output waveform and duty cycle; odd-N 50% duty using both edges; toggle flip-flop chain for powers of two.",
+  "params": {
+   "n": "divide ratio (default 3)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "adc-lab",
+  "title": "ADC: quantization, SAR, flash & reading conversion",
+  "category": "Digital & Embedded",
+  "description": "'quantize': N bits and Vref vs input → code, LSB, quantization error. 'sar': step through the successive-approximation binary search bit by bit. 'flash': comparator ladder thermometer code. 'convert': code ↔ voltage converter (V = code·Vref/2^N, and the 2^N−1 convention note).",
+  "params": {
+   "view": "'quantize'|'sar'|'flash'|'convert' (default 'quantize')",
+   "bits": "default 10",
+   "vref": "V (default 3.3)",
+   "vin": "V (default 1.234)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "dac-lab",
+  "title": "DAC: R-2R & binary-weighted",
+  "category": "Digital & Embedded",
+  "description": "Digital code → analog output for an R-2R ladder or binary-weighted DAC, with resistor mismatch causing DNL/INL; staircase output for a ramp; LSB size and resolution.",
+  "params": {
+   "type": "'r2r'|'weighted' (default 'r2r')",
+   "bits": "default 4",
+   "vref": "V (default 3.3)",
+   "mismatch": "fraction (default 0)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "sample-hold",
+  "title": "Sample & hold",
+  "category": "Digital & Embedded",
+  "description": "Switch (Ron) + hold capacitor + buffer. Shows tracking during sample phase (RC acquisition time to N-bit accuracy), droop from leakage during hold, charge-injection pedestal, and the trade-offs of short vs long sample times and small vs large hold caps.",
+  "params": {
+   "ron": "Ω (default 100)",
+   "ch": "F (default 10e-12)",
+   "tsample": "s (default 100e-9)",
+   "ileak": "A (default 1e-9)",
+   "bits": "default 12"
+  },
+  "presets": {}
+ },
+ {
+  "id": "uart-frame",
+  "title": "UART framing & oversampling",
+  "category": "Digital & Embedded",
+  "description": "Type a character: shows the frame (idle-high, start bit, data LSB-first, optional parity, stop bits) at a baud rate; receiver 16× oversampling locating mid-bit sample points; baud-rate mismatch slider showing cumulative sampling drift and when frames fail.",
+  "params": {
+   "char": "default 'A'",
+   "baud": "default 115200",
+   "parity": "'none'|'even'|'odd'",
+   "stop": "1|2",
+   "mismatch": "% (default 0)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "spi-modes",
+  "title": "SPI modes & connections",
+  "category": "Digital & Embedded",
+  "description": "CPOL/CPHA mode selector shows SCLK, MOSI, MISO, CS waveforms for a byte with sample/shift edges marked; topology view for independent chip-selects vs daisy-chain.",
+  "params": {
+   "mode": "0..3 (default 0)",
+   "byte": "hex (default '0xA5')",
+   "view": "'timing'|'topology'"
+  },
+  "presets": {}
+ },
+ {
+  "id": "i2c-bus",
+  "title": "I²C transaction builder",
+  "category": "Digital & Embedded",
+  "description": "Compose a transaction (start, 7-bit address, R/W, ACK/NACK, data bytes, repeated start, stop); renders SDA/SCL waveforms with each field labelled; toggle clock stretching by the target; explains who drives SDA in each bit.",
+  "params": {
+   "address": "hex (default '0x48')",
+   "rw": "'w'|'r'",
+   "data": "array of hex strings",
+   "stretch": "boolean"
+  },
+  "presets": {}
+ },
+ {
+  "id": "i2c-pullup",
+  "title": "I²C pull-up sizing & rise time",
+  "category": "Digital & Embedded",
+  "description": "Bus capacitance, VDD and speed mode → Rp(min) = (VDD − VOL)/IOL and Rp(max) = tr/(0.8473·Cb); shows the RC rise waveform against the 30%/70% thresholds and the spec rise-time limit; flags too-weak/too-strong pull-ups.",
+  "params": {
+   "vdd": "V (default 3.3)",
+   "cb": "F (default 200e-12)",
+   "rp": "Ω (default 4700)",
+   "mode": "'standard'|'fast'|'fastplus' (default 'fast')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "gpio-lab",
+  "title": "GPIO: push-pull, open-drain, inputs & contention",
+  "category": "Digital & Embedded",
+  "description": "'output': push-pull vs open-drain with pull-up, showing which transistor conducts. 'input': floating vs pull-up/pull-down with leakage noise. 'contention': two push-pull drivers fighting → current through the FETs. 'debounce': mechanical bounce with RC + Schmitt or software debounce.",
+  "params": {
+   "view": "'output'|'input'|'contention'|'debounce' (default 'output')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "timer-lab",
+  "title": "MCU timer / counter & PWM",
+  "category": "Digital & Embedded",
+  "description": "Input clock, prescaler (PSC) and auto-reload (ARR) → counter sawtooth, update-event frequency f = fclk/((PSC+1)(ARR+1)), compare register → PWM duty, resolution vs frequency trade-off; solves for PSC/ARR given a target frequency with error.",
+  "params": {
+   "fclk": "Hz (default 16e6)",
+   "psc": "default 15",
+   "arr": "default 999",
+   "ccr": "default 250"
+  },
+  "presets": {}
+ },
+ {
+  "id": "interrupt-lab",
+  "title": "Interrupts & ISR timing",
+  "category": "Digital & Embedded",
+  "description": "Timeline of a main loop plus multiple interrupt sources with priorities and ISR durations; shows latency, nesting/preemption vs non-nested handling, pending flags, and missed events when an ISR is too long.",
+  "params": {
+   "nesting": "boolean (default false)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "pipeline-lab",
+  "title": "5-stage pipeline & hazards",
+  "category": "Computer Architecture",
+  "description": "IF-ID-EX-MEM-WB pipeline diagram for a short instruction sequence; toggles forwarding, shows data-hazard stalls (load-use), branch flushes, and computes CPI vs an unpipelined design.",
+  "params": {
+   "program": "'alu'|'load-use'|'branch' (default 'load-use')",
+   "forwarding": "boolean (default true)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "branch-predictor",
+  "title": "Branch prediction",
+  "category": "Computer Architecture",
+  "description": "Run static (always taken/not-taken), 1-bit and 2-bit saturating-counter predictors on a branch outcome pattern (loops, alternating, random); shows state transitions, mispredictions and accuracy.",
+  "params": {
+   "pattern": "'loop'|'alternating'|'random'|'custom'"
+  },
+  "presets": {}
+ },
+ {
+  "id": "cache-lab",
+  "title": "Cache simulator",
+  "category": "Computer Architecture",
+  "description": "Direct-mapped or N-way set-associative cache: address breakdown into tag/index/offset, step through an address trace with hits/misses, LRU replacement and hit-rate.",
+  "params": {
+   "lines": "default 8",
+   "ways": "default 1",
+   "block": "bytes (default 16)",
+   "trace": "'sequential'|'stride'|'conflict'"
+  },
+  "presets": {}
+ },
+ {
+  "id": "asm-stepper",
+  "title": "Assembly stepper",
+  "category": "Computer Architecture",
+  "description": "Step a small RISC-V-style assembly program (loop/subroutine) instruction by instruction: registers, PC, branch decisions, instruction count and cycle estimate; counts how many times a subroutine executes.",
+  "params": {
+   "program": "'sum-loop'|'nested-loop'|'subroutine' (default 'sum-loop')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "pvt-power",
+  "title": "Power, performance & thermals (PVT)",
+  "category": "Computer Architecture",
+  "description": "Dynamic power αCV²f + leakage (∝ exp with temperature and Vt) vs voltage, frequency and temperature; max frequency vs voltage (alpha-power delay model); DVFS operating points; thermal model (θ) with a throttling control loop.",
+  "params": {
+   "v": "V (default 0.9)",
+   "f": "Hz (default 2e9)",
+   "t": "°C ambient (default 25)",
+   "corner": "'tt'|'ff'|'ss'"
+  },
+  "presets": {}
+ },
+ {
+  "id": "ecc-lab",
+  "title": "Radiation upsets, ECC & TMR",
+  "category": "Computer Architecture",
+  "description": "Hamming(7,4)/SECDED code word: flip bits to simulate single-event upsets and watch syndrome decode correct single errors and detect doubles; triple modular redundancy voting.",
+  "params": {
+   "mode": "'hamming'|'tmr' (default 'hamming')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "imu-lab",
+  "title": "IMU: integration drift & sensor fusion",
+  "category": "Sensors & Measurement",
+  "description": "Accelerometer bias/noise double-integrated to position drift (∝ t²); gyro bias integrated to angle drift; complementary filter fusing accelerometer tilt with gyro rate, adjustable α.",
+  "params": {
+   "view": "'drift'|'fusion' (default 'drift')",
+   "bias": "m/s² (default 0.02)",
+   "alpha": "default 0.98"
+  },
+  "presets": {}
+ },
+ {
+  "id": "photodiode-lab",
+  "title": "Light sensing: photodiode vs photoresistor",
+  "category": "Sensors & Measurement",
+  "description": "Irradiance → photodiode current (responsivity) → transimpedance amplifier output, bandwidth vs feedback R/C; photoresistor log-resistance response and slow time constant; side-by-side step response.",
+  "params": {
+   "lux": "default 500",
+   "rf": "Ω TIA feedback (default 1e6)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "lidar-tof",
+  "title": "LiDAR time-of-flight",
+  "category": "Sensors & Measurement",
+  "description": "Target distance → round-trip time 2d/c; timing resolution → range resolution; return pulse with noise, ambient light and multiple returns; max range from pulse repetition rate.",
+  "params": {
+   "d": "m (default 30)",
+   "tres": "s timing resolution (default 1e-9)",
+   "prf": "Hz (default 100e3)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "scope-probe",
+  "title": "Scope probes: compensation, loading & ground lead",
+  "category": "Sensors & Measurement",
+  "description": "'compensation': 10× probe tip R/C vs scope input R/C — adjust the compensation cap to see over/under-compensated square waves. 'loading': probe input impedance (1× vs 10× vs active) loading a source impedance vs frequency. 'ground': ground-lead inductance ringing vs spring tip.",
+  "params": {
+   "view": "'compensation'|'loading'|'ground' (default 'compensation')"
+  },
+  "presets": {}
+ },
+ {
+  "id": "scope-trigger",
+  "title": "Oscilloscope triggering",
+  "category": "Sensors & Measurement",
+  "description": "Noisy repetitive signal displayed with and without a trigger: set level, slope, holdoff and mode (auto/normal/single); untriggered display rolls, triggered display stabilizes; runt/glitch example.",
+  "params": {
+   "level": "V (default 0.5)",
+   "slope": "'rising'|'falling'"
+  },
+  "presets": {}
+ },
+ {
+  "id": "measurement-bw",
+  "title": "Bandwidth, rise time & sample rate",
+  "category": "Sensors & Measurement",
+  "description": "Signal rise time vs instrument bandwidth: measured tr ≈ sqrt(tr_sig² + (0.35/BW)²); harmonic content vs bandwidth; sample-rate view showing too few samples per edge and aliasing.",
+  "params": {
+   "tr": "s signal rise time (default 1e-9)",
+   "bw": "Hz scope bandwidth (default 200e6)",
+   "fs": "Sa/s (default 1e9)"
+  },
+  "presets": {}
+ },
+ {
+  "id": "sensor-calibration",
+  "title": "Sensor calibration & error",
+  "category": "Sensors & Measurement",
+  "description": "A sensor with offset, gain error, nonlinearity and noise vs a reference; take calibration points, fit 1-/2-/multi-point corrections, see residual error, accuracy vs precision (bias vs scatter) and averaging.",
+  "params": {
+   "offset": "default 0.2",
+   "gain": "default 1.05",
+   "nonlin": "default 0.02",
+   "noise": "default 0.05"
+  },
+  "presets": {}
+ },
+ {
+  "id": "dmm-lab",
+  "title": "DMM measurements: loading, burden & 4-wire",
+  "category": "Sensors & Measurement",
+  "description": "'loading': DMM input resistance (10 MΩ) measuring a high-impedance node. 'burden': shunt burden voltage in current mode. '4wire': 2-wire vs 4-wire (Kelvin) resistance with lead resistance.",
+  "params": {
+   "view": "'loading'|'burden'|'4wire' (default '4wire')"
+  },
+  "presets": {}
+ }
+]

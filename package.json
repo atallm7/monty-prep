@@ -1,0 +1,32 @@
+{
+  "name": "monty-prep",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "index": "node scripts/build-index.mjs",
+    "validate": "node scripts/validate-content.mjs",
+    "dev": "node scripts/build-index.mjs && vite",
+    "build": "node scripts/build-index.mjs && node scripts/validate-content.mjs --quiet && tsc --noEmit -p . && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "node scripts/test-engine.mjs"
+  },
+  "dependencies": {
+    "katex": "^0.16.11",
+    "marked": "^14.1.4",
+    "mermaid": "^11.4.1",
+    "minisearch": "^7.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.7",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}
