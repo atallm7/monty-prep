@@ -20,6 +20,36 @@ export const HELPERS: Record<string, unknown> = {
 const BAD = /\b(window|document|globalThis|Function|constructor|prototype|__proto__|import|fetch|eval|while|for)\b|=>|[;{}`\[\]]/;
 const cache = new Map<string, (...a: number[]) => number>();
 
+
+/** JS forbids `-a**b`; rewrite unary minus applied to a power as `-(a**b)` (standard math precedence). */
+function fixUnaryPow(src: string): string {
+  const operand = (s: string, i: number): number => { // returns end index (exclusive) of an operand starting at i
+    while (s[i] === ' ') i++;
+    if (s[i] === '-' || s[i] === '+') i++;
+    if (s[i] === '(') { let d = 0; for (let j = i; j < s.length; j++) { if (s[j] === '(') d++; else if (s[j] === ')' && --d === 0) return j + 1; } return s.length; }
+    const m = /^[A-Za-z_][\w]*|^\d*\.?\d+(?:e[-+]?\d+)?/i.exec(s.slice(i)); if (!m) return -1;
+    let j = i + m[0].length;
+    if (s[j] === '(') { let d = 0; for (let k = j; k < s.length; k++) { if (s[k] === '(') d++; else if (s[k] === ')' && --d === 0) return k + 1; } }
+    return j;
+  };
+  let out = src;
+  for (let guard = 0; guard < 50; guard++) {
+    let changed = false;
+    for (let i = 0; i < out.length; i++) {
+      if (out[i] !== '-') continue;
+      let p = i - 1; while (p >= 0 && out[p] === ' ') p--;
+      if (p >= 0 && !'(,+-*/%<>=?:'.includes(out[p])) continue; // binary minus
+      const a = operand(out, i + 1); if (a < 0) continue;
+      let k = a; while (out[k] === ' ') k++;
+      if (out.slice(k, k + 2) !== '**') continue;
+      const b = operand(out, k + 2); if (b < 0) continue;
+      out = out.slice(0, i + 1) + '(' + out.slice(i + 1, b) + ')' + out.slice(b); changed = true; break;
+    }
+    if (!changed) break;
+  }
+  return out;
+}
+
 export function compile(expr: string, args: string[] = ['x'], vars: Record<string, number> = {}): (...a: number[]) => number {
   const key = expr + '|' + args.join(',') + '|' + JSON.stringify(vars);
   const hit = cache.get(key); if (hit) return hit;
@@ -27,7 +57,7 @@ export function compile(expr: string, args: string[] = ['x'], vars: Record<strin
   const names = Object.keys(HELPERS).filter(n => !args.includes(n) && !(n in vars));
   const vnames = Object.keys(vars);
   // eslint-disable-next-line no-new-func
-  const src = expr.replace(/\^/g, '**').replace(/--(?=\s*[\d.(a-zA-Z])/g, '+ ');
+  const src = fixUnaryPow(expr.replace(/\^/g, '**').replace(/--(?=\s*[\d.(a-zA-Z])/g, '+ '));
   const fn = new Function('H', 'V', ...args, `const {${names.join(',')}} = H; ${vnames.length ? `const {${vnames.join(',')}} = V;` : ''} return (${src});`) as (...a: unknown[]) => number;
   const f = (...a: number[]) => Number(fn(HELPERS, vars, ...a));
   cache.set(key, f);
