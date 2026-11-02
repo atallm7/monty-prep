@@ -17,3 +17,4 @@ Rules: never put scratch or test files in content/ (use your mktemp dir). Only c
 Final message: ids completed, the validator summary line, a short list of uncertain points flagged, interpretation decisions, and any platform bugs.
 Mermaid tip: prefer flowchart TB or ≤6 nodes per row; wide LR charts become unreadably small.
 Screenshot tip: full-page shots are too tall to read. Capture individual figures with `node scripts/shot.mjs /q/<id> out.png --selector .figure --nth N` (or `--selector .sim`).
+Mermaid tip: node labels starting with "1. " render as "Unsupported markdown: list". Write "Step 1:" instead.

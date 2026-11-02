@@ -55,8 +55,10 @@ function linTicks(a: number, b: number, target: number) {
 }
 function logTicks(a: number, b: number) {
   const out: number[] = []; const minor: number[] = [];
-  for (let e = Math.floor(Math.log10(a)); e <= Math.ceil(Math.log10(b)); e++) {
-    const d = 10 ** e; if (d >= a * 0.999 && d <= b * 1.001) out.push(d);
+  const e0 = Math.floor(Math.log10(a)), e1 = Math.ceil(Math.log10(b)); const stepE = Math.max(1, Math.ceil((e1 - e0) / 8));
+  for (let e = e0; e <= e1; e++) {
+    const d = 10 ** e; if (d >= a * 0.999 && d <= b * 1.001 && (e - e0) % stepE === 0) out.push(d);
+    if (stepE > 1) continue;
     for (let k = 2; k < 10; k++) { const v = k * d; if (v > a && v < b) minor.push(v); }
   }
   return { major: out, minor };
