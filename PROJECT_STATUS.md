@@ -13,19 +13,19 @@
 - Tests: `node scripts/e2e.mjs [--all-sims --all-questions]` (dev server must be running). Checklist: `node scripts/progress-report.mjs` → `docs/PROGRESS.md`.
 
 ## Status (update after each batch)
-- Question pages: 312/1005 written (0 validator errors). Done: b01–b12 and b14. Partial: b13 and b15–b23 (resumable agents; new agents skip existing files). Not started: b24–b56. QA-reviewed (Opus, see docs/reviews/): b01–b12 (199 pages). Reviews correct errors on about 60% of pages, so keep reviewing every batch.
+- Question pages: 548/1005 written (0 validator errors). Done through b26. In progress (resumable): b27–b34. Not started: b35–b56. Opus QA done: b01–b22 (381 pages); in progress: b23–b26. Reviews correct errors on most pages, so review every batch.
 - Sims: **90/90 implemented** with model tests passing; all render (e2e --all-sims 126/126). bjt/mosfet/cmos were rebuilt and verified by Opus.
 - Platform: all pages done; 36/36 e2e checks pass.
 
 ## Process
 - Writers use Sonnet subagents, one batch file each, skipping existing files. Opus QA reviewers check each finished batch and write `docs/reviews/bNN.md`.
-- Hit 5-hour usage limits twice. Keep ≤8 concurrent. Interrupted agents can be resumed with SendMessage (cheaper than starting new ones).
+- Hit 5-hour usage limits three times. Keep ≤8 concurrent. Interrupted agents can be resumed with SendMessage (cheaper than starting new ones).
 
 ## Next tasks
-1. Finish b01–b07, then b08–b56 (Sonnet writers).
-2. Implement the 22 missing sims (Sonnet), then run an Opus verification pass on the sim physics.
-3. Opus QA for each completed batch.
-4. Final: `npm run build`, then `e2e.mjs --all-sims --all-questions`.
+1. Finish writer batches b27–b56 (Sonnet; prompt docs/WRITER_PROMPT.md).
+2. Opus QA for each finished batch (docs/QA_PROMPT.md); b23–b34 pending.
+3. Final: `npm run build`, then `node scripts/e2e.mjs --all-sims --all-questions`, and fix failures.
+4. Polish backlog below.
 
 ## Known issues / polish backlog
 - Some sims expose fewer params than pages would like: dc-motor-lab J, lipo-lab rint/temperature per preset, rc-transient. Captions note the default differences. Possible future enhancement.
