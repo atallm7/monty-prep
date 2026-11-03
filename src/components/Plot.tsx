@@ -92,7 +92,7 @@ export default function Plot(p: PlotProps) {
 
 
   // SI prefixes only make sense for SI units; anything else (%, °C, dB, rpm, "periods") prints plain numbers + unit
-  const SI_UNITS = /^(V|A|W|Ω|F|H|Hz|s|J|C|T|Wb|S|N|N·m|N⋅m|m|g|Wh|Ah|VA|V\/s|A\/s|W\/K|K\/W|bit\/s|b\/s|B|Sa\/s|rad\/s|Ω·m|V\/A|A\/V|lx|Pa|kg·m²)$/;
+  const SI_UNITS = /^(V|A|W|Ω|F|H|Hz|s|J|C|T|Wb|S|N|N·m|N⋅m|m|Wh|Ah|VA|V\/s|A\/s|W\/K|K\/W|bit\/s|b\/s|B|Sa\/s|rad\/s|Ω·m|V\/A|A\/V|lx|Pa|kg·m²)$/;
   const fmtU = (v: number, u?: string) => u === undefined ? num(v, 3) : SI_UNITS.test(u) ? si(v, u, 3) : `${num(v, 3)}${u ? ' ' + u : ''}`;
   const fx = p.xTickFormat ?? ((v: number) => fmtU(v, p.xUnit));
   const fy = p.yTickFormat ?? ((v: number) => fmtU(v, p.yUnit));
