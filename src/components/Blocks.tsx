@@ -8,6 +8,7 @@ import { getSim } from '../sims/registry';
 import { useTheme } from '../lib/theme';
 import { logspace } from '../lib/units';
 import SimErrorBoundary from './SimErrorBoundary';
+import { loadMermaid } from '../lib/mermaidLoader';
 
 function Caption({ text }: { text?: string }) {
   if (!text) return null;
@@ -143,7 +144,7 @@ export function MermaidBlock({ code, caption }: { code: string; caption?: string
     let alive = true;
     (async () => {
       try {
-        const m = (await import('mermaid')).default;
+        const m = await loadMermaid();
         m.initialize({ startOnLoad: false, theme: effective === 'dark' ? 'dark' : 'neutral', securityLevel: 'strict', fontFamily: 'Inter, sans-serif', flowchart: { curve: 'basis', htmlLabels: true }, themeVariables: effective === 'dark' ? { background: '#15161a', primaryColor: '#1c1e25', primaryBorderColor: '#8b8df9', lineColor: '#a6a7b0', primaryTextColor: '#ececf0' } : { primaryColor: '#f7f7fb', primaryBorderColor: '#4f46e5', lineColor: '#55555c' } });
         const { svg } = await m.render('mmd' + (++mermaidSeq), code);
         if (alive && ref.current) { ref.current.innerHTML = svg; setErr(null); }

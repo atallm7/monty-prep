@@ -25,10 +25,12 @@
 1. Writers (Sonnet, prompt "Read docs/WRITER_PROMPT.md and follow it exactly. Your batch: docs/batches/bNN.md") for b49–b56. Check missing ids with `node scripts/validate-content.mjs` (it prints the missing count) or `node scripts/progress-report.mjs`.
 2. Opus QA (docs/QA_PROMPT.md) for b43–b56.
 3. Deepen pass: pages with the `deep section only ~N words` warning below 600 words (about 25 pages, worst q0582–q0592), then QA them.
-4. Final: `npm run build`, `node scripts/e2e.mjs --all-sims --all-questions`, fix failures, republish the preview artifact (same file path dist/index.html; artifact URL https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR).
+4. Final: `npm run build`, `node scripts/e2e.mjs --all-sims --all-questions`, fix failures, republish the preview artifact: `node scripts/build-artifact.mjs` → publish `dist-artifact/index.html` with root `dist-artifact` + files `content/q00..q19.json` to https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR (v3 published 2026-11-03). Test under CSP first: `node scripts/serve-csp.mjs` (port 5199) then `node scripts/e2e.mjs --base http://localhost:5199`.
 5. Small sim backlog: adc-lab quantization-error axis label (mV vs step size).
 
 ## Known issues / polish backlog
+- Artifact CSP: own-file scripts/fonts blocked, so the artifact build inlines JS/CSS, fetches content JSON bundles, loads mermaid from jsDelivr, and uses a no-eval expression parser (`src/lib/expr.ts`). Settings' progress export download doesn't work inside the artifact (sandbox blocks downloads); fine in the normal build.
+- e2e under CSP: 29/32 (library-page checks time out; page renders fine in screenshot — likely test timing, investigate).
 - Some sims expose fewer params than pages would like: dc-motor-lab J, lipo-lab rint/temperature per preset, rc-transient. Captions note the default differences. Possible future enhancement.
 - Circuit DSL: no wire-crossing hop or transistor vertical flip; `vmark` minus sign hides on ground wires.
 - Long top-to-bottom mermaid flowcharts are readable but tall.

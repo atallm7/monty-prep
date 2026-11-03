@@ -17,49 +17,86 @@ export const HELPERS: Record<string, unknown> = {
   hypot: Math.hypot,
   ite: (c: number | boolean, a: number, b: number) => (c ? a : b), // piecewise: ite(x < 1, f1, f2)
 };
-const BAD = /\b(window|document|globalThis|Function|constructor|prototype|__proto__|import|fetch|eval|while|for)\b|=>|[;{}`\[\]]/;
 const cache = new Map<string, (...a: number[]) => number>();
 
 
-/** JS forbids `-a**b`; rewrite unary minus applied to a power as `-(a**b)` (standard math precedence). */
-function fixUnaryPow(src: string): string {
-  const operand = (s: string, i: number): number => { // returns end index (exclusive) of an operand starting at i
-    while (s[i] === ' ') i++;
-    if (s[i] === '-' || s[i] === '+') i++;
-    if (s[i] === '(') { let d = 0; for (let j = i; j < s.length; j++) { if (s[j] === '(') d++; else if (s[j] === ')' && --d === 0) return j + 1; } return s.length; }
-    const m = /^[A-Za-z_][\w]*|^\d*\.?\d+(?:e[-+]?\d+)?/i.exec(s.slice(i)); if (!m) return -1;
-    let j = i + m[0].length;
-    if (s[j] === '(') { let d = 0; for (let k = j; k < s.length; k++) { if (s[k] === '(') d++; else if (s[k] === ')' && --d === 0) return k + 1; } }
-    return j;
-  };
-  let out = src;
-  for (let guard = 0; guard < 50; guard++) {
-    let changed = false;
-    for (let i = 0; i < out.length; i++) {
-      if (out[i] !== '-') continue;
-      let p = i - 1; while (p >= 0 && out[p] === ' ') p--;
-      if (p >= 0 && !'(,+-*/%<>=?:'.includes(out[p])) continue; // binary minus
-      const a = operand(out, i + 1); if (a < 0) continue;
-      let k = a; while (out[k] === ' ') k++;
-      if (out.slice(k, k + 2) !== '**') continue;
-      const b = operand(out, k + 2); if (b < 0) continue;
-      out = out.slice(0, i + 1) + '(' + out.slice(i + 1, b) + ')' + out.slice(b); changed = true; break;
-    }
-    if (!changed) break;
+type Node = (env: Record<string, unknown>) => number;
+/**
+ * Small Pratt parser that compiles an expression to closures. No eval/new Function, so it works under a
+ * strict Content-Security-Policy (claude.ai artifacts). Precedence, lowest first:
+ * ?: , || , && , == != , < <= > >= , + - , * / % , unary - + ! , ^ / ** (right-assoc), call/atom.
+ * Unary minus binds looser than power, so -x^2 = -(x^2), the standard math reading.
+ */
+function parse(src: string): Node {
+  const toks: string[] = [];
+  const re = /\s*(\d*\.?\d+(?:[eE][-+]?\d+)?|[A-Za-z_]\w*|\*\*|<=|>=|==|!=|&&|\|\||[-+*/%^()?:,<>!])/y;
+  let m: RegExpExecArray | null; re.lastIndex = 0;
+  while (re.lastIndex < src.length) {
+    const before = re.lastIndex; m = re.exec(src);
+    if (!m) { if (/^\s*$/.test(src.slice(before))) break; throw new Error(`Unexpected "${src.slice(before).trim()[0]}" in expression: ${src}`); }
+    toks.push(m[1]);
   }
-  return out;
+  let i = 0;
+  const peek = () => toks[i]; const next = () => toks[i++];
+  const expect = (t: string) => { if (toks[i] !== t) throw new Error(`Expected "${t}" in expression: ${src}`); i++; };
+  const BIN: Record<string, [number, (a: number, b: number) => number]> = {
+    '||': [1, (a, b) => (a || b)], '&&': [2, (a, b) => (a && b)], '==': [3, (a, b) => +(a === b)], '!=': [3, (a, b) => +(a !== b)],
+    '<': [4, (a, b) => +(a < b)], '<=': [4, (a, b) => +(a <= b)], '>': [4, (a, b) => +(a > b)], '>=': [4, (a, b) => +(a >= b)],
+    '+': [5, (a, b) => a + b], '-': [5, (a, b) => a - b], '*': [6, (a, b) => a * b], '/': [6, (a, b) => a / b], '%': [6, (a, b) => a % b],
+  };
+  const atom = (): Node => {
+    const t = next();
+    if (t === undefined) throw new Error(`Unexpected end of expression: ${src}`);
+    if (t === '(') { const e = ternary(); expect(')'); return e; }
+    if (/^[\d.]/.test(t)) { const v = parseFloat(t); return () => v; }
+    if (/^[A-Za-z_]/.test(t)) {
+      if (peek() === '(') {
+        next(); const args: Node[] = [];
+        if (peek() !== ')') { args.push(ternary()); while (peek() === ',') { next(); args.push(ternary()); } }
+        expect(')');
+        return env => { const f = env[t]; if (typeof f !== 'function') throw new Error(`Unknown function ${t}`); return (f as (...a: number[]) => number)(...args.map(a => a(env))); };
+      }
+      return env => { const v = env[t]; if (v === undefined) throw new Error(`Unknown name ${t}`); return v as number; };
+    }
+    throw new Error(`Unexpected "${t}" in expression: ${src}`);
+  };
+  const power = (): Node => { // right-associative; exponent may carry its own unary sign
+    const base = atom();
+    if (peek() === '^' || peek() === '**') { next(); const ex = unary(); return env => Math.pow(base(env), ex(env)); }
+    return base;
+  };
+  const unary = (): Node => {
+    const t = peek();
+    if (t === '-') { next(); const e = unary(); return env => -e(env); }
+    if (t === '+') { next(); return unary(); }
+    if (t === '!') { next(); const e = unary(); return env => +!e(env); }
+    return power();
+  };
+  const binary = (minPrec: number): Node => {
+    let left = unary();
+    for (;;) {
+      const op = BIN[peek()]; if (!op || op[0] < minPrec) return left;
+      next(); const right = binary(op[0] + 1); const l = left, fn = op[1];
+      left = env => fn(l(env), right(env));
+    }
+  };
+  const ternary = (): Node => {
+    const c = binary(1);
+    if (peek() !== '?') return c;
+    next(); const a = ternary(); expect(':'); const b = ternary();
+    return env => (c(env) ? a(env) : b(env));
+  };
+  const root = ternary();
+  if (i < toks.length) throw new Error(`Unexpected "${toks[i]}" in expression: ${src}`);
+  return root;
 }
 
 export function compile(expr: string, args: string[] = ['x'], vars: Record<string, number> = {}): (...a: number[]) => number {
   const key = expr + '|' + args.join(',') + '|' + JSON.stringify(vars);
   const hit = cache.get(key); if (hit) return hit;
-  if (BAD.test(expr)) throw new Error(`Disallowed token in expression: ${expr}`);
-  const names = Object.keys(HELPERS).filter(n => !args.includes(n) && !(n in vars));
-  const vnames = Object.keys(vars);
-  // eslint-disable-next-line no-new-func
-  const src = fixUnaryPow(expr.replace(/\^/g, '**').replace(/--(?=\s*[\d.(a-zA-Z])/g, '+ '));
-  const fn = new Function('H', 'V', ...args, `const {${names.join(',')}} = H; ${vnames.length ? `const {${vnames.join(',')}} = V;` : ''} return (${src});`) as (...a: unknown[]) => number;
-  const f = (...a: number[]) => Number(fn(HELPERS, vars, ...a));
+  const node = parse(expr);
+  const base: Record<string, unknown> = { ...HELPERS, ...vars };
+  const f = (...a: number[]) => { const env = args.length ? { ...base } : base; args.forEach((n, k) => { env[n] = a[k]; }); return Number(node(env)); };
   cache.set(key, f);
   return f;
 }

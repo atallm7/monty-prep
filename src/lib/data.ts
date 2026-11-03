@@ -1,6 +1,7 @@
 import indexJson from '../data/index.generated.json';
 import metaJson from '../data/meta.generated.json';
 import { parseQuestion } from '../content/parse.mjs';
+import { getRaw } from './contentSource';
 
 export type QIndex = { n: number; id: string; text: string; subItems: string[]; sectionId: string; domainId: string };
 export type Section = { id: string; domain: string; domainId: string; path: string[]; title: string; note: string | null; questions: number[] };
@@ -27,13 +28,11 @@ export function shortText(t: string, n = 80) { const s = t.replace(/\s*\(.*?\)\s
 export function difficultyOf(id: string): Difficulty { return META[id]?.difficulty || 'fundamental'; }
 export function hasContent(id: string) { return !!META[id]; }
 
-const loaders = import.meta.glob('/content/questions/*.md', { query: '?raw', import: 'default' }) as Record<string, () => Promise<string>>;
 const cache = new Map<string, QContent | null>();
 export async function loadQuestion(id: string): Promise<QContent | null> {
   if (cache.has(id)) return cache.get(id)!;
-  const l = loaders[`/content/questions/${id}.md`];
-  if (!l) { cache.set(id, null); return null; }
-  const src = await l();
+  const src = await getRaw(id);
+  if (src === null) { cache.set(id, null); return null; }
   const parsed = parseQuestion(src) as QContent;
   cache.set(id, parsed);
   return parsed;

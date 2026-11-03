@@ -4,3 +4,4 @@ dist
 .vite
 *.tmp.*
 monty-prep-backup.bundle
+dist-artifact/
