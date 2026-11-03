@@ -38,6 +38,7 @@ for (const f of files) {
   for (const m of all.matchAll(/```sim\n([\s\S]*?)\n```/g)) { try { const o = JSON.parse(m[1]); const c = catalog.find(s => s.id === o.id); if (c) for (const k of Object.keys(o)) if (!['id', 'title'].includes(k) && !(k in c.params)) v.warnings.push(`sim ${o.id}: param "${k}" not in catalog params`); if (c && o.preset && c.presets && Object.keys(c.presets).length && !(o.preset in c.presets)) v.errors.push(`sim ${o.id}: unknown preset "${o.preset}"`); } catch { /* reported */ } }
   if (only.length && !only.includes(id)) { /* still include meta */ }
   for (const m of all.matchAll(/^```[ \t]*\S.*$/gm)) if (!/^```[a-z-]+\s*$/.test(m[0])) v.errors.push('text on a fence line (put captions on the next line): ' + m[0].slice(0, 60));
+  { let inF = false; src.split('\n').forEach((l, i) => { if (l.trim().startsWith('```')) { inF = !inF; return; } if (inF || l.includes('$$')) return; const t = l.replace(/\\\$/g, '').replace(/`[^`]*`/g, ''); if ((t.match(/\$/g) || []).length % 2) v.errors.push(`line ${i + 1}: unbalanced $ (currency? write "USD 5" or \\$): ${l.trim().slice(0, 60)}`); }); }
   nErr += v.errors.length; nWarn += v.warnings.length;
   if ((v.errors.length || (!quiet && v.warnings.length)) && (!only.length || only.includes(id))) report.push(`\n${id}:` + v.errors.map(e => `\n  ERROR ${e}`).join('') + v.warnings.map(w => `\n  warn  ${w}`).join(''));
   const sims = [...all.matchAll(/```sim\n([\s\S]*?)\n```/g)].map(m => { try { return JSON.parse(m[1]).id; } catch { return null; } }).filter(Boolean);
