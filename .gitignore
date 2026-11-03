@@ -3,3 +3,4 @@ dist
 *.png
 .vite
 *.tmp.*
+monty-prep-backup.bundle
