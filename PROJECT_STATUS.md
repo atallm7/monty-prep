@@ -13,7 +13,7 @@
 - Tests: `node scripts/e2e.mjs [--all-sims --all-questions]` (dev server must be running). Checklist: `node scripts/progress-report.mjs` → `docs/PROGRESS.md`.
 
 ## Status (update after each batch)
-- Question pages: 781/1005 written (0 validator errors). Done through b39 (except the resumable b40–b46). Not started: b47–b56. Opus QA done: b01–b34 (630 pages); in progress (resumable): b35, b36+b38. b37 and b39 still need QA.
+- Question pages: 928/1005 written, all valid (0 errors). 77 missing, all in batches b49–b56 (partly written; new writers skip existing files). Opus QA done: b01–b42 (751 pages). QA still needed: b43–b56. Paused 2026-11-03 at the user's request; resume next week.
 - Sims: **90/90 implemented** with model tests passing; all render (e2e --all-sims 126/126). bjt/mosfet/cmos were rebuilt and verified by Opus.
 - Platform: all pages done; 36/36 e2e checks pass.
 
@@ -21,11 +21,12 @@
 - Writers use Sonnet subagents, one batch file each, skipping existing files. Opus QA reviewers check each finished batch and write `docs/reviews/bNN.md`.
 - Hit 5-hour usage limits four times. Keep ≤8 concurrent. Interrupted agents can be resumed with SendMessage (cheaper than starting new ones).
 
-## Next tasks
-1. Finish writer batches b27–b56 (Sonnet; prompt docs/WRITER_PROMPT.md).
-2. Opus QA for each finished batch (docs/QA_PROMPT.md); b23–b34 pending.
-3. Final: `npm run build`, then `node scripts/e2e.mjs --all-sims --all-questions`, and fix failures.
-4. Polish backlog below.
+## Next tasks (resume here)
+1. Writers (Sonnet, prompt "Read docs/WRITER_PROMPT.md and follow it exactly. Your batch: docs/batches/bNN.md") for b49–b56. Check missing ids with `node scripts/validate-content.mjs` (it prints the missing count) or `node scripts/progress-report.mjs`.
+2. Opus QA (docs/QA_PROMPT.md) for b43–b56.
+3. Deepen pass: pages with the `deep section only ~N words` warning below 600 words (about 25 pages, worst q0582–q0592), then QA them.
+4. Final: `npm run build`, `node scripts/e2e.mjs --all-sims --all-questions`, fix failures, republish the preview artifact (same file path dist/index.html; artifact URL https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR).
+5. Small sim backlog: adc-lab quantization-error axis label (mV vs step size).
 
 ## Known issues / polish backlog
 - Some sims expose fewer params than pages would like: dc-motor-lab J, lipo-lab rint/temperature per preset, rc-transient. Captions note the default differences. Possible future enhancement.
