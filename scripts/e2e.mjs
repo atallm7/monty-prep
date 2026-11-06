@@ -37,11 +37,11 @@ try {
   // follow-up reveal
   await page.locator('.fu-q').first().click();
   ok('follow-up reveals answer', await page.locator('.fu-a').count() === 1);
-  // quiz: item 1 numeric (3 V) and item 2 mcq (index 1)
+  // quiz: item 1 numeric (3 V) and item 2 mcq (options are shuffled on screen, so pick the correct one by its text)
   const items = page.locator('.quiz-item');
   await items.nth(0).locator('input').fill('3'); await items.nth(0).getByText('Check answer').click();
   ok('numeric quiz marks correct', (await items.nth(0).textContent()).includes('Correct'));
-  await items.nth(1).locator('.quiz-opt').nth(1).click(); await items.nth(1).getByText('Check answer').click();
+  await items.nth(1).locator('.quiz-opt', { hasText: 'The same current flows through R1 and R2' }).click(); await items.nth(1).getByText('Check answer').click();
   ok('mcq quiz marks correct', (await items.nth(1).textContent()).includes('Correct'));
   await items.nth(2).locator('input').fill('6'); await items.nth(2).getByText('Check answer').click();
   ok('wrong numeric marked wrong', (await items.nth(2).textContent()).includes('Not quite'));
@@ -54,7 +54,7 @@ try {
   await page.waitForTimeout(300);
   // 2 of 3 quiz answered correct = 67% < 80% → learning; answer item 4 correctly to reach 3/4 = 75%... then item 5 → 4/5 = 80%
   await items.nth(3).locator('input').fill('7.5'); await items.nth(3).getByText('Check answer').click();
-  await items.nth(4).locator('.quiz-opt').nth(1).click(); await items.nth(4).getByText('Check answer').click();
+  await items.nth(4).locator('.quiz-opt', { hasText: '31.25 kΩ' }).click(); await items.nth(4).getByText('Check answer').click();
   await page.waitForTimeout(300);
   const status = await page.locator('.q-header .chip.chip-dot').textContent();
   ok('mastery earned after self-check + 80% quiz', status.includes('Mastered'), status);

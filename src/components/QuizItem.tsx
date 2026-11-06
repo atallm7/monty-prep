@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { QuizItem } from '../lib/data';
 import { mdInline, mdToHtml } from '../lib/markdown';
 import { resolveQ } from '../lib/data';
 import { ICheck, IX } from './Icons';
+import { shuffleItem } from '../lib/quizShuffle';
 
 export function checkAnswer(item: QuizItem, resp: unknown): boolean {
   switch (item.type) {
@@ -19,7 +20,8 @@ export function checkAnswer(item: QuizItem, resp: unknown): boolean {
 }
 
 /** Renders one quiz item; calls onAnswered(correct) once checked. */
-export default function QuizItemView({ item, index, onAnswered, prior }: { item: QuizItem; index?: number; onAnswered?: (correct: boolean) => void; prior?: { c: boolean } }) {
+export default function QuizItemView({ item: raw, index, onAnswered, prior }: { item: QuizItem; index?: number; onAnswered?: (correct: boolean) => void; prior?: { c: boolean } }) {
+  const item = useMemo(() => shuffleItem(raw), [raw]);
   const [resp, setResp] = useState<unknown>(item.type === 'multi' ? [] : null);
   const [checked, setChecked] = useState<null | boolean>(null);
   const html = (s: string) => ({ __html: mdInline(s, resolveQ) });
