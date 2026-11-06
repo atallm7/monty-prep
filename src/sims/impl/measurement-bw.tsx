@@ -31,7 +31,7 @@ export default function MeasurementBW({ params }: SimProps) {
 
   return (
     <SimShell title="Bandwidth, rise time & sample rate" onReset={() => set(init)}
-      tryThis={<>with the defaults (1 ns edge, 200 MHz scope) the display shows a rise time of {si(e.trMeas, 's')} instead of 1 ns, a {e.errPct.toFixed(0)} % error, because t<sub>r,meas</sub> = √(t<sub>r,sig</sub>² + (0.35/BW)²). Raise BW to 2 GHz (≈ 5× the signal bandwidth {si(knee, 'Hz')}) and the error falls below 2 % (3× still leaves about 6 %). Now lower the sample rate toward 500 MS/s: only about one sample lands on the edge, the measured rise time jumps around as you slide the sampling phase, and harmonics above fs/2 alias back into the band.</>}
+      tryThis={<>with the current settings ({si(s.tr, 's')} edge, {si(s.bw, 'Hz')} scope) the display shows a rise time of {si(e.trMeas, 's')} instead of {si(s.tr, 's')}, a {e.errPct.toFixed(0)} % error, because t<sub>r,meas</sub> = √(t<sub>r,sig</sub>² + (0.35/BW)²). Raise BW to 2 GHz (≈ 5× the signal bandwidth {si(knee, 'Hz')}) and the error falls below 2 % (3× still leaves about 6 %). Now lower the sample rate toward 500 MS/s: only about one sample lands on the edge, the measured rise time jumps around as you slide the sampling phase, and harmonics above fs/2 alias back into the band.</>}
       controls={<>
         <Slider label="Signal rise time (10–90 %)" value={s.tr} min={50e-12} max={100e-9} log unit="s" onChange={upd('tr')} />
         <Slider label="Scope bandwidth (−3 dB)" value={s.bw} min={10e6} max={20e9} log unit="Hz" onChange={upd('bw')} />

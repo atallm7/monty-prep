@@ -88,7 +88,7 @@ JSON `{"elements":[...]}` on a grid where **1 unit = 20 px**. Coordinates are `[
 
 **Two-terminal parts** `{"t":TYPE,"a":[x,y],"b":[x,y],"label":"R_1","value":"10 kΩ","labelSide":"other"?,"color":?,"mirror":?}`. The body is drawn centered between a and b, with leads filling the rest.
 TYPE ∈ `R` (zigzag), `Rbox`, `Z` (generic impedance box), `FB` (ferrite bead), `C`, `Cpol` (+ at a), `L`, `Lcore`, `V` (DC source, **+ at a**), `Vac`, `Vsq` (square-wave source), `I` (current source, arrow a→b), `Vdep`/`Idep` (dependent sources, diamonds), `battery` / `cell` (+ at a), `D`, `Zener`, `Schottky`, `TVS`, `LED`, `photodiode` (diodes: **anode = a, cathode = b**, conventional current a→b), `SW` (open switch), `SWclosed`, `PB` (pushbutton), `F` (fuse), `lamp`, `M` (motor), `A` (ammeter), `VM` (voltmeter), `xtal`, `pot` (wiper arrow at middle), `thermistor`.
-Labels go above horizontal parts and to the right of vertical parts by default; `"labelSide":"other"` flips the side. Labels support `_` subscripts (`V_{out}`, `R_1`) and `\n` for line breaks.
+Labels go above horizontal parts and to the right of vertical parts by default; `"labelSide":"other"` flips the side. Labels support `_` subscripts (`V_{out}`, `R_1`) and `\n` for line breaks. For a literal underscore (e.g. `u_ha1`) write `\\_` in the JSON.
 
 **Wires** `{"t":"wire","pts":[[x,y],[x,y],...],"flow":true?,"dashed":true?,"label":?}`. `flow:true` animates current along the wire in the pts direction (`"flow":"reverse"` reverses it). Use flow to show current paths (e.g. buck on-state vs off-state in two figures).
 

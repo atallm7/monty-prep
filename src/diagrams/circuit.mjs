@@ -5,13 +5,14 @@ const f = n => Math.round(n * 100) / 100;
 const COLORS = ['accent', 'red', 'blue', 'green', 'orange', 'purple', 'muted'];
 const cls = (base, el) => base + (el && COLORS.includes(el.color) ? ` ck-c-${el.color}` : '') + (el && el.bold ? ' ck-bold' : '');
 
-/** Rich label: supports X_{sub}, X_s (single char), X^{sup}. Returns tspans. */
+/** Rich label: supports X_{sub}, X_s (single char), X^{sup}; \_ and \^ give a literal _ or ^. Returns tspans. */
 export function richText(t) {
   t = String(t ?? '');
   let out = ''; let i = 0; let plain = '';
   const flush = () => { if (plain) { out += esc(plain); plain = ''; } };
   while (i < t.length) {
     const c = t[i];
+    if (c === '\\' && (t[i + 1] === '_' || t[i + 1] === '^')) { plain += t[i + 1]; i += 2; continue; } // \_ or \^ = literal
     if ((c === '_' || c === '^') && i + 1 < t.length) {
       let content; let j;
       if (t[i + 1] === '{') { j = t.indexOf('}', i + 2); if (j < 0) j = t.length; content = t.slice(i + 2, j); i = j + 1; }
