@@ -51,13 +51,15 @@ export default function QuestionPage() {
   const nav = useNavigate();
   const q = Q_BY_ID.get(id);
   const store = useStore();
-  const [content, setContent] = useState<QContent | null | undefined>(undefined);
+  const [loaded, setLoaded] = useState<{ id: string; c: QContent | null } | undefined>(undefined);
+  // only show content that belongs to the current id (avoids a stale render while the next page loads)
+  const content: QContent | null | undefined = loaded && loaded.id === id ? loaded.c : undefined;
   const [tab, setTab] = useState<(typeof ANSWER_TABS)[number]['key']>('answer');
   const [hide, setHide] = usePref('mcp.hideAnswers', false);
   const [revealed, setRevealed] = useState(false);
   const [active, setActive] = useState('question');
 
-  useEffect(() => { setContent(undefined); setRevealed(false); setTab('answer'); if (q) { actions.view(q.id); loadQuestion(q.id).then(setContent); } }, [id]);
+  useEffect(() => { let live = true; setRevealed(false); setTab('answer'); if (q) { actions.view(q.id); const qid = q.id; loadQuestion(qid).then(c => { if (live) setLoaded({ id: qid, c }); }); } return () => { live = false; }; }, [id]);
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if (/input|textarea|select/i.test((e.target as HTMLElement).tagName) || e.metaKey || e.ctrlKey) return;

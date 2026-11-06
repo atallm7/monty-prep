@@ -37,7 +37,7 @@ export default function QuizItemView({ item, index, onAnswered, prior }: { item:
       {(item.type === 'mcq' || item.type === 'multi') && (
         <div className="quiz-opts">
           {item.options!.map((o, i) => {
-            const chosen = item.type === 'mcq' ? resp === i : (resp as number[]).includes(i);
+            const chosen = item.type === 'mcq' ? resp === i : (Array.isArray(resp) ? resp : []).includes(i);
             const cls = reveal ? (correctIdx(i) ? ' correct' : chosen ? ' wrong' : '') : chosen ? ' chosen' : '';
             return <button key={i} className={'quiz-opt' + cls} disabled={reveal}
               onClick={() => { if (item.type === 'mcq') setResp(i); else { const r = new Set(resp as number[]); r.has(i) ? r.delete(i) : r.add(i); setResp([...r]); } }}>

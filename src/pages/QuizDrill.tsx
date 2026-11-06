@@ -66,7 +66,7 @@ export default function QuizDrill() {
   return <div className="page page-narrow fade-in">
     <div className="iv-top"><span className="small muted">Item {i + 1} of {items.length}</span><div className="progress" style={{ flex: 1 }}><i className="pb-learning" style={{ width: `${i / items.length * 100}%` }} /></div><span className="small">{answers.filter(Boolean).length} correct</span></div>
     <div className="small faint" style={{ margin: '16px 0 6px' }}>From <Link to={`/q/${it.qid}`}>Q{Q_BY_ID.get(it.qid)!.n}: {titleOf(it.qid)}</Link></div>
-    <QuizItemView key={i} item={it.item} onAnswered={ok => { actions.answerQuiz(it.qid, it.idx, ok); setAnswers(a => [...a, ok]); if (i === items.length - 1) actions.recordSession({ t: Date.now(), mode: 'quiz', questions: items.map(x => x.qid), score: [...answers, ok].filter(Boolean).length / items.length, seconds: Math.round((Date.now() - t0) / 1000) }); }} />
+    <QuizItemView key={it.qid + ':' + it.idx + ':' + i} item={it.item} onAnswered={ok => { actions.answerQuiz(it.qid, it.idx, ok); setAnswers(a => [...a, ok]); if (i === items.length - 1) actions.recordSession({ t: Date.now(), mode: 'quiz', questions: items.map(x => x.qid), score: [...answers, ok].filter(Boolean).length / items.length, seconds: Math.round((Date.now() - t0) / 1000) }); }} />
     {answers.length > i && <div className="row" style={{ marginTop: 14 }}><button className="btn btn-primary" onClick={() => setI(i + 1)}>{i === items.length - 1 ? 'See results' : 'Next'} <IArrowR size={14} /></button></div>}
   </div>;
 }

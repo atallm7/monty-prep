@@ -13,7 +13,7 @@
 - Tests: `node scripts/e2e.mjs [--all-sims --all-questions]` (dev server must be running). Checklist: `node scripts/progress-report.mjs` → `docs/PROGRESS.md`.
 
 ## Status (update after each batch)
-- Question pages: 928/1005 written, all valid (0 errors). 77 missing, all in batches b49–b56 (partly written; new writers skip existing files). Opus QA done: b01–b42 (751 pages). QA still needed: b43–b56. Paused 2026-11-03 at the user's request; resume next week.
+- Question pages: 928/1005 written, all valid (0 errors). 77 missing, all in batches b49–b56 (partly written; new writers skip existing files). Opus QA done: b01–b42 (751 pages). QA still needed: b43–b56. Resumed 2026-11-06: writers running for b49–b56.
 - Sims: **90/90 implemented** with model tests passing; all render (e2e --all-sims 126/126). bjt/mosfet/cmos were rebuilt and verified by Opus.
 - Platform: all pages done; 36/36 e2e checks pass.
 
@@ -30,7 +30,7 @@
 
 ## Known issues / polish backlog
 - Artifact CSP: own-file scripts/fonts blocked, so the artifact build inlines JS/CSS, fetches content JSON bundles, loads mermaid from jsDelivr, and uses a no-eval expression parser (`src/lib/expr.ts`). Settings' progress export download doesn't work inside the artifact (sandbox blocks downloads); fine in the normal build.
-- e2e under CSP: 29/32 (library-page checks time out; page renders fine in screenshot — likely test timing, investigate).
+- Fixed 2026-11-06: quiz crash when moving between questions (stale content rendered under new id). e2e 36/36 on dev and under CSP.
 - Some sims expose fewer params than pages would like: dc-motor-lab J, lipo-lab rint/temperature per preset, rc-transient. Captions note the default differences. Possible future enhancement.
 - Circuit DSL: no wire-crossing hop or transistor vertical flip; `vmark` minus sign hides on ground wires.
 - Long top-to-bottom mermaid flowcharts are readable but tall.

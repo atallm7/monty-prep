@@ -82,11 +82,12 @@ try {
   ok('keyboard next (j)', page.url().includes('q0011'));
 
   // 5. library filters
-  await go('/library'); ok('library lists domains', await page.locator('.domain-card').count() === 16);
-  await go('/s/the-basics-fundamentals-basic-circuits'); ok('section page lists 12 questions', await page.locator('.q-row').count() === 12);
+  await go('/library'); await page.waitForSelector('.domain-card', { timeout: 15000 }).catch(() => {}); ok('library lists domains', await page.locator('.domain-card').count() === 16);
+  await go('/s/the-basics-fundamentals-basic-circuits'); await page.waitForSelector('.q-row', { timeout: 15000 }).catch(() => {}); ok('section page lists 12 questions', await page.locator('.q-row').count() === 12);
 
   // 6. divider sim interaction
   await go('/sims/divider');
+  await page.waitForSelector('.readout.hl .v', { timeout: 15000 }).catch(() => {});
   const before = await page.locator('.readout.hl .v').textContent();
   const slider = page.locator('input[type=range]').first(); await slider.focus(); for (let i = 0; i < 20; i++) await page.keyboard.press('ArrowLeft');
   await page.waitForTimeout(200);
