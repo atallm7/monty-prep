@@ -38,6 +38,6 @@
 
 ## Open follow-ups (minor)
 - q0249's step-response figure/table (71/76 mV) come from q0248's loop tuning and are labeled as such; regenerate one consistent set across q0248/q0249 with the buck-control sim.
-- ~145 pages have deep sections 600–800 words (validator warns <800). Optional second deepen pass.
+- IN PROGRESS (2026-11-06): second deepen pass on 217 pages with deep 600–800 words, groups docs/deepen/e00–e11 (Sonnet write → Opus review per group, reviews docs/reviews/deepen-eNN.md). e00–e07 started first; then e08–e11 as slots free.
 - pvt-power sim: FF corner runs away at default θ=10 K/W (captions match this; changing defaults would require caption updates).
 - Circuit gates: a few pages wire inputs off the gate pin positions (extra stubs). Cosmetic.

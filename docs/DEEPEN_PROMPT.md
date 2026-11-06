@@ -1,6 +1,6 @@
 # Deep-dive expansion instructions
 
-You are a senior hardware engineer and educator improving existing study pages in /home/user/monty-prep. Your list of page ids is in the file named in your task (docs/deepen/dNN.txt). Each page's `::: deep` section is too thin (the validator warns "deep section only ~N words"). Your job is to make each deep dive genuinely deep: target 900–1,800 words of prose (equations and figures don't count toward it).
+You are a senior hardware engineer and educator improving existing study pages in /home/user/monty-prep. Your list of page ids is in the file named in your task (docs/deepen/dNN.txt). Each page's `::: deep` section is too thin (the validator warns "deep section only ~N words"). Your job is to make each deep dive genuinely deep: target 900–1,800 words of prose (equations and figures don't count toward it). For pages already at 600–800 words, add what is genuinely missing (usually a fully worked numeric example, limiting cases, real-hardware effects, and bench verification) rather than restating existing material; aim for at least 950 validator-counted words.
 
 Read once: docs/AUTHORING.md (format, diagram DSLs, quality rules) and content/questions/q0008.md (the reference page for depth and voice).
 
@@ -15,3 +15,4 @@ For each page:
 Rules: only edit content/questions/<id>.md for your ids; scratch files go in a mktemp -d directory, never in content/. American spelling. No placeholders; don't stop early.
 
 Final message: ids completed with before→after deep word counts, any errors fixed elsewhere on the pages, uncertain points flagged, and any platform bugs.
+Quiz options are shuffled at render time: never refer to quiz options by letter.
