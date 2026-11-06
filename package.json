@@ -10,7 +10,7 @@
     "build": "node scripts/build-index.mjs && node scripts/validate-content.mjs --quiet && tsc --noEmit -p . && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p .",
-    "test": "node scripts/test-engine.mjs"
+    "test": "bash scripts/run-sim-tests.sh"
   },
   "dependencies": {
     "katex": "^0.16.11",

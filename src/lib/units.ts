@@ -19,7 +19,12 @@ export function num(v: number, digits = 4): string {
   if (!isFinite(v)) return v > 0 ? '∞' : '−∞';
   if (v === 0) return '0';
   const a = Math.abs(v);
-  if (a >= 1e5 || a < 1e-3) return v.toExponential(2).replace('-', '−');
+  if (a >= 1e5 || a < 1e-3) {
+    const [m, e] = v.toExponential(Math.min(digits, 3) - 1).split('e');
+    const sup = String(Number(e)).replace(/[-0-9]/g, c => '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(c)]);
+    const mant = Number(m);
+    return (Math.abs(mant) === 1 ? (mant < 0 ? '−' : '') + '10' : String(mant).replace('-', '−') + '×10') + sup;
+  }
   return Number(v.toPrecision(digits)).toString().replace('-', '−');
 }
 
