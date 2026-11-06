@@ -13,7 +13,7 @@
 - Tests: `node scripts/e2e.mjs [--all-sims --all-questions]` (dev server must be running). Checklist: `node scripts/progress-report.mjs` → `docs/PROGRESS.md`.
 
 ## Status (update after each batch)
-- Question pages: 928/1005 written, all valid (0 errors). 77 missing, all in batches b49–b56 (partly written; new writers skip existing files). Opus QA done: b01–b42 (751 pages). QA still needed: b43–b56. Resumed 2026-11-06: writers running for b49–b56.
+- Question pages: **1005/1005 written**, all valid (0 errors). Opus QA done for all batches b01–b56 (reviews in docs/reviews/). MCQ options shuffled at render (src/lib/quizShuffle.ts) because 74% of authored answers were index 1.
 - Sims: **90/90 implemented** with model tests passing; all render (e2e --all-sims 126/126). bjt/mosfet/cmos were rebuilt and verified by Opus.
 - Platform: all pages done; 36/36 e2e checks pass.
 
@@ -22,9 +22,9 @@
 - Hit 5-hour usage limits four times. Keep ≤8 concurrent. Interrupted agents can be resumed with SendMessage (cheaper than starting new ones).
 
 ## Next tasks (resume here)
-1. Writers (Sonnet, prompt "Read docs/WRITER_PROMPT.md and follow it exactly. Your batch: docs/batches/bNN.md") for b49–b56. Check missing ids with `node scripts/validate-content.mjs` (it prints the missing count) or `node scripts/progress-report.mjs`.
-2. Opus QA (docs/QA_PROMPT.md) for b43–b56.
-3. Deepen pass: pages with the `deep section only ~N words` warning below 600 words (about 25 pages, worst q0582–q0592), then QA them.
+1. (done 2026-11-06) Writers (Sonnet, prompt "Read docs/WRITER_PROMPT.md and follow it exactly. Your batch: docs/batches/bNN.md") for b49–b56. Check missing ids with `node scripts/validate-content.mjs` (it prints the missing count) or `node scripts/progress-report.mjs`.
+2. (done 2026-11-06) Opus QA for b43–b56.
+3. IN PROGRESS: deepen pass (docs/DEEPEN_PROMPT.md, groups docs/deepen/d00–d05, 70 pages with deep < 600 words); d04, d05 written and in Opus QA (reviews docs/reviews/deepen-dNN.md). Original note — pages with the `deep section only ~N words` warning below 600 words (about 25 pages, worst q0582–q0592), then QA them.
 4. Final: `npm run build`, `node scripts/e2e.mjs --all-sims --all-questions`, fix failures, republish the preview artifact: `node scripts/build-artifact.mjs` → publish `dist-artifact/index.html` with root `dist-artifact` + files `content/q00..q19.json` to https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR (v3 published 2026-11-03). Test under CSP first: `node scripts/serve-csp.mjs` (port 5199) then `node scripts/e2e.mjs --base http://localhost:5199`.
 5. (done 2026-11-06) adc-lab error axis in LSB, SAR code label fixed.
 
