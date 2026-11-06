@@ -24,8 +24,8 @@
 ## Next tasks (resume here)
 1. (done 2026-11-06) Writers (Sonnet, prompt "Read docs/WRITER_PROMPT.md and follow it exactly. Your batch: docs/batches/bNN.md") for b49–b56. Check missing ids with `node scripts/validate-content.mjs` (it prints the missing count) or `node scripts/progress-report.mjs`.
 2. (done 2026-11-06) Opus QA for b43–b56.
-3. IN PROGRESS: deepen pass (docs/DEEPEN_PROMPT.md, groups docs/deepen/d00–d05, 70 pages with deep < 600 words); d04, d05 written and in Opus QA (reviews docs/reviews/deepen-dNN.md). Original note — pages with the `deep section only ~N words` warning below 600 words (about 25 pages, worst q0582–q0592), then QA them.
-4. Final: `npm run build`, `node scripts/e2e.mjs --all-sims --all-questions`, fix failures, republish the preview artifact: `node scripts/build-artifact.mjs` → publish `dist-artifact/index.html` with root `dist-artifact` + files `content/q00..q19.json` to https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR (v3 published 2026-11-03). Test under CSP first: `node scripts/serve-csp.mjs` (port 5199) then `node scripts/e2e.mjs --base http://localhost:5199`.
+3. (done 2026-11-06) Deepen pass: 70 pages with deep < 600 words expanded to ~1,100–1,800 (groups docs/deepen/d00–d05) and Opus-reviewed (docs/reviews/deepen-dNN.md). Original note — pages with the `deep section only ~N words` warning below 600 words (about 25 pages, worst q0582–q0592), then QA them.
+4. (done 2026-11-06: e2e --all-sims --all-questions 1131/1131, artifact v5 republished) Final: `npm run build`, `node scripts/e2e.mjs --all-sims --all-questions`, fix failures, republish the preview artifact: `node scripts/build-artifact.mjs` → publish `dist-artifact/index.html` with root `dist-artifact` + files `content/q00..q19.json` to https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR (v3 published 2026-11-03). Test under CSP first: `node scripts/serve-csp.mjs` (port 5199) then `node scripts/e2e.mjs --base http://localhost:5199`.
 5. (done 2026-11-06) adc-lab error axis in LSB, SAR code label fixed.
 
 ## Known issues / polish backlog
@@ -35,3 +35,9 @@
 - Circuit DSL: no wire-crossing hop or transistor vertical flip; `vmark` minus sign hides on ground wires.
 - Long top-to-bottom mermaid flowcharts are readable but tall.
 - Depth audit: ~25 pages have deep sections under 500 words (worst: q0582–q0592, q0284–q0288, q0240–q0255 range). Plan: once all pages exist, run a Sonnet "deepen" pass on pages whose deep section is under 600 words (`deep section only` validator warning), then Opus QA. The validator now warns below 800.
+
+## Open follow-ups (minor)
+- q0249's step-response figure/table (71/76 mV) come from q0248's loop tuning and are labeled as such; regenerate one consistent set across q0248/q0249 with the buck-control sim.
+- ~145 pages have deep sections 600–800 words (validator warns <800). Optional second deepen pass.
+- pvt-power sim: FF corner runs away at default θ=10 K/W (captions match this; changing defaults would require caption updates).
+- Circuit gates: a few pages wire inputs off the gate pin positions (extra stubs). Cosmetic.
