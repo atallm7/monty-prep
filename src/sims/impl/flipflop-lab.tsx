@@ -92,7 +92,7 @@ export default function FlipflopLab({ params }: SimProps) {
           <button className="btn btn-sm" onClick={() => setW(p => ({ ...p, b: Array(N).fill(0) }))}>Clear {mode === 'sr' ? 'R' : 'D'}</button>
         </div>
         {mode === 'setup-hold' && <>
-          <div className="small" style={{ fontWeight: 600, marginTop: 4 }}>Synchroniser MTBF (τ = 20 ps, T₀ = 50 ps)</div>
+          <div className="small" style={{ fontWeight: 600, marginTop: 4 }}>Synchronizer MTBF (τ = 20 ps, T₀ = 50 ps)</div>
           <Slider label="Clock f_clk" value={fclk} min={5e7} max={3e9} log unit="Hz" onChange={setFclk} />
           <Slider label="Async data rate f_data" value={fdata} min={1e3} max={5e8} log unit="Hz" onChange={setFdata} />
           <SegCtl label="Flip-flops in synchroniser" value={stages} onChange={setStages} options={[{ value: '1', label: '1' }, { value: '2', label: '2' }, { value: '3', label: '3' }]} />
@@ -156,7 +156,7 @@ export default function FlipflopLab({ params }: SimProps) {
         <Readouts>
           <Readout k="Window t_su + t_h" v={`${(tsu + th).toFixed(3)} T`} />
           <Readout k="Resolution time t_r" v={si(tr, 's')} />
-          <Readout k="Synchroniser MTBF" v={fmtTime(mt)} hl tone={mt < 3.15e7 * 10 ? 'bad' : mt < 3.15e7 * 1e4 ? 'warn' : 'ok'} />
+          <Readout k="Synchronizer MTBF" v={fmtTime(mt)} hl tone={mt < 3.15e7 * 10 ? 'bad' : mt < 3.15e7 * 1e4 ? 'warn' : 'ok'} />
           <Readout k="Each extra FF multiplies MTBF by" v={`e^(T/τ) = e^${(1 / fclk / 20e-12).toFixed(0)}`} />
         </Readouts>
       </>}

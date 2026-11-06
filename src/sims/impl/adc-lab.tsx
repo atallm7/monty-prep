@@ -91,7 +91,7 @@ export default function AdcLab({ params }: SimProps) {
       { t: 'box', at: [13, 1], w: 5, h: 5, label: 'SAR logic', pins: [{ side: 'left', pos: 3, name: '' }, { side: 'top', pos: 2.5, name: '' }, { side: 'right', pos: 3, name: '' }] },
       { t: 'wire', pts: [[15.5, 1], [15.5, -1.5], [2.5, -1.5], [2.5, 0]], color: 'purple' },
       { t: 'text', at: [9, -2.3], text: `D = ${word}`, color: 'purple', anchor: 'middle' },
-      { t: 'term', at: [18, 4], label: `code ${cur ? cur.code : 0}`, side: 'right' },
+      { t: 'wire', pts: [[18, 4], [19, 4]], color: 'accent' }, { t: 'text', at: [15.5, 6.9], text: `code = ${cur ? cur.code : 0}`, color: 'accent', anchor: 'middle' },
     ] }).svg;
   }, [sr, stepN, bits, L]);
 
@@ -125,8 +125,8 @@ export default function AdcLab({ params }: SimProps) {
         <Plot series={[{ x: tr.x, y: tr.y, label: 'ADC code', color: 'accent', step: false }, { x: tr.x, y: tr.yi, label: 'ideal Vin/LSB', color: 'muted', dashed: true }]}
           xTickFormat={vfmt} xUnit="V" xLabel={zoom ? `Vin (zoom ±4 LSB, ${bits} bits)` : 'Vin'} yLabel="code" height={230} vlines={[{ at: vin, label: 'Vin', color: 'orange' }, ...(zoom ? [] : [{ at: vref, label: 'Vref', color: 'red' }])]}
           points={[{ x: Math.min(vin, tr.x[tr.x.length - 1]), y: q.code, label: `code ${q.code}` }]} yRange={zoom ? [Math.max(0, vin / L - 5), vin / L + 5] : undefined} />
-        <Plot series={[{ x: err.x, y: err.y, label: 'quantization error', color: 'red' }]} xTickFormat={vfmt} xUnit="V" yUnit="LSB" xLabel="Vin" yLabel="quantization error e_q" height={170}
-          hlines={[{ at: errBand[0], label: s.round ? '−½ LSB' : '0', color: 'muted' }, { at: errBand[1], label: s.round ? '+½ LSB' : '1 LSB', color: 'muted' }]} vlines={[{ at: vin, color: 'orange' }]} yTickFormat={v => v.toPrecision(3) + ' mV'} />
+        <Plot series={[{ x: err.x, y: err.y, label: 'quantization error', color: 'red' }]} xTickFormat={vfmt} xUnit="V" yUnit="LSB" xLabel="Vin" yLabel="error e_q (LSB)" height={170}
+          hlines={[{ at: errBand[0], label: s.round ? '−½ LSB' : '0', color: 'muted' }, { at: errBand[1], label: s.round ? '+½ LSB' : '1 LSB', color: 'muted' }]} vlines={[{ at: vin, color: 'orange' }]} yTickFormat={v => String(+v.toFixed(2))} />
         <Readouts>
           <Readout k="Code" v={`${q.code}  ${toBin(q.code, bits)}  ${hex(q.code, bits)}`} hl />
           <Readout k="LSB = Vref/2^N" v={si(L, 'V')} />

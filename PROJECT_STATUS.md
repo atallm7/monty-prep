@@ -26,7 +26,7 @@
 2. Opus QA (docs/QA_PROMPT.md) for b43–b56.
 3. Deepen pass: pages with the `deep section only ~N words` warning below 600 words (about 25 pages, worst q0582–q0592), then QA them.
 4. Final: `npm run build`, `node scripts/e2e.mjs --all-sims --all-questions`, fix failures, republish the preview artifact: `node scripts/build-artifact.mjs` → publish `dist-artifact/index.html` with root `dist-artifact` + files `content/q00..q19.json` to https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR (v3 published 2026-11-03). Test under CSP first: `node scripts/serve-csp.mjs` (port 5199) then `node scripts/e2e.mjs --base http://localhost:5199`.
-5. Small sim backlog: adc-lab quantization-error axis label (mV vs step size).
+5. (done 2026-11-06) adc-lab error axis in LSB, SAR code label fixed.
 
 ## Known issues / polish backlog
 - Artifact CSP: own-file scripts/fonts blocked, so the artifact build inlines JS/CSS, fetches content JSON bundles, loads mermaid from jsDelivr, and uses a no-eval expression parser (`src/lib/expr.ts`). Settings' progress export download doesn't work inside the artifact (sandbox blocks downloads); fine in the normal build.
