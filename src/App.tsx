@@ -6,6 +6,7 @@ import { useTheme } from './lib/theme';
 import { IHome, ILibrary, IMic, IQuiz, IReview, ISim, IPath, ISettings, ISearch, ISun, IMoon, IMenu, IChevron, ILogo } from './components/Icons';
 import SearchPalette from './components/SearchPalette';
 import Dashboard from './pages/Dashboard';
+export const SOURCE_URL = 'https://montychoy.com/blog/the_ultimate_list_of_hardware_engineering_internship_interview_questions';
 
 const Library = lazy(() => import('./pages/Library'));
 const QuestionPage = lazy(() => import('./pages/QuestionPage'));
@@ -100,6 +101,11 @@ export default function App() {
             <Route path="*" element={<div className="page"><div className="empty">Page not found. <Link to="/">Go home</Link></div></div>} />
           </Routes>
         </Suspense>
+        <footer className="site-footer small muted">
+          Questions are reproduced from Monty Choy's{' '}
+          <a href={SOURCE_URL} target="_blank" rel="noreferrer">“The Ultimate List of Hardware Engineering Internship Interview Questions”</a>.
+          {' '}Answers, explanations, diagrams, quizzes and simulations are original study material; verify anything you rely on. <Link to="/settings">About this site</Link>
+        </footer>
       </div>
       {search && <SearchPalette onClose={() => setSearch(false)} />}
     </div>

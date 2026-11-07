@@ -184,3 +184,4 @@
   .fu-a { padding-left: 16px; }
   .cat-table th:nth-child(4), .cat-table td:nth-child(4) { display: none; }
 }
+.site-footer { padding: 20px max(16px, env(safe-area-inset-left, 0px)) 28px; border-top: 1px solid var(--border); margin-top: 32px; line-height: 1.6; }

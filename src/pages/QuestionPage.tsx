@@ -112,6 +112,7 @@ export default function QuestionPage() {
             <h1 className="q-title">{q.text}</h1>
             {q.subItems.length > 0 && <ul className="q-subitems">{q.subItems.map((s, i) => <li key={i}>{s}</li>)}</ul>}
             {sec.note && <p className="q-note small"><b>Source note for this section:</b> {sec.note}</p>}
+            <p className="small muted" style={{ margin: '6px 0 0' }}>Question {q.n} from <a href="https://montychoy.com/blog/the_ultimate_list_of_hardware_engineering_internship_interview_questions" target="_blank" rel="noreferrer">Monty Choy's list</a>, quoted word for word.</p>
             <div className="row-wrap" style={{ marginTop: 14 }}>
               <button className="btn btn-sm btn-accent" onClick={() => scrollTo('sec-selfcheck')}>Practice answering</button>
               <button className={'btn btn-sm' + (qs?.bookmarked ? ' btn-primary' : '')} onClick={() => actions.bookmark(q.id, !qs?.bookmarked)}><IBookmark size={14} />{qs?.bookmarked ? 'Bookmarked' : 'Bookmark'}</button>
