@@ -38,6 +38,12 @@
 
 ## Open follow-ups (minor)
 - q0249's step-response figure/table (71/76 mV) come from q0248's loop tuning and are labeled as such; regenerate one consistent set across q0248/q0249 with the buck-control sim.
-- IN PROGRESS (2026-11-06): second deepen pass on 217 pages with deep 600–800 words, groups docs/deepen/e00–e11 (Sonnet write → Opus review per group, reviews docs/reviews/deepen-eNN.md). e00–e07 started first; then e08–e11 as slots free.
+- (done 2026-11-07) Second deepen pass: all 217 pages with deep 600–800 words expanded (groups docs/deepen/e00–e11) and Opus-reviewed (docs/reviews/deepen-eNN.md). Validator: 0 errors, 0 warnings.
 - pvt-power sim: FF corner runs away at default θ=10 K/W (captions match this; changing defaults would require caption updates).
 - Circuit gates: a few pages wire inputs off the gate pin positions (extra stubs). Cosmetic.
+
+## Public website (GitHub Pages)
+- Workflow ready: .github/workflows/deploy.yml (builds on push to main/master, publishes dist/ to Pages). Clean-clone build verified.
+- Source attribution footer on every page + per-question source line (src/App.tsx SOURCE_URL).
+- BLOCKED on the user: create an empty public GitHub repo (planned atallm7/monty-prep), then add_repo with push access, `git remote add origin`, push, and set Settings → Pages → Source: GitHub Actions if not automatic. Expected URL https://atallm7.github.io/monty-prep/.
+- Preview artifact v6 republished 2026-11-07 (https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR).
