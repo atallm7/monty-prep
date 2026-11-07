@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => {
       rollupOptions: { output: {
         // group the ~1000 question files and 90 sims into a few dozen chunks (keeps deployable file count low)
         manualChunks(id) {
+          // Libraries (React, router, KaTeX…) get their own chunk; leaving them in the entry chunk created an
+          // entry ↔ sims chunk cycle where jsx-runtime was still undefined when the sim chunks evaluated.
+          if (id.includes('node_modules')) return /mermaid|cytoscape|dagre|d3-|elkjs|khroma|lodash-es|dompurify/.test(id) ? undefined : 'vendor';
           const q = id.match(/content\/questions\/q(\d{4})\.md/); if (q) return 'q' + String(Math.floor(+q[1] / 50)).padStart(2, '0');
           const s = id.match(/src\/sims\/(impl|models)\/([a-z])/); if (s) return 'sims-' + (s[2] < 'g' ? 'a' : s[2] < 'p' ? 'b' : 'c');
           return undefined;
