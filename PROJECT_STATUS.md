@@ -42,8 +42,8 @@
 - pvt-power sim: FF corner runs away at default θ=10 K/W (captions match this; changing defaults would require caption updates).
 - Circuit gates: a few pages wire inputs off the gate pin positions (extra stubs). Cosmetic.
 
-## Public website (GitHub Pages)
-- Workflow ready: .github/workflows/deploy.yml (builds on push to main/master, publishes dist/ to Pages). Clean-clone build verified.
-- Source attribution footer on every page + per-question source line (src/App.tsx SOURCE_URL).
-- BLOCKED on the user: create an empty public GitHub repo (planned atallm7/monty-prep), then add_repo with push access, `git remote add origin`, push, and set Settings → Pages → Source: GitHub Actions if not automatic. Expected URL https://atallm7.github.io/monty-prep/.
-- Preview artifact v6 republished 2026-11-07 (https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR).
+## Public website (GitHub Pages) — LIVE
+- Repo: https://github.com/atallm7/monty-prep (branch main; local branch master tracks origin/main). Site: https://atallm7.github.io/monty-prep/
+- Deploys automatically on every push via .github/workflows/deploy.yml: npm ci → npm run build → Chromium smoke test (scripts/smoke-dist.mjs) → Pages. First deploy 2026-11-07 succeeded.
+- 2026-11-07: fixed a production-only blank-page bug (entry ↔ sims chunk cycle; vendor chunk split in vite.config.ts). Full e2e against the production build: 1131/1131.
+- Preview artifact (claude.ai): https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR (build with node scripts/build-artifact.mjs).
