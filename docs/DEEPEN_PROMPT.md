@@ -17,3 +17,4 @@ Rules: only edit content/questions/<id>.md for your ids; scratch files go in a m
 Final message: ids completed with before→after deep word counts, any errors fixed elsewhere on the pages, uncertain points flagged, and any platform bugs.
 Quiz options are shuffled at render time: never refer to quiz options by letter.
 Editing tip: if you script insertions in JavaScript, never pass page text as the replacement string of String.replace — `$$`, `$&` and `$'` are special there and will mangle math. Use a function replacement (s.replace(x, () => text)) or slice-and-concatenate, or use the Edit tool. Afterwards confirm `git diff --numstat HEAD -- content/questions/<id>.md` shows (almost) only additions.
+Screenshot tip: figures inside the deep section render lazily; add `--section deep` to scripts/shot.mjs so they are scrolled into view (otherwise you get a blank image or too few .figure matches). Sims are not counted by `--selector .figure`.
