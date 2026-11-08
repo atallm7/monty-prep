@@ -26,7 +26,18 @@ for (const f of files) {
   for (const m of all.matchAll(/```timing\n([\s\S]*?)\n```/g)) { try { const r = renderTiming(JSON.parse(m[1])); for (const e of r.errors) v.errors.push('timing: ' + e); } catch { /* reported */ } }
   // evaluate plot/bode expressions so broken formulas are caught at build time
   const ev = (spec, kind) => {
-    const vars = {}; for (const [k, val] of Object.entries(spec.vars || {})) vars[k] = evalNum(val, vars);
+    const vars = {};
+    for (const pr of spec.params || []) {
+      if (!pr.name || typeof pr.min !== 'number' || typeof pr.max !== 'number' || typeof pr.value !== 'number') throw new Error(`param needs name, numeric min/max/value: ${JSON.stringify(pr)}`);
+      if (!(pr.min < pr.max) || pr.value < pr.min || pr.value > pr.max) throw new Error(`param ${pr.name}: need min < max and min ≤ value ≤ max`);
+      if (pr.log && pr.min <= 0) throw new Error(`param ${pr.name}: log slider needs min > 0`);
+      vars[pr.name] = pr.value;
+    }
+    for (const [k, val] of Object.entries(spec.vars || {})) if (!(k in vars)) vars[k] = evalNum(val, vars);
+    for (const r of spec.readouts || []) { if (!r.label || !r.expr) throw new Error('readout needs label and expr'); evalNum(r.expr, vars); }
+    // also check the curve stays finite at the slider extremes
+    for (const pr of spec.params || []) for (const edge of [pr.min, pr.max]) { const v2 = { ...vars, [pr.name]: edge }; for (const [k, val] of Object.entries(spec.vars || {})) if (!(spec.params || []).some(q => q.name === k)) v2[k] = evalNum(val, v2);
+      if (kind === 'plot') for (const sr of spec.series || []) { if (!sr.fn) continue; const f = compile(sr.fn, ['x'], v2); const a = evalNum(spec.x?.min ?? 0, v2), b = evalNum(spec.x?.max ?? 1, v2); let fin = 0; for (let i = 0; i < 50; i++) if (Number.isFinite(f(a + (b - a) * i / 49))) fin++; if (fin < 10) throw new Error(`series "${sr.label || sr.fn}" is non-finite when ${pr.name} = ${edge}`); } }
     if (kind === 'plot') {
       const a = evalNum(spec.x?.min ?? 0, vars), b = evalNum(spec.x?.max ?? 1, vars);
       for (const sr of spec.series || []) { if (!sr.fn) continue; const f = compile(sr.fn, ['x'], vars); let fin = 0; for (let i = 0; i < 50; i++) { const y = f(a + (b - a) * i / 49); if (Number.isFinite(y)) fin++; } if (fin < 10) v.errors.push(`plot series "${sr.label || sr.fn}" is non-finite over the x range`); }

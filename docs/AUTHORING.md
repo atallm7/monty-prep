@@ -129,6 +129,23 @@ Colors: `"color"` ∈ accent, red, blue, green, orange, purple, muted.
 ```
 `num`/`den` are polynomial coefficients in **s, highest power first** (e.g. `[1]` / `["r*c",1]` = 1/(sRC+1); a second-order LPF is `["1"]` / `["l*c","r*c",1]`). Frequency axis in Hz.
 
+### 4.3a Interactive `plot` / `bode`: sliders and live readouts
+Add `"params"` to any `plot` or `bode` block to turn it into an interactive figure. Each param becomes a slider, and its value is a variable in every expression on the figure: series `fn`, `vars` (derived values recompute), `hlines`/`vlines`/`points`/`marks`, axis limits, and bode coefficients. Optional `"readouts"` show live computed numbers under the sliders.
+
+```json
+"params": [
+  {"name": "r", "label": "R", "min": 100, "max": 1000000, "value": 10000, "log": true, "unit": "Ω"},
+  {"name": "zeta", "label": "Damping ζ", "min": 0.05, "max": 2, "value": 0.3, "step": 0.01}
+],
+"readouts": [{"label": "Corner f_c = 1/(2πRC)", "expr": "1/(2*pi*r*c)", "unit": "Hz"}]
+```
+
+- `value` must sit inside `[min, max]`; `log: true` (min > 0) for quantities spanning decades (R, C, L, f). `unit` in V, A, W, Ω, F, H, Hz, s, J gets SI prefixes automatically.
+- A param with the same name as a `vars` entry overrides it; other `vars` may depend on params.
+- The validator checks that every curve stays finite at each slider's min and max. Choose ranges where the physics and the axis limits still make sense, and fix `y.min`/`y.max` (or `magRange`) so the axes don't jump while dragging.
+- The caption should say what to try ("Drag ζ below 0.5 and watch the overshoot grow") and what the default values show.
+- Use sliders when moving a parameter teaches something (corner frequency, damping, duty cycle, load line, tolerance). Keep a figure static when it compares fixed cases.
+
 ### 4.4 `timing`: digital timing diagrams (WaveDrom-like)
 ```json
 {"signals":[{"name":"CLK","wave":"p......."},{"name":"D","wave":"0.1..0.1"},{"name":"Q","wave":"x0.1..0.","color":"accent"},{"name":"DATA","wave":"x=.=.x..","data":["0xA5","0x3C"]}],

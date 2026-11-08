@@ -1169,5 +1169,225 @@
    "view": "'loading'|'burden'|'4wire' (default '4wire')"
   },
   "presets": {}
+ },
+ {
+  "id": "trace-ampacity",
+  "title": "Trace & via current capacity",
+  "category": "PCB & Manufacturing",
+  "description": "IPC-2221 trace current vs width, copper weight, internal/external layer and allowed temperature rise; inverse mode (width needed for a current); trace resistance, voltage drop and I²R loss over a length; via current capacity from barrel plating; shows why internal layers need wider traces.",
+  "params": {
+   "mode": "'current'|'width' (default 'current')",
+   "w": "trace width mm (default 0.5)",
+   "oz": "copper weight oz (default 1)",
+   "layer": "'external'|'internal' (default 'external')",
+   "dT": "allowed rise °C (default 10)",
+   "I": "A, for width mode (default 2)",
+   "len": "trace length mm (default 50)"
+  },
+  "presets": {
+   "power-rail": "5 A rail on 1 oz outer copper",
+   "signal": "0.2 mm signal trace",
+   "internal": "same current on an inner layer"
+  }
+ },
+ {
+  "id": "return-path",
+  "title": "Return current & plane splits",
+  "category": "PCB & Manufacturing",
+  "description": "Cross-section and top view of a trace over a reference plane. Return-current density under the trace follows I(x) ∝ 1/(1+(x/h)²); move the trace height and watch it spread. Add a slot or split in the plane: the return path detours, loop area and loop inductance grow, and an estimated radiated-emission/crosstalk penalty is shown. Compare stitching capacitor / via fixes.",
+  "params": {
+   "h": "trace height above plane mm (default 0.2)",
+   "slot": "boolean plane slot under trace (default false)",
+   "slotLen": "mm (default 20)",
+   "fix": "'none'|'stitch-cap'|'via-bridge' (default 'none')",
+   "f": "signal frequency MHz (default 100)"
+  },
+  "presets": {
+   "solid": "solid plane",
+   "split": "trace crossing a split",
+   "stitched": "split with stitching capacitor"
+  }
+ },
+ {
+  "id": "yield-coverage",
+  "title": "Test coverage, yield & escapes",
+  "category": "PCB & Manufacturing",
+  "description": "Manufacturing test funnel: process yield, per-stage fault coverage (AOI, ICT/flying probe, functional, burn-in) and cost per stage. Computes defect level with the Williams-Brown model DL = 1 − Y^(1−T), shipped DPPM, boards caught at each stage, cost of test vs cost of field failures; shows the 'rule of ten' cost escalation.",
+  "params": {
+   "Y": "process yield (default 0.95)",
+   "aoi": "coverage 0–1 (default 0.6)",
+   "ict": "coverage (default 0.8)",
+   "fct": "coverage (default 0.9)",
+   "burnin": "boolean (default false)",
+   "fieldCost": "USD per field failure (default 200)"
+  },
+  "presets": {
+   "startup": "low volume, functional test only",
+   "production": "AOI + ICT + FCT",
+   "automotive": "burn-in and near-full coverage"
+  }
+ },
+ {
+  "id": "reflow-profile",
+  "title": "Reflow oven profile",
+  "category": "PCB & Manufacturing",
+  "description": "Set oven zone temperatures and conveyor speed; a first-order thermal model gives the temperature of a small part and a large thermal mass (BGA/connector) through preheat, soak, reflow and cooling. Reports ramp rate, soak time, time above liquidus (217 °C SAC305), peak temperature and ΔT between parts, with pass/fail against a typical paste window.",
+  "params": {
+   "zones": "array of zone setpoints °C (default [150,180,200,230,250,200])",
+   "speed": "conveyor cm/min (default 70)",
+   "tauSmall": "s (default 20)",
+   "tauLarge": "s (default 60)"
+  },
+  "presets": {
+   "good": "typical SAC305 profile",
+   "cold": "insufficient peak for the large part",
+   "hot-fast": "too-steep ramp"
+  }
+ },
+ {
+  "id": "process-capability",
+  "title": "Process capability (Cp/Cpk)",
+  "category": "PCB & Manufacturing",
+  "description": "A normal distribution of a measured parameter against lower/upper spec limits. Drag the mean and sigma: Cp, Cpk, sigma level and expected out-of-spec ppm update; a live control chart (X-bar) draws random samples and flags points outside ±3σ. Shows why a centered process with the same σ yields far fewer defects.",
+  "params": {
+   "mu": "mean (default 0)",
+   "sigma": "(default 1)",
+   "lsl": "(default -4)",
+   "usl": "(default 4)",
+   "shift": "long-term shift in σ (default 1.5)"
+  },
+  "presets": {
+   "capable": "Cpk 1.33",
+   "off-center": "same σ, mean shifted",
+   "six-sigma": "Cpk 2 with 1.5σ shift"
+  }
+ },
+ {
+  "id": "wafer-yield",
+  "title": "Wafer map & die yield",
+  "category": "Packaging & Fab",
+  "description": "Draws a wafer with dies laid out for a chosen die size and wafer diameter, edge exclusion, and random point defects at a given density. Counts gross dies per wafer, good dies, and compares Poisson, Murphy and negative-binomial yield models; cost per good die from wafer cost. Shows why big dies are expensive.",
+  "params": {
+   "wafer": "mm (default 300)",
+   "dieW": "mm (default 10)",
+   "dieH": "mm (default 10)",
+   "D0": "defects/cm² (default 0.1)",
+   "alpha": "clustering for negative binomial (default 2)",
+   "waferCost": "USD (default 10000)",
+   "edge": "edge exclusion mm (default 3)"
+  },
+  "presets": {
+   "small-mcu": "4 mm² die",
+   "gpu": "600 mm² die",
+   "mature-node": "low defect density"
+  }
+ },
+ {
+  "id": "package-thermal",
+  "title": "Package thermal network",
+  "category": "Packaging & Fab",
+  "description": "Junction-to-ambient thermal resistance network: θJC, interface material, heatsink θSA vs airflow, plus the board path θJB in parallel. Power in, junction temperature out, with a heat-flow split between the top and board paths and a transient RC response to a power step. Compares packages (QFN with exposed pad, BGA, TO-220).",
+  "params": {
+   "P": "W (default 2)",
+   "Ta": "°C (default 40)",
+   "pkg": "'qfn'|'bga'|'to220' (default 'qfn')",
+   "heatsink": "boolean (default false)",
+   "airflow": "m/s (default 0)",
+   "Tjmax": "°C (default 125)"
+  },
+  "presets": {
+   "qfn-board": "QFN cooled through the board",
+   "bga-heatsink": "BGA with heatsink and airflow",
+   "to220": "TO-220 on a heatsink"
+  }
+ },
+ {
+  "id": "amdahl-roofline",
+  "title": "Amdahl's law & roofline",
+  "category": "Computer Architecture",
+  "description": "Two views. Amdahl: speedup vs number of cores for a parallel fraction p (and Gustafson's scaled speedup for comparison). Roofline: attainable performance vs arithmetic intensity for a chosen peak compute and memory bandwidth; place kernels (matrix multiply, stencil, vector add) and see whether they are memory- or compute-bound.",
+  "params": {
+   "view": "'amdahl'|'roofline' (default 'amdahl')",
+   "p": "parallel fraction (default 0.9)",
+   "cores": "(default 16)",
+   "peak": "GFLOP/s (default 1000)",
+   "bw": "GB/s (default 100)",
+   "ai": "FLOP/byte (default 1)"
+  },
+  "presets": {
+   "cpu": "16-core CPU",
+   "gpu": "GPU-like peak and bandwidth",
+   "serial-heavy": "p = 0.5"
+  }
+ },
+ {
+  "id": "memory-hierarchy",
+  "title": "Memory hierarchy & AMAT",
+  "category": "Computer Architecture",
+  "description": "Average memory access time through L1, L2, L3 and DRAM: set hit rates and latencies, see AMAT, the share of time spent at each level, and the effective CPI impact for a load fraction. Includes a TLB miss term and a 'working set grows past the cache' sweep.",
+  "params": {
+   "l1hit": "(default 0.95)",
+   "l2hit": "local (default 0.8)",
+   "l3hit": "local (default 0.5)",
+   "l1": "cycles (default 4)",
+   "l2": "(default 12)",
+   "l3": "(default 40)",
+   "dram": "(default 200)",
+   "loads": "fraction of instructions (default 0.3)"
+  },
+  "presets": {
+   "desktop": "typical desktop core",
+   "mcu": "MCU with only flash and SRAM",
+   "thrashing": "working set larger than L2"
+  }
+ },
+ {
+  "id": "sort-visualizer",
+  "title": "Algorithm visualizer & Big-O",
+  "category": "Coding",
+  "description": "Animated bars for bubble, insertion, merge and quick sort, plus binary vs linear search, on random, sorted, reversed or nearly-sorted input. Counts comparisons and swaps step by step and plots measured operation counts against n, n log n and n² curves for growing n.",
+  "params": {
+   "algo": "'bubble'|'insertion'|'merge'|'quick'|'binary-search'|'linear-search' (default 'insertion')",
+   "n": "(default 24)",
+   "input": "'random'|'sorted'|'reversed'|'nearly' (default 'random')"
+  },
+  "presets": {
+   "worst-case": "reversed input",
+   "best-case": "already sorted",
+   "search": "binary vs linear search"
+  }
+ },
+ {
+  "id": "float-explorer",
+  "title": "Floating point & fixed point",
+  "category": "Coding",
+  "description": "IEEE-754 single (and half) precision: click bits to toggle sign, exponent and mantissa and see the value, or type a number to see its bits and the rounding error (0.1 is not exact). Shows ULP spacing, denormals, infinity/NaN, and compares with a Q-format fixed-point representation of the same value (range vs resolution).",
+  "params": {
+   "x": "number (default 0.1)",
+   "fmt": "'f32'|'f16' (default 'f32')",
+   "q": "fixed-point fractional bits (default 15)"
+  },
+  "presets": {
+   "point-one": "0.1",
+   "big": "16,777,217 (2^24 + 1)",
+   "tiny": "a denormal"
+  }
+ },
+ {
+  "id": "ring-buffer",
+  "title": "Ring buffer & producer/consumer",
+  "category": "Coding",
+  "description": "A circular buffer with head and tail pointers between a producer (e.g. a UART ISR) and a consumer (main loop). Set producer rate, consumer rate and burst length; watch the buffer fill, see overflow (dropped bytes) and the minimum size needed for a given burst, including the 'one slot empty' full/empty convention and power-of-two masking.",
+  "params": {
+   "size": "slots (default 16)",
+   "prodRate": "items/ms (default 1.2)",
+   "consRate": "items/ms (default 1)",
+   "burst": "items (default 20)"
+  },
+  "presets": {
+   "balanced": "consumer keeps up",
+   "burst-overflow": "burst larger than the buffer",
+   "sized": "buffer sized for the burst"
+  }
  }
 ]
