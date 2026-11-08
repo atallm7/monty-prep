@@ -1293,7 +1293,13 @@
    "pkg": "'qfn'|'bga'|'to220' (default 'qfn')",
    "heatsink": "boolean (default false)",
    "airflow": "m/s (default 0)",
-   "Tjmax": "°C (default 125)"
+   "Tjmax": "°C (default 125)",
+   "thetaJA": "K/W, optional: one lumped junction-to-ambient resistor (no heat-flow split); overrides everything below",
+   "thetaJC": "K/W, optional junction-to-case (overrides the package typical)",
+   "thetaCS": "K/W, optional case-to-sink interface (used with heatsink)",
+   "thetaSA": "K/W, optional heatsink-to-ambient (overrides the airflow-based value)",
+   "thetaJB": "K/W, optional junction-to-board",
+   "thetaBA": "K/W, optional board-to-ambient. If thetaJC/CS/SA are given but neither thetaJB nor thetaBA is, the board path is open: Tj = Ta + P(θJC+θCS+θSA)"
   },
   "presets": {
    "qfn-board": "QFN cooled through the board",

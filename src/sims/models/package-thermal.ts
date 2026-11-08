@@ -6,7 +6,22 @@
 // Forced convection: h ∝ √v (laminar flat-plate), so θ(v) = θ(0) / (1 + k·√v).
 // Transient: 3-node lumped RC (junction, case+sink, board) integrated with backward Euler (unconditionally stable).
 export type Pkg = 'qfn' | 'bga' | 'to220';
-export type ThermalIn = { P: number; Ta: number; pkg: Pkg; heatsink: boolean; airflow: number };
+export type Overrides = {
+  thetaJA?: number; // lumped junction-to-ambient (K/W): replaces the whole network (single resistor, no split)
+  thetaJC?: number; thetaCS?: number; thetaSA?: number; thetaJB?: number; thetaBA?: number; // K/W, replace the typical values
+  noBoard?: boolean; // open the board path (datasheet-style Tj = Ta + P(θJC+θCS+θSA))
+};
+export type ThermalIn = { P: number; Ta: number; pkg: Pkg; heatsink: boolean; airflow: number } & Overrides;
+
+const num = (v: unknown): number | undefined => { const n = typeof v === 'string' && v.trim() === '' ? NaN : Number(v); return v != null && isFinite(n) && n >= 0 ? n : undefined; };
+/** Read optional θ override params. A top-path override (thetaJC/CS/SA) without thetaJB/thetaBA opens the board path. */
+export function overridesFromParams(p: Record<string, any>): Overrides {
+  const o: Overrides = { thetaJA: num(p.thetaJA), thetaJC: num(p.thetaJC), thetaCS: num(p.thetaCS), thetaSA: num(p.thetaSA), thetaJB: num(p.thetaJB), thetaBA: num(p.thetaBA) };
+  const top = o.thetaJC !== undefined || o.thetaCS !== undefined || o.thetaSA !== undefined;
+  o.noBoard = top && o.thetaJB === undefined && o.thetaBA === undefined;
+  return o;
+}
+const OPEN = 1e9, SHORT = 1e-6;
 
 type PkgData = { name: string; jc: number; jb: number; ba: number; ca: number; tim: number; sa: number; cj: number; cc: number; csink: number; cb: number; note: string };
 // θ in K/W, C in J/K (typical)
@@ -19,17 +34,21 @@ export const PKGS: Record<Pkg, PkgData> = {
 export const K_AIR = 0.9; // forced-convection factor, typical
 const airDiv = (v: number, k = K_AIR) => 1 + k * Math.sqrt(Math.max(0, v));
 
-export function resistances(i: Pick<ThermalIn, 'pkg' | 'heatsink' | 'airflow'>) {
+export function resistances(i: Pick<ThermalIn, 'pkg' | 'heatsink' | 'airflow'> & Overrides) {
   const d = PKGS[i.pkg];
-  const jc = d.jc;
-  const tim = i.heatsink ? d.tim : 0;
-  const sa = i.heatsink ? d.sa / airDiv(i.airflow) : 0;
+  if (i.thetaJA !== undefined) { // lumped single resistor: junction node and case node merged, no board path
+    const ja = Math.max(SHORT, i.thetaJA);
+    return { lumped: true, jc: SHORT, tim: 0, sa: 0, ca: 0, rest: ja, jb: OPEN, ba: 0, top: ja, board: OPEN, ja };
+  }
+  const jc = i.thetaJC ?? d.jc;
+  const tim = i.heatsink ? (i.thetaCS ?? d.tim) : 0;
+  const sa = i.heatsink ? (i.thetaSA ?? d.sa / airDiv(i.airflow)) : 0;
   const ca = i.heatsink ? 0 : d.ca / airDiv(i.airflow, 0.7); // bare case-to-ambient
   const rest = i.heatsink ? tim + sa : ca; // case → ambient
-  const jb = d.jb, ba = d.ba / airDiv(i.airflow, 0.35);
+  const jb = i.noBoard ? OPEN : (i.thetaJB ?? d.jb), ba = i.noBoard ? 0 : (i.thetaBA ?? d.ba / airDiv(i.airflow, 0.35));
   const top = jc + rest, board = jb + ba;
   const ja = (top * board) / (top + board);
-  return { jc, tim, sa, ca, rest, jb, ba, top, board, ja };
+  return { lumped: false, jc, tim, sa, ca, rest, jb, ba, top, board, ja };
 }
 
 export function steady(i: ThermalIn) {
@@ -37,11 +56,11 @@ export function steady(i: ThermalIn) {
   const P = Math.max(0, i.P);
   const Tj = i.Ta + P * R.ja;
   const dT = Tj - i.Ta;
-  const Qtop = dT / R.top, Qb = dT / R.board;
+  const Qtop = dT / R.top, Qb = R.board >= OPEN ? 0 : dT / R.board;
   const Tcase = Tj - Qtop * R.jc;
   const Tsink = i.heatsink ? i.Ta + Qtop * R.sa : Tcase - Qtop * 0; // sink base (or case if bare)
   const Tboard = Tj - Qb * R.jb;
-  return { R, P, Tj, Qtop, Qb, Tcase, Tsink, Tboard, fracTop: P > 0 ? Qtop / P : 0.5 };
+  return { R, P, Tj, Qtop, Qb, Tcase, Tsink, Tboard, fracTop: P > 0 ? Qtop / P : (R.board >= OPEN ? 1 : 0.5) };
 }
 
 /** Max power for a given Tjmax: P = (Tjmax − Ta)/θJA */
@@ -52,9 +71,9 @@ export function transient(i: ThermalIn, tEndOverride?: number) {
   const R = resistances(i), d = PKGS[i.pkg];
   const Cj = d.cj, Ct = d.cc + (i.heatsink ? d.csink : 0), Cb = d.cb;
   // node conductances
-  const gJT = 1 / R.jc, gT = 1 / R.rest, gJB = 1 / R.jb, gB = 1 / R.ba;
+  const gJT = 1 / R.jc, gT = 1 / R.rest, gJB = 1 / R.jb, gB = 1 / Math.max(R.ba, SHORT);
   // slowest time constant estimate: total C × θJA (upper-ish bound)
-  const tauSlow = (Ct + Cb) * R.ja * 1.2 + Cj * R.jc;
+  const tauSlow = (Ct + (R.board >= OPEN ? 0 : Cb)) * R.ja * 1.2 + Cj * R.jc;
   const tEnd = tEndOverride ?? Math.max(1, tauSlow * 5);
   const t: number[] = [0], Tj: number[] = [i.Ta];
   let x = [0, 0, 0]; // temperature rise of J, T, B above ambient
