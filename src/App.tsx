@@ -4,8 +4,9 @@ import { DOMAINS, SECTIONS, SECTION_BY_ID, questionsInDomain } from './lib/data'
 import { useStore, statusOf } from './lib/progress';
 import { useTheme } from './lib/theme';
 import { IHome, ILibrary, IMic, IQuiz, IReview, ISim, IPath, ISettings, ISearch, ISun, IMoon, IMenu, IChevron, ILogo } from './components/Icons';
-import SearchPalette from './components/SearchPalette';
 import Dashboard from './pages/Dashboard';
+// Search (MiniSearch + search index data) loads the first time the palette opens.
+const SearchPalette = lazy(() => import('./components/SearchPalette'));
 export const SOURCE_URL = 'https://montychoy.com/blog/the_ultimate_list_of_hardware_engineering_internship_interview_questions';
 
 type TextSize = 'small' | 'normal' | 'large';
@@ -123,7 +124,7 @@ export default function App() {
           {' '}Answers, explanations, diagrams, quizzes and simulations are original study material; verify anything you rely on. <Link to="/settings">About this site</Link>
         </footer>
       </div>
-      {search && <SearchPalette onClose={() => setSearch(false)} />}
+      {search && <Suspense fallback={null}><SearchPalette onClose={() => setSearch(false)} /></Suspense>}
     </div>
   );
 }

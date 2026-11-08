@@ -5,6 +5,8 @@ import { QUESTIONS, META, SECTION_BY_ID, SECTIONS, titleOf } from '../lib/data';
 import { SIM_CATALOG, simImplemented } from '../sims/registry';
 import { useStore, statusOf } from '../lib/progress';
 import StatusChip from './StatusChip';
+import searchJson from '../data/search.generated.json';
+const SEARCH = searchJson as Record<string, { short: string; terms: string[] }>;
 
 type Doc = { id: string; kind: 'q' | 'section' | 'sim'; n?: number; title: string; text: string; concepts: string; terms: string; section: string; short: string };
 let index: MiniSearch<Doc> | null = null;
@@ -17,7 +19,7 @@ function getIndex() {
   });
   const docs: Doc[] = QUESTIONS.map(q => {
     const m = META[q.id]; const s = SECTION_BY_ID.get(q.sectionId)!;
-    return { id: q.id, kind: 'q', n: q.n, title: m?.title || '', text: q.text + ' ' + q.subItems.join(' '), concepts: (m?.concepts || []).join(' ').replace(/-/g, ' '), terms: (m?.terms || []).join(' '), section: s.path.join(' '), short: m?.short || '' };
+    return { id: q.id, kind: 'q', n: q.n, title: m?.title || '', text: q.text + ' ' + q.subItems.join(' '), concepts: (m?.concepts || []).join(' ').replace(/-/g, ' '), terms: (SEARCH[q.id]?.terms || []).join(' '), section: s.path.join(' '), short: SEARCH[q.id]?.short || '' };
   });
   for (const s of SECTIONS) docs.push({ id: 's:' + s.id, kind: 'section', title: s.title, text: s.path.join(' › '), concepts: '', terms: '', section: s.domain, short: '' });
   for (const sim of SIM_CATALOG) if (simImplemented(sim.id)) docs.push({ id: 'sim:' + sim.id, kind: 'sim', title: sim.title, text: sim.description, concepts: sim.category, terms: '', section: 'Simulation', short: '' });

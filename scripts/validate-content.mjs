@@ -12,7 +12,7 @@ const catalog = JSON.parse(fs.readFileSync(path.join(root, 'src/sims/catalog.jso
 const ctx = { simIds: new Set(catalog.map(s => s.id)), questionIds: new Set(index.questions.map(q => q.id)) };
 const dir = path.join(root, 'content/questions');
 const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => /^q\d{4}\.md$/.test(f)).sort() : [];
-const meta = {}; let nErr = 0, nWarn = 0; const report = [];
+const meta = {}; const search = {}; let nErr = 0, nWarn = 0; const report = [];
 const strip = s => (s || '').replace(/```[\s\S]*?```/g, ' ').replace(/\$\$[\s\S]*?\$\$/g, ' ').replace(/\$([^$\n]+)\$/g, '$1').replace(/\[\[(q\d{4})(\|[^\]]+)?\]\]/g, '').replace(/[#>*_`|]/g, '').replace(/\s+/g, ' ').trim();
 for (const f of files) {
   const id = f.replace('.md', '');
@@ -43,9 +43,12 @@ for (const f of files) {
   if ((v.errors.length || (!quiet && v.warnings.length)) && (!only.length || only.includes(id))) report.push(`\n${id}:` + v.errors.map(e => `\n  ERROR ${e}`).join('') + v.warnings.map(w => `\n  warn  ${w}`).join(''));
   const sims = [...all.matchAll(/```sim\n([\s\S]*?)\n```/g)].map(m => { try { return JSON.parse(m[1]).id; } catch { return null; } }).filter(Boolean);
   const terms = (p.sections.terms || '').split('\n').map(l => (l.match(/^\s*[-*]\s+\*\*(.+?)\*\*/) || [])[1]).filter(Boolean);
-  meta[id] = { title: p.meta.title || id, difficulty: p.meta.difficulty, kind: p.meta.kind, concepts: p.meta.concepts || [], prereqs: p.meta.prereqs || [], related: p.meta.related || [], words: v.words, sims, quizCount: p.quiz.length, rubricCount: p.rubric.length, followupCount: p.followups.length, short: strip(p.sections.short).slice(0, 420), terms };
+  meta[id] = { title: p.meta.title || id, difficulty: p.meta.difficulty, kind: p.meta.kind, concepts: p.meta.concepts || [], prereqs: p.meta.prereqs || [], related: p.meta.related || [], words: v.words, sims, quizCount: p.quiz.length, rubricCount: p.rubric.length, followupCount: p.followups.length };
+  search[id] = { short: strip(p.sections.short).slice(0, 420), terms };
 }
 fs.writeFileSync(path.join(root, 'src/data/meta.generated.json'), JSON.stringify(meta));
+// Search-only fields live in their own file so they load with the search palette, not on every first visit.
+fs.writeFileSync(path.join(root, 'src/data/search.generated.json'), JSON.stringify(search));
 const missing = index.questions.filter(q => !meta[q.id]).map(q => q.n);
 console.log(report.join('') || '');
 console.log(`\nValidated ${files.length} files: ${nErr} errors, ${nWarn} warnings. Missing content for ${missing.length}/${index.questions.length} questions.`);

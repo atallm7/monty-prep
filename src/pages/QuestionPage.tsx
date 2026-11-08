@@ -126,7 +126,7 @@ export default function QuestionPage() {
           {content === null && <div className="card" style={{ marginTop: 24 }}><b>Content for this question isn't available yet.</b><p className="muted small">The question is listed in the source material; its study page hasn't been generated.</p></div>}
           {content && <>
             <nav className="q-jump" aria-label="Jump to section">
-              <select value={toc.some(t => t.id === active) ? active : ''} onChange={e => { if (e.target.value) scrollTo('sec-' + e.target.value); }}>
+              <select aria-label="Jump to section" value={toc.some(t => t.id === active) ? active : ''} onChange={e => { if (e.target.value) scrollTo('sec-' + e.target.value); }}>
                 <option value="" disabled>Jump to section…</option>
                 {toc.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
               </select>

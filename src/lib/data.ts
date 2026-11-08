@@ -7,7 +7,7 @@ export type QIndex = { n: number; id: string; text: string; subItems: string[]; 
 export type Section = { id: string; domain: string; domainId: string; path: string[]; title: string; note: string | null; questions: number[] };
 export type Domain = { id: string; title: string; sections: string[] };
 export type Difficulty = 'fundamental' | 'intermediate' | 'advanced';
-export type QMeta = { title: string; difficulty: Difficulty; kind: string; concepts: string[]; prereqs: string[]; related: string[]; words: number; sims: string[]; quizCount: number; rubricCount: number; followupCount: number; short: string; terms: string[] };
+export type QMeta = { title: string; difficulty: Difficulty; kind: string; concepts: string[]; prereqs: string[]; related: string[]; words: number; sims: string[]; quizCount: number; rubricCount: number; followupCount: number };
 export type QuizItem = { type: 'mcq' | 'numeric' | 'truefalse' | 'multi'; level: Difficulty; q: string; options?: string[]; answer: number | boolean | number[]; tolerance?: number; unit?: string; explain: string };
 export type QContent = Omit<ReturnType<typeof parseQuestion>, 'sections' | 'quiz'> & { quiz: QuizItem[]; sections: Record<string, string> & { [K in 'testing' | 'why' | 'concepts' | 'answer' | 'technical' | 'short' | 'long' | 'terms' | 'exceptional' | 'mistakes' | 'deep' | 'applications' | 'assumptions' | 'references']: string } };
 
