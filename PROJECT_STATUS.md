@@ -54,3 +54,12 @@
 - Readability: 16.5px reading text, ~75-character measure (`max-width: 38em` on prose text), more spacing, darker muted text, A−/A/A+ text-size toggle (html[data-text]), sticky "Jump to section" menu under 1180px.
 - Fixed: KaTeX `\,^\circ` error (ldo-lab sim, q0397), long titles/link chips/dashboard heatmap overflowing on phones, q0898 mermaid labels starting with "+ ", q0368 long inline formula.
 - Not done: the claude.ai preview artifact still shows the pre-readability styling (rebuild with `node scripts/build-artifact.mjs` and republish if needed).
+
+## Big check + navigation + interactive pass (2026-11-08)
+- Fresh-eyes UX review and deep functional QA (scripts in scratchpad/qa) → fixes: welcome hero, Saved page (/saved), review queue lists due items, library = topic cards, topic pages with jump chips + collapsible sections, sim lab search/filters, status dots, single Aa text-size button, <main> landmark, deep-dive subsections nested in contents menus, sims on phones show Try-this first with controls pinned to the bottom, larger quiz/self-check tap targets, End drill.
+- Bugs fixed: malformed progress import no longer blanks the app (sanitize + error boundary), interview/review state isolation, numeric answers with SI prefixes/units/Unicode minus (scripts/test-numeric.mjs), no empty sessions, remedial picks respect scope, follow-up timer, 320px dashboard, not-found for unknown topics; 10 prerequisite cycles removed and the validator now rejects cycles.
+- Performance: per-question and per-sim chunks (a question loads ~29 KB), search data lazy-loaded with idle prefetch; favicon, meta description, theme-color.
+- Interactive plots: ```plot/```bode "params" (sliders) + "readouts" (docs/AUTHORING.md §4.3a), validated at slider extremes; ~90 figures upgraded across the site and Opus-reviewed (docs/reviews/interactive-a/b/c.md).
+- 12 new sims (102 total, all model-tested): trace-ampacity, return-path, yield-coverage, reflow-profile, process-capability, wafer-yield, package-thermal (θ overrides), amdahl-roofline, memory-hierarchy, sort-visualizer, float-explorer, ring-buffer; embedded in ~49 pages (PCB, testing, packaging, architecture, coding, embedded).
+- Renderer: wrapping HTML plot titles, x-tick label thinning, long units in axis titles, subscripts in slider/readout/plot labels, off-plot point labels hidden; sim sliders widen to include preset values.
+- Accessibility: axe 0 WCAG A/AA violations on 13 key routes in light and dark.
