@@ -53,7 +53,7 @@ export default function QuizItemView({ item: raw, index, onAnswered, prior }: { 
         </div>
       )}
       {item.type === 'truefalse' && (
-        <div className="quiz-opts row-wrap">
+        <div className="quiz-opts">
           {[true, false].map(v => <button key={String(v)} disabled={reveal} className={'quiz-opt tf' + (reveal ? (item.answer === v ? ' correct' : resp === v ? ' wrong' : '') : resp === v ? ' chosen' : '')} onClick={() => setResp(v)}>{v ? 'True' : 'False'}</button>)}
         </div>
       )}
@@ -66,7 +66,7 @@ export default function QuizItemView({ item: raw, index, onAnswered, prior }: { 
         </div>
       )}
       {!reveal && <div className="row" style={{ marginTop: 10 }}>
-        <button className="btn btn-sm btn-primary" disabled={resp === null || resp === '' || (Array.isArray(resp) && !resp.length)} onClick={submit}>Check answer</button>
+        <button className="btn btn-primary quiz-check" disabled={resp === null || resp === '' || (Array.isArray(resp) && !resp.length)} onClick={submit}>Check answer</button>
       </div>}
       {reveal && <div className={'quiz-explain ' + (checked ? 'ok' : 'bad')}>
         <div className="quiz-verdict">{checked ? 'Correct' : 'Not quite'}</div>

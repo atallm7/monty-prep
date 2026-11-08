@@ -20,8 +20,9 @@ const go = async r => { await page.goto(`${base}/#${r}`, { waitUntil: 'networkid
 try {
   // 1. dashboard
   await go('/');
-  ok('dashboard renders', await page.getByText('Interview readiness').isVisible());
-  ok('dashboard shows 1005 total', (await page.textContent('body')).includes('1005'));
+  // First visit (no progress) shows the welcome hero instead of the readiness stats.
+  ok('dashboard renders welcome hero', await page.getByText('Start with the fundamentals').isVisible());
+  ok('dashboard shows 1,005 total', (await page.textContent('body')).includes('1,005'));
 
   // 2. question page + quiz + persistence
   await go('/q/q0008');
@@ -70,11 +71,11 @@ try {
   ok('dashboard counts mastered', (await page.locator('.readiness').textContent()) !== null && (await page.textContent('body')).includes('1 of 1005 questions mastered'));
 
   // 3. search
-  await page.keyboard.press('Control+k'); await page.keyboard.type('voltage divider'); await page.waitForTimeout(400);
+  await page.keyboard.press('Control+k'); await page.waitForSelector('.palette-input input'); await page.keyboard.type('voltage divider'); await page.waitForTimeout(400);
   ok('search returns results', await page.locator('.palette-item').count() > 0);
   await page.keyboard.press('Enter'); await page.waitForTimeout(600);
   ok('search navigates to question', page.url().includes('/q/'));
-  await page.keyboard.press('Control+k'); await page.keyboard.type('#342'); await page.waitForTimeout(300); await page.keyboard.press('Enter'); await page.waitForTimeout(500);
+  await page.keyboard.press('Control+k'); await page.waitForSelector('.palette-input input'); await page.keyboard.type('#342'); await page.waitForTimeout(300); await page.keyboard.press('Enter'); await page.waitForTimeout(500);
   ok('search by number', page.url().includes('q0342'));
 
   // 4. j/k navigation

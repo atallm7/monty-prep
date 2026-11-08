@@ -2,7 +2,9 @@ import { Link } from 'react-router-dom';
 import { DOMAINS, QUESTIONS, META, Q_BY_ID, questionsInDomain, titleOf } from '../lib/data';
 import { useStore, overall, statusOf, conceptStats, dueForReview, streak, scoreOf, Status } from '../lib/progress';
 import StatusChip from '../components/StatusChip';
-import { IMic, IQuiz, IReview, IArrowR, IPath } from '../components/Icons';
+import { orderQuestions } from '../lib/pathOrder';
+import { savedIds } from '../lib/saved';
+import { IMic, IQuiz, IReview, IArrowR, IPath, ILibrary, IBookmark, IFlag } from '../components/Icons';
 
 const pctS = (x: number | null) => x === null ? '—' : Math.round(x * 100) + '%';
 
@@ -30,9 +32,24 @@ export default function Dashboard() {
   const last = store.last ? Q_BY_ID.get(store.last) : null;
   const contentCount = Object.keys(META).length;
   const unseenFundamental = QUESTIONS.filter(q => META[q.id]?.difficulty === 'fundamental' && statusOf(q.id, store).status === 'not-started').slice(0, 5);
+  const hasProgress = o.completed > 0 || store.sessions.length > 0;
+  const hasActivity = Object.keys(store.activity).length > 0;
+  const firstStep = orderQuestions(QUESTIONS.filter(q => q.domainId === DOMAINS[0].id).map(q => q.id))[0];
+  const { bookmarked, flagged } = savedIds(store);
+  const savedList = [...new Set([...bookmarked, ...flagged])];
   return (
     <div className="page fade-in">
-      <div className="dash-hero">
+      {!hasProgress && <section className="welcome" aria-labelledby="welcome-h">
+        <div className="eyebrow">Welcome</div>
+        <h1 id="welcome-h" className="welcome-title">Practice hardware engineering interview questions, properly.</h1>
+        <p className="welcome-sub">{QUESTIONS.length.toLocaleString('en-US')} hardware interview questions, each with model answers, a deep dive, simulations where they help, and quiz drills. Your progress is saved in this browser and shows up here once you start.</p>
+        <div className="welcome-actions">
+          <Link className="btn btn-primary btn-lg" to={`/q/${firstStep}`}><IPath size={16} /> Start with the fundamentals</Link>
+          <Link className="btn btn-lg" to="/library"><ILibrary size={16} /> Browse topics</Link>
+          <Link className="btn btn-lg" to="/interview"><IMic size={16} /> Try a mock interview</Link>
+        </div>
+      </section>}
+      {hasProgress && <div className="dash-hero">
         <div>
           <div className="eyebrow">Interview readiness</div>
           <div className="row" style={{ alignItems: 'baseline', gap: 14, marginTop: 4 }}>
@@ -51,9 +68,9 @@ export default function Dashboard() {
             <Link className="btn btn-lg" to="/review"><IReview size={16} /> Review {due.length ? `(${due.length})` : ''}</Link>
           </div>
         </div>
-      </div>
+      </div>}
 
-      <div className="grid-4 stat-grid">
+      {hasProgress && <div className="grid-4 stat-grid">
         <div className="card"><div className="stat-num">{o.total}</div><div className="stat-label">Total questions</div><div className="tiny faint">{contentCount} with full study pages</div></div>
         <div className="card"><div className="stat-num">{o.completed}</div><div className="stat-label">Started or completed</div><div className="tiny faint">{pctS(o.completed / o.total)} of the list</div></div>
         <div className="card"><div className="stat-num" style={{ color: 'var(--ok)' }}>{o.counts.mastered}</div><div className="stat-label">Mastered</div><div className="tiny faint">earned through self-checks + quizzes</div></div>
@@ -61,11 +78,11 @@ export default function Dashboard() {
         <div className="card"><div className="stat-num">{pctS(o.accuracy)}</div><div className="stat-label">Quiz accuracy</div><div className="tiny faint">{o.quizCorrect}/{o.quizAnswered} correct</div></div>
         <div className="card"><div className="stat-num">{pctS(o.coverage)}</div><div className="stat-label">Avg. key-point coverage</div><div className="tiny faint">from spoken self-checks</div></div>
         <div className="card"><div className="stat-num">{streak(store)}</div><div className="stat-label">Day streak</div><div className="tiny faint">{store.sessions.length} interview/quiz sessions</div></div>
-        <div className="card"><div className="stat-label" style={{ marginBottom: 8 }}>Last 16 weeks</div><Heatmap activity={store.activity} /></div>
-      </div>
+        {hasActivity && <div className="card"><div className="stat-label" style={{ marginBottom: 8 }}>Last 16 weeks</div><Heatmap activity={store.activity} /></div>}
+      </div>}
 
       <div className="dash-cols">
-        <div className="card">
+        <div className="card dash-cats">
           <div className="spread"><h3 className="h3">Performance by category</h3><Link className="small" to="/library">Library →</Link></div>
           <table className="cat-table">
             <thead><tr><th>Category</th><th>Progress</th><th className="num">Mastered</th><th className="num">Avg score</th></tr></thead>
@@ -85,8 +102,20 @@ export default function Dashboard() {
             </tbody>
           </table>
         </div>
-        <div className="stack">
+        <div className="stack dash-side">
           <div className="card">
+            <h3 className="h3">Suggested next</h3>
+            {due.length > 0 && <Link className="next-row card-link" to="/review"><IReview size={15} /><span>{due.length} question{due.length > 1 ? 's' : ''} need review</span><IArrowR size={14} /></Link>}
+            <Link className="next-row card-link" to="/quiz"><IQuiz size={15} /><span>Quick 10-question quiz drill</span><IArrowR size={14} /></Link>
+            <Link className="next-row card-link" to="/path"><IPath size={15} /><span>Follow the learning path</span><IArrowR size={14} /></Link>
+            {unseenFundamental.map(q => <Link key={q.id} className="next-row card-link" to={`/q/${q.id}`}><StatusChip status="not-started" compact /><span>Q{q.n} · {titleOf(q.id)}</span><IArrowR size={14} /></Link>)}
+          </div>
+          {savedList.length > 0 && <div className="card">
+            <div className="spread"><h3 className="h3">Saved</h3><Link className="small" to="/saved">View all →</Link></div>
+            <div className="row-wrap small muted" style={{ marginTop: 6 }}><span><IBookmark size={13} /> {bookmarked.length} bookmarked</span><span><IFlag size={13} /> {flagged.length} flagged for review</span></div>
+            {savedList.slice(0, 3).map(id => <Link key={id} className="next-row card-link" to={`/q/${id}`}><StatusChip status={statusOf(id, store).status} compact /><span>Q{Q_BY_ID.get(id)?.n} · {titleOf(id)}</span><IArrowR size={14} /></Link>)}
+          </div>}
+          <div className="card dash-weak">
             <h3 className="h3">Weakest concepts</h3>
             {concepts.length === 0 ? <p className="small muted">Once you've self-checked or quizzed a few questions, the concepts you're weakest on show up here, ranked by your measured score.</p> :
               <div className="stack" style={{ gap: 8, marginTop: 10 }}>{concepts.map(c => <div key={c.concept}>
@@ -94,13 +123,6 @@ export default function Dashboard() {
                 <div className="progress"><i className={c.avg < 0.6 ? 'pb-review' : 'pb-learning'} style={{ width: `${c.avg * 100}%` }} /></div>
                 <div className="row-wrap tiny" style={{ marginTop: 4 }}>{c.qs.slice(0, 4).map(id => <Link key={id} to={`/q/${id}`}>Q{Q_BY_ID.get(id)?.n}</Link>)}</div>
               </div>)}</div>}
-          </div>
-          <div className="card">
-            <h3 className="h3">Suggested next</h3>
-            {due.length > 0 && <Link className="next-row" to="/review"><IReview size={15} /><span>{due.length} question{due.length > 1 ? 's' : ''} need review</span><IArrowR size={14} /></Link>}
-            <Link className="next-row" to="/quiz"><IQuiz size={15} /><span>Quick 10-question quiz drill</span><IArrowR size={14} /></Link>
-            <Link className="next-row" to="/path"><IPath size={15} /><span>Follow the learning path</span><IArrowR size={14} /></Link>
-            {unseenFundamental.map(q => <Link key={q.id} className="next-row" to={`/q/${q.id}`}><StatusChip status="not-started" compact /><span>Q{q.n} · {titleOf(q.id)}</span><IArrowR size={14} /></Link>)}
           </div>
         </div>
       </div>

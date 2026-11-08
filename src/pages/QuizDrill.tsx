@@ -18,6 +18,7 @@ export default function QuizDrill() {
   const [answers, setAnswers] = useState<boolean[]>([]);
   const [loading, setLoading] = useState(false);
   const [t0, setT0] = useState(0);
+  const [ended, setEnded] = useState(false);
 
   async function start() {
     setLoading(true);
@@ -34,7 +35,12 @@ export default function QuizDrill() {
       if (cand.length) all.push(cand[Math.floor(Math.random() * cand.length)]);
       if (all.length >= count) break;
     }
-    setItems(all); setI(0); setAnswers([]); setLoading(false); setT0(Date.now());
+    setItems(all); setEnded(false); setI(0); setAnswers([]); setLoading(false); setT0(Date.now());
+  }
+
+  function endDrill() {
+    if (items && answers.length && answers.length < items.length) actions.recordSession({ t: Date.now(), mode: 'quiz', questions: items.slice(0, answers.length).map(x => x.qid), score: answers.filter(Boolean).length / answers.length, seconds: Math.round((Date.now() - t0) / 1000) });
+    setEnded(true);
   }
 
   if (!items) return <div className="page page-narrow fade-in">
@@ -54,17 +60,19 @@ export default function QuizDrill() {
 
   if (!items.length) return <div className="page page-narrow"><div className="empty">No quiz items match that selection. <button className="btn btn-sm" onClick={() => setItems(null)}>Back</button></div></div>;
 
-  if (i >= items.length) {
+  if (i >= items.length || ended) {
+    const n = ended ? answers.length : items.length;
     const correct = answers.filter(Boolean).length;
     return <div className="page page-narrow fade-in">
-      <div className="eyebrow">Drill complete</div><h1 className="page-title">{correct}/{items.length} correct ({Math.round(correct / items.length * 100)}%)</h1>
-      <div className="stack" style={{ marginTop: 18 }}>{items.map((it, k) => <Link key={k} className="q-row" to={`/q/${it.qid}`}><span className="q-row-n">{answers[k] ? '✓' : '✗'}</span><span className="q-row-main"><span className="q-row-text">{it.item.q.replace(/\$[^$]*\$/g, '…').slice(0, 140)}</span><span className="tiny faint">From Q{Q_BY_ID.get(it.qid)!.n}: {titleOf(it.qid)}</span></span><IArrowR size={14} /></Link>)}</div>
+      <div className="eyebrow">Drill complete</div><h1 className="page-title">{n ? `${correct}/${n} correct (${Math.round(correct / n * 100)}%)` : 'No questions answered'}</h1>
+      {ended && <p className="page-sub">Drill ended early: {n} of {items.length} questions answered.</p>}
+      <div className="stack" style={{ marginTop: 18 }}>{items.slice(0, n).map((it, k) => <Link key={k} className="q-row" to={`/q/${it.qid}`}><span className="q-row-n">{answers[k] ? '✓' : '✗'}</span><span className="q-row-main"><span className="q-row-text">{it.item.q.replace(/\$[^$]*\$/g, '…').slice(0, 140)}</span><span className="tiny faint">From Q{Q_BY_ID.get(it.qid)!.n}: {titleOf(it.qid)}</span></span><IArrowR size={14} /></Link>)}</div>
       <div className="row" style={{ marginTop: 18 }}><button className="btn btn-primary" onClick={() => setItems(null)}>New drill</button><Link className="btn" to="/">Dashboard</Link></div>
     </div>;
   }
   const it = items[i];
   return <div className="page page-narrow fade-in">
-    <div className="iv-top"><span className="small muted">Item {i + 1} of {items.length}</span><div className="progress" style={{ flex: 1 }}><i className="pb-learning" style={{ width: `${i / items.length * 100}%` }} /></div><span className="small">{answers.filter(Boolean).length} correct</span></div>
+    <div className="iv-top"><span className="small muted" style={{ whiteSpace: 'nowrap' }}>Question {i + 1} of {items.length}</span><div className="progress" style={{ flex: 1 }} role="progressbar" aria-valuemin={0} aria-valuemax={items.length} aria-valuenow={answers.length}><i className="pb-learning" style={{ width: `${answers.length / items.length * 100}%` }} /></div><span className="small" style={{ whiteSpace: 'nowrap' }}>{answers.filter(Boolean).length} correct</span><button className="btn btn-sm btn-ghost" onClick={endDrill}>End drill</button></div>
     <div className="small faint" style={{ margin: '16px 0 6px' }}>From <Link to={`/q/${it.qid}`}>Q{Q_BY_ID.get(it.qid)!.n}: {titleOf(it.qid)}</Link></div>
     <QuizItemView key={it.qid + ':' + it.idx + ':' + i} item={it.item} onAnswered={ok => { actions.answerQuiz(it.qid, it.idx, ok); setAnswers(a => [...a, ok]); if (i === items.length - 1) actions.recordSession({ t: Date.now(), mode: 'quiz', questions: items.map(x => x.qid), score: [...answers, ok].filter(Boolean).length / items.length, seconds: Math.round((Date.now() - t0) / 1000) }); }} />
     {answers.length > i && <div className="row" style={{ marginTop: 14 }}><button className="btn btn-primary" onClick={() => setI(i + 1)}>{i === items.length - 1 ? 'See results' : 'Next'} <IArrowR size={14} /></button></div>}

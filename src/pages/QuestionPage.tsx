@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, Fragment } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Q_BY_ID, SECTION_BY_ID, DOMAIN_BY_ID, META, loadQuestion, neighbors, titleOf, QContent, resolveQ } from '../lib/data';
 import { useStore, statusOf, actions } from '../lib/progress';
@@ -58,6 +58,7 @@ export default function QuestionPage() {
   const [hide, setHide] = usePref('mcp.hideAnswers', false);
   const [revealed, setRevealed] = useState(false);
   const [active, setActive] = useState('question');
+  const [activeSub, setActiveSub] = useState('');
 
   useEffect(() => { let live = true; setRevealed(false); setTab('answer'); if (q) { actions.view(q.id); const qid = q.id; loadQuestion(qid).then(c => { if (live) setLoaded({ id: qid, c }); }); } return () => { live = false; }; }, [id]);
   useEffect(() => {
@@ -76,7 +77,30 @@ export default function QuestionPage() {
     if (!content) return;
     const els = [...document.querySelectorAll('.q-section')];
     const io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) setActive(e.target.id.replace('sec-', '')); }, { rootMargin: '-30% 0px -60% 0px' });
-    els.forEach(e => io.observe(e)); return () => io.disconnect();
+    els.forEach(e => io.observe(e));
+    // Deep-dive subsections: give the rendered h2s stable ids so the contents menu can link to them.
+    const heads = [...document.querySelectorAll('#sec-deep .prose h2')];
+    heads.forEach((h, i) => { h.id = `deep-${i}`; });
+    // active subsection = the last heading that has scrolled above 40% of the viewport
+    let raf = 0;
+    const onScroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => {
+      let cur = ''; for (const h of heads) { if (h.getBoundingClientRect().top < window.innerHeight * 0.4) cur = h.id; else break; }
+      setActiveSub(cur);
+    }); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    return () => { io.disconnect(); window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
+  }, [content]);
+
+  // "## " headings of the deep dive, listed under "Deep dive" in the contents menus
+  const deepHeads = useMemo(() => {
+    if (!content) return [] as string[];
+    const out: string[] = []; let fence = false;
+    for (const line of content.sections.deep.split('\n')) {
+      if (/^\s*(```|~~~)/.test(line)) fence = !fence;
+      const m = !fence && line.match(/^##\s+(.+?)\s*$/);
+      if (m) out.push(m[1].replace(/\$([^$]*)\$/g, '$1').replace(/[*_`\\]/g, '').replace(/\{|\}/g, ''));
+    }
+    return out;
   }, [content]);
 
   const toc = useMemo(() => {
@@ -126,9 +150,12 @@ export default function QuestionPage() {
           {content === null && <div className="card" style={{ marginTop: 24 }}><b>Content for this question isn't available yet.</b><p className="muted small">The question is listed in the source material; its study page hasn't been generated.</p></div>}
           {content && <>
             <nav className="q-jump" aria-label="Jump to section">
-              <select aria-label="Jump to section" value={toc.some(t => t.id === active) ? active : ''} onChange={e => { if (e.target.value) scrollTo('sec-' + e.target.value); }}>
+              <select aria-label="Jump to section" value={active === 'deep' && activeSub ? activeSub : toc.some(t => t.id === active) ? active : ''} onChange={e => { const v = e.target.value; if (v) scrollTo(v.startsWith('deep-') ? v : 'sec-' + v); }}>
                 <option value="" disabled>Jump to section…</option>
-                {toc.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+                {toc.map(t => <Fragment key={t.id}>
+                  <option value={t.id}>{t.label}</option>
+                  {t.id === 'deep' && deepHeads.map((h, i) => <option key={i} value={`deep-${i}`}>{'\u00a0\u00a0\u00a0– ' + h}</option>)}
+                </Fragment>)}
               </select>
             </nav>
             <Section id="question" title="Understand the question">
@@ -176,7 +203,10 @@ export default function QuestionPage() {
         </article>
         {content && <aside className="q-toc">
           <div className="eyebrow" style={{ marginBottom: 8 }}>On this page</div>
-          {toc.map(t => <button key={t.id} className={'toc-link' + (active === t.id ? ' on' : '')} onClick={() => scrollTo('sec-' + t.id)}>{t.label}</button>)}
+          {toc.map(t => <Fragment key={t.id}>
+            <button className={'toc-link' + (active === t.id ? ' on' : '')} onClick={() => scrollTo('sec-' + t.id)}>{t.label}{t.id === 'deep' && deepHeads.length > 0 && active !== 'deep' ? <span className="toc-count">{deepHeads.length}</span> : null}</button>
+            {t.id === 'deep' && active === 'deep' && deepHeads.map((h, i) => <button key={i} className={'toc-link toc-sub' + (activeSub === `deep-${i}` ? ' on' : '')} onClick={() => scrollTo(`deep-${i}`)}>{h}</button>)}
+          </Fragment>)}
           <div className="toc-status">
             <StatusChip status={st.status} />
             <div className="tiny muted" style={{ marginTop: 6 }}>{st.reason}</div>

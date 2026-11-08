@@ -28,7 +28,7 @@ export const RATINGS = [
 ];
 
 /** Rubric checklist + rating; used by the question page and the interview simulator. */
-export function RubricGrader({ content, onSubmit, submitLabel = 'Save self-check' }: { content: QContent; onSubmit: (covered: number[], rating: number) => void; submitLabel?: string }) {
+export function RubricGrader({ content, onSubmit, submitLabel = 'Save self-check', helper }: { content: QContent; onSubmit: (covered: number[], rating: number) => void; submitLabel?: string; helper?: string }) {
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const [rating, setRating] = useState<number | null>(null);
   const [done, setDone] = useState(false);
@@ -45,11 +45,11 @@ export function RubricGrader({ content, onSubmit, submitLabel = 'Save self-check
       ))}
     </div>
     <div className="eyebrow" style={{ marginTop: 4 }}>How did it go?</div>
-    <div className="rating-row">
-      {RATINGS.map(r => <button key={r.v} disabled={done} className={'rating-btn' + (rating === r.v ? ' on' : '')} onClick={() => setRating(r.v)}><b>{r.label}</b><span>{r.hint}</span></button>)}
+    <div className="rating-row" role="radiogroup" aria-label="How did it go?">
+      {RATINGS.map(r => <button key={r.v} role="radio" aria-checked={rating === r.v} disabled={done} className={'rating-btn' + (rating === r.v ? ' on' : '')} onClick={() => setRating(r.v)}><b>{r.label}</b><span>{r.hint}</span></button>)}
     </div>
-    {!done && <div className="row"><button className="btn btn-accent" disabled={rating === null} onClick={() => { setDone(true); onSubmit([...checked], rating!); }}>{submitLabel}</button>
-      <span className="small faint">{checked.size}/{content.rubric.length} points covered</span></div>}
+    {!done && <div className="row-wrap rubric-actions"><button className="btn btn-accent btn-lg" disabled={rating === null} onClick={() => { setDone(true); onSubmit([...checked], rating!); }}>{submitLabel}</button>
+      <span className="small faint">{rating === null ? (helper || 'Pick how it went to save') + ' · ' : ''}{checked.size}/{content.rubric.length} points covered</span></div>}
     {done && <div className={'callout ' + (missed.length === 0 ? 'callout-tip' : 'callout-warning')}>
       <div className="callout-title">{missed.length === 0 ? 'You hit every key point.' : `You missed ${missed.length} key point${missed.length > 1 ? 's' : ''}. Each one's reason is shown above.`}</div>
       <p className="small" style={{ margin: 0 }}>Coverage {Math.round(checked.size / Math.max(1, content.rubric.length) * 100)}%. Mastery needs ≥80% coverage with a rating of “Solid” or better, plus ≥80% on the quiz.</p>

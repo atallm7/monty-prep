@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { DOMAINS, QUESTIONS, META, SECTION_BY_ID, DOMAIN_BY_ID, Q_BY_ID, loadQuestion, QContent, titleOf, Difficulty, resolveQ } from '../lib/data';
-import { useStore, statusOf, actions, scoreOf, getStore } from '../lib/progress';
+import { useStore, statusOf, actions, scoreOf, getStore, dueForReview } from '../lib/progress';
 import Markdown from '../components/Markdown';
 import { RubricGrader, useTimer, mmss } from '../components/SelfCheck';
 import { DiffChip } from '../components/StatusChip';
@@ -88,7 +88,9 @@ export default function Interview({ reviewMode = false }: { reviewMode?: boolean
       <div className="eyebrow">{reviewMode ? 'Spaced review' : 'Interview simulator'}</div>
       <h1 className="page-title">{reviewMode ? 'Review what slipped' : 'Mock technical interview'}</h1>
       <p className="page-sub">{reviewMode ? 'Questions you flagged, missed key points on, or that are due for spaced review. Each is asked like a real interview question.' : 'One question at a time, answered out loud against the clock. After each answer you compare it with the model answer, mark the key points you actually said, and get pushed: good answers earn a harder follow-up and a harder next question, while weak ones step back to a prerequisite.'}</p>
-      <div className="card stack" style={{ marginTop: 20, gap: 18 }}>
+      {reviewMode && <ReviewQueue ids={dueForReview(store)} store={store} />}
+      {!(reviewMode && !dueForReview(store).length) && <div className="card stack" style={{ marginTop: 20, gap: 18 }}>
+        {reviewMode && <div className="eyebrow">Session options</div>}
         <div><div className="eyebrow" style={{ marginBottom: 8 }}>Topics {setup.scope.length ? `(${setup.scope.length} selected)` : '(all)'}</div>
           <div className="row-wrap">{preScope.filter(s => SECTION_BY_ID.has(s)).map(s => <button key={s} className={'chip' + (setup.scope.includes(s) ? ' on' : '')} onClick={() => toggleScope(s)}>{SECTION_BY_ID.get(s)!.title}</button>)}
             {DOMAINS.map(d => <button key={d.id} className={'chip' + (setup.scope.includes(d.id) ? ' on' : '')} onClick={() => toggleScope(d.id)}>{d.title}</button>)}</div></div>
@@ -104,9 +106,9 @@ export default function Interview({ reviewMode = false }: { reviewMode?: boolean
           <label className="toggle"><input type="checkbox" checked={setup.followups} onChange={e => setSetup(s => ({ ...s, followups: e.target.checked }))} />Ask follow-up questions</label>
           <label className="toggle"><input type="checkbox" checked={setup.prioritize} onChange={e => setSetup(s => ({ ...s, prioritize: e.target.checked }))} />Prioritize weak and unseen questions</label>
         </div>
-        <div className="spread"><span className="small muted">{available} question{available === 1 ? '' : 's'} available in this scope</span>
-          <button className="btn btn-primary btn-lg" disabled={!available} onClick={start}><IMic size={16} /> Start {reviewMode ? 'review' : 'interview'}</button></div>
-      </div>
+        <div className="spread"><span className="small muted">{available} question{available === 1 ? '' : 's'} {reviewMode ? 'in this review session' : 'available in this scope'}</span>
+          <button className="btn btn-primary btn-lg" disabled={!available} onClick={start}><IMic size={16} /> {reviewMode ? 'Start review session' : 'Start interview'}</button></div>
+      </div>}
     </div>;
   }
 
@@ -160,10 +162,10 @@ export default function Interview({ reviewMode = false }: { reviewMode?: boolean
       </div>}
 
       {phase === 'grade' && <div className="stack" style={{ marginTop: 16 }}>
-        {notes && <div className="card card-tight"><div className="eyebrow">Your notes · {mmss(answerSecs)}</div><div className="small" style={{ whiteSpace: 'pre-wrap', marginTop: 4 }}>{notes}</div></div>}
+        <details className="card card-tight iv-notes" open><summary className="small" style={{ cursor: 'pointer', fontWeight: 600 }}>Your notes · {mmss(answerSecs)}</summary><div className="small" style={{ whiteSpace: 'pre-wrap', marginTop: 6 }}>{notes || <span className="faint">(spoken answer, no notes typed)</span>}</div></details>
         <div className="card card-tight"><div className="eyebrow">Model answer (30 s)</div><Markdown src={cur.content.sections.short} /></div>
         <details className="card card-tight"><summary className="small" style={{ cursor: 'pointer', fontWeight: 600 }}>Model answer (2 min)</summary><Markdown src={cur.content.sections.long} /></details>
-        <RubricGrader content={cur.content} submitLabel="Grade & continue" onSubmit={(covered, rating) => {
+        <RubricGrader content={cur.content} helper="Pick how it went to continue" submitLabel="Grade & continue" onSubmit={(covered, rating) => {
           const total = cur.content.rubric.length; const cov = covered.length / Math.max(1, total);
           const res: Result = { id: cur.id, covered: covered.length, total, rating, seconds: answerSecs, missed: cur.content.rubric.map((_, i) => i).filter(i => !covered.includes(i)), level: meta.difficulty, remedial: cur.remedial };
           actions.recordAttempt(cur.id, { mode: 'interview', covered: covered.length, total, rating, seconds: answerSecs, missed: res.missed });
@@ -215,5 +217,31 @@ function SummaryRow({ r, n, text }: { r: Result; n: number; text: string }) {
       <Link className="btn btn-sm" to={`/q/${r.id}`}>Study this question <IArrowR size={13} /></Link>
     </div>}
     {!open && r.missed.length > 0 && <div className="tiny faint" style={{ marginTop: 4 }}>Click to see the {r.missed.length} missed point{r.missed.length > 1 ? 's' : ''} explained</div>}
+  </div>;
+}
+
+function reasonLabel(reason: string) {
+  if (/flagged/i.test(reason)) return 'Flagged';
+  if (/spaced review/i.test(reason)) return 'Scheduled review';
+  if (/missed key points/i.test(reason)) return 'Missed key points';
+  if (/Quiz accuracy/i.test(reason)) return 'Low quiz accuracy';
+  return reason;
+}
+
+function ReviewQueue({ ids, store }: { ids: string[]; store: ReturnType<typeof getStore> }) {
+  if (!ids.length) return <div className="card review-empty" style={{ marginTop: 20 }}>
+    <h2 className="review-h">Nothing due for review</h2>
+    <p className="small muted" style={{ margin: '4px 0 12px' }}>No questions are flagged, overdue or weak right now. Flag a question from its page, or complete a self-check, and it will show up here.</p>
+    <div className="row-wrap"><Link className="btn btn-primary" to="/interview">Try a mock interview</Link><Link className="btn" to="/quiz">Quiz drill</Link></div>
+  </div>;
+  return <div className="card review-queue" style={{ marginTop: 20 }}>
+    <div className="spread"><h2 className="review-h">Due for review</h2><span className="small muted">{ids.length} question{ids.length === 1 ? '' : 's'}</span></div>
+    <div className="review-list">
+      {ids.map(id => { const q = Q_BY_ID.get(id)!; const st = statusOf(id, store); return <Link key={id} className="review-row" to={`/q/${id}`}>
+        <span className="review-main"><span className="review-title">{titleOf(id)}</span><span className="tiny faint">Q{q.n} · {DOMAIN_BY_ID.get(q.domainId)?.title}</span></span>
+        <span className="chip s-needs-review review-why" title={st.reason}>{reasonLabel(st.reason)}</span>
+        <span className="small review-read">Read <IArrowR size={13} /></span>
+      </Link>; })}
+    </div>
   </div>;
 }

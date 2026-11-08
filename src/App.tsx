@@ -3,10 +3,11 @@ import { NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import { DOMAINS, SECTIONS, SECTION_BY_ID, questionsInDomain } from './lib/data';
 import { useStore, statusOf } from './lib/progress';
 import { useTheme } from './lib/theme';
-import { IHome, ILibrary, IMic, IQuiz, IReview, ISim, IPath, ISettings, ISearch, ISun, IMoon, IMenu, IChevron, ILogo } from './components/Icons';
+import { IHome, ILibrary, IMic, IQuiz, IReview, ISim, IPath, ISettings, ISearch, ISun, IMoon, IMenu, IChevron, ILogo, IBookmark } from './components/Icons';
 import Dashboard from './pages/Dashboard';
 // Search (MiniSearch + search index data) loads the first time the palette opens.
 const SearchPalette = lazy(() => import('./components/SearchPalette'));
+const prefetchSearch = () => { void import('./components/SearchPalette'); };
 export const SOURCE_URL = 'https://montychoy.com/blog/the_ultimate_list_of_hardware_engineering_internship_interview_questions';
 
 type TextSize = 'small' | 'normal' | 'large';
@@ -27,6 +28,7 @@ const Interview = lazy(() => import('./pages/Interview'));
 const QuizDrill = lazy(() => import('./pages/QuizDrill'));
 const SimsLab = lazy(() => import('./pages/SimsLab'));
 const LearningPath = lazy(() => import('./pages/LearningPath'));
+const Saved = lazy(() => import('./pages/Saved'));
 const Settings = lazy(() => import('./pages/Settings'));
 
 function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -45,6 +47,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         <NavLink to="/" end onClick={onClose}><IHome />Dashboard</NavLink>
         <NavLink to="/library" onClick={onClose}><ILibrary />Question library</NavLink>
         <NavLink to="/path" onClick={onClose}><IPath />Learning path</NavLink>
+        <NavLink to="/saved" onClick={onClose}><IBookmark />Saved</NavLink>
         <NavLink to="/interview" onClick={onClose}><IMic />Interview simulator</NavLink>
         <NavLink to="/quiz" onClick={onClose}><IQuiz />Quiz drill</NavLink>
         <NavLink to="/review" onClick={onClose}><IReview />Review queue</NavLink>
@@ -81,6 +84,13 @@ export default function App() {
   const [textSize, setTextSize] = useTextSize();
   const loc = useLocation();
   useEffect(() => { window.scrollTo({ top: 0 }); }, [loc.pathname]);
+  // Prefetch the lazy search palette once idle so keystrokes after Ctrl+K aren't lost.
+  useEffect(() => {
+    const go = () => { void import('./components/SearchPalette'); };
+    const w = window as any;
+    const h = w.requestIdleCallback ? w.requestIdleCallback(go, { timeout: 2500 }) : setTimeout(go, 1200);
+    return () => (w.cancelIdleCallback ? w.cancelIdleCallback(h) : clearTimeout(h));
+  }, []);
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !/input|textarea|select/i.test((e.target as HTMLElement).tagName))) { e.preventDefault(); setSearch(true); }
@@ -94,13 +104,13 @@ export default function App() {
       <div className="main">
         <header className="topbar">
           <button className="icon-btn menu-btn" aria-label="Open navigation" onClick={() => setNav(true)}><IMenu /></button>
-          <button className="search-trigger" onClick={() => setSearch(true)}><ISearch size={16} /><span>Search questions, concepts…</span><kbd>Ctrl K</kbd></button>
+          <button className="search-trigger" onClick={() => setSearch(true)} onPointerEnter={prefetchSearch} onFocus={prefetchSearch}><ISearch size={16} /><span>Search questions, concepts…</span><kbd className="kbd-hint">Ctrl K</kbd></button>
           <span className="topbar-spacer" />
-          <div className="textsize" role="group" aria-label="Text size">
-            {(['small', 'normal', 'large'] as const).map((t, i) => <button key={t} className={textSize === t ? 'on' : ''} aria-pressed={textSize === t} title={['Smaller text', 'Normal text', 'Larger text'][i]} onClick={() => setTextSize(t)}>{['A−', 'A', 'A+'][i]}</button>)}
-          </div>
+          <button className="textsize-btn" aria-label={`Text size: ${textSize}. Activate to change.`} title={`Text size: ${textSize} (click to change)`} data-size={textSize}
+            onClick={() => setTextSize(textSize === 'small' ? 'normal' : textSize === 'normal' ? 'large' : 'small')}><span aria-hidden="true">Aa</span></button>
           <button className="icon-btn" aria-label="Toggle theme" title="Toggle light/dark" onClick={() => setMode(effective === 'dark' ? 'light' : 'dark')}>{effective === 'dark' ? <ISun /> : <IMoon />}</button>
         </header>
+        <main id="main">
         <Suspense fallback={<div className="page"><div className="empty">Loading…</div></div>}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
@@ -114,10 +124,12 @@ export default function App() {
             <Route path="/sims" element={<SimsLab />} />
             <Route path="/sims/:simId" element={<SimsLab />} />
             <Route path="/path" element={<LearningPath />} />
+            <Route path="/saved" element={<Saved />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<div className="page"><div className="empty">Page not found. <Link to="/">Go home</Link></div></div>} />
           </Routes>
         </Suspense>
+        </main>
         <footer className="site-footer small muted">
           Questions are reproduced from Monty Choy's{' '}
           <a href={SOURCE_URL} target="_blank" rel="noreferrer">“The Ultimate List of Hardware Engineering Internship Interview Questions”</a>.
