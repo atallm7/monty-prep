@@ -19,6 +19,13 @@ export type PlotProps = {
 };
 
 /** Render "R_L", "V_{out}", "x^2" as SVG tspans */
+const escHtml = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+/** Plot title → HTML with the same X_{sub} / X_s subscript convention as axis labels. */
+function titleHtml(t: string) {
+  return escHtml(t).replace(/([A-Za-zΩτωφθλμ\d)])_(?:\{([^}]+)\}|([A-Za-z0-9]{1,4}))/g, (_, a, b, c) => `${a}<sub>${b || c}</sub>`)
+    .replace(/\^(?:\{([^}]+)\}|([A-Za-z0-9+\-]{1,4}))/g, (_, b, c) => `<sup>${b || c}</sup>`);
+}
+
 export function Lbl({ t }: { t?: string }) {
   if (!t) return null;
   const parts: (string | { s: string; sub: boolean })[] = []; let buf = ''; let i = 0;
@@ -105,7 +112,7 @@ export default function Plot(p: PlotProps) {
   const yt = p.yLog ? logTicks(yr[0], yr[1]) : { major: linTicks(yr[0], yr[1], 5), minor: [] as number[] };
   // left margin grows with the widest y tick label so the rotated axis title never overlaps it
   const yTickW = Math.max(18, ...yt.major.map(v => fy(v).length * 6.6));
-  const M = { l: Math.round(yTickW + (p.yLabel ? 30 : 12)), r: 26, t: p.title ? 26 : 12, b: p.xLabel ? 44 : 28 };
+  const M = { l: Math.round(yTickW + (p.yLabel ? 30 : 12)), r: 26, t: 12, b: p.xLabel ? 44 : 28 };
   const iw = W - M.l - M.r, ih = H - M.t - M.b;
   const tx = (x: number) => p.xLog ? M.l + (Math.log10(x) - Math.log10(xr[0])) / (Math.log10(xr[1]) - Math.log10(xr[0])) * iw : M.l + (x - xr[0]) / (xr[1] - xr[0]) * iw;
   const ty = (y: number) => p.yLog ? M.t + ih - (Math.log10(y) - Math.log10(yr[0])) / (Math.log10(yr[1]) - Math.log10(yr[0])) * ih : M.t + ih - (y - yr[0]) / (yr[1] - yr[0]) * ih;
@@ -144,11 +151,12 @@ export default function Plot(p: PlotProps) {
 
   return (
     <div ref={wrap} style={{ position: 'relative', width: '100%' }}>
+      {/* Title as HTML so long titles wrap instead of being clipped by the SVG */}
+      {p.title && <div className="plot-title" style={{ paddingLeft: M.l }} dangerouslySetInnerHTML={{ __html: titleHtml(p.title) }} />}
       <svg className="plot-svg" width={W} height={H} viewBox={`0 0 ${W} ${H}`}
         onPointerMove={e => { const r = (e.currentTarget as SVGSVGElement).getBoundingClientRect(); const px = e.clientX - r.left; const py = e.clientY - r.top; if (px >= M.l && px <= M.l + iw) setHover({ px, py, x: invx(px) }); else setHover(null); }}
         onPointerLeave={() => setHover(null)}>
         <defs><clipPath id={clipId}><rect x={M.l} y={M.t} width={iw} height={ih} /></clipPath></defs>
-        {p.title && <text x={M.l} y={16} className="title"><Lbl t={p.title} /></text>}
         {(p.xspans || []).map((s, i) => <g key={'xs' + i}><rect x={tx(s.from)} y={M.t} width={Math.max(0, tx(s.to) - tx(s.from))} height={ih} fill={colorOf(s.color || 'accent', 0)} opacity={0.08} />{s.label && <text x={(tx(s.from) + tx(s.to)) / 2} y={M.t + 12} textAnchor="middle" className="ann" style={{ fill: colorOf(s.color || 'accent', 0) }}>{s.label}</text>}</g>)}
         {(p.yspans || []).map((s, i) => <g key={'ys' + i}><rect x={M.l} y={ty(s.to)} width={iw} height={Math.max(0, ty(s.from) - ty(s.to))} fill={colorOf(s.color || 'accent', 0)} opacity={0.08} />{s.label && <text x={M.l + iw - 4} y={ty(s.to) + 12} textAnchor="end" className="ann" style={{ fill: colorOf(s.color || 'accent', 0) }}>{s.label}</text>}</g>)}
         {xt.minor.map(v => <line key={'xm' + v} x1={tx(v)} x2={tx(v)} y1={M.t} y2={M.t + ih} className="gridl" opacity={0.5} />)}

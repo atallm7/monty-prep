@@ -1388,7 +1388,8 @@
    "size": "slots (default 16)",
    "prodRate": "items/ms (default 1.2)",
    "consRate": "items/ms (default 1)",
-   "burst": "items (default 20)"
+   "burst": "items (default 20)",
+   "gap": "idle gap between bursts, ms (default 20)"
   },
   "presets": {
    "balanced": "consumer keeps up",

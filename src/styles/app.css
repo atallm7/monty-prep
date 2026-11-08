@@ -255,7 +255,7 @@
 .plot-param-name { color: var(--text-2); }
 .plot-param input[type=range] { width: 100%; accent-color: var(--accent); min-height: 28px; }
 .plot-readouts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-.plot-readout { display: flex; flex-direction: column; padding: 6px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); min-width: 120px; }
+.plot-readout { display: flex; flex-direction: column; flex: 1 1 140px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); min-width: 0; }
 .plot-readout b { font-variant-numeric: tabular-nums; font-size: 15px; }
 
 /* ===== Navigation improvements (nav review) ===== */
@@ -344,3 +344,4 @@ main#main { display: block; min-width: 0; }
 .toc-sub { padding: 4px 10px 4px 22px; font-size: 12.5px; line-height: 1.35; }
 .toc-count { margin-left: 6px; font-size: 11px; color: var(--text-3); background: var(--surface-2); border-radius: 999px; padding: 0 6px; }
 @media (max-width: 1180px) { .q-section .prose h2 { scroll-margin-top: 120px; } }
+.plot-title { color: var(--text); font-size: 13px; font-weight: 600; line-height: 1.35; padding-right: 16px; margin: 2px 0 2px; text-wrap: balance; }
