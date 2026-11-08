@@ -53,19 +53,22 @@ export default function PackageThermal({ params }: SimProps) {
       <text x={x + w / 2} y={y - 16} textAnchor="middle" fontSize={11} fill="var(--d-muted)">{name}</text>
     </g>
   );
-  const Node = ({ x, y, label, T, hot }: { x: number; y: number; label: string; T: number; hot?: boolean }) => (
-    <g>
-      <circle cx={x} cy={y} r={hot ? 7 : 5} fill={hot ? (tone === 'bad' ? 'var(--d-red)' : tone === 'warn' ? 'var(--d-orange)' : 'var(--d-green)') : 'var(--d-ink)'} />
-      <text x={hot ? x + 14 : x} y={hot ? y - 2 : y + 22} textAnchor={hot ? 'start' : 'middle'} fontSize={11} fill="var(--d-muted)">{label}</text>
-      <text x={hot ? x + 14 : x} y={hot ? y + 13 : y + 35} textAnchor={hot ? 'start' : 'middle'} fontSize={12} fontWeight={700} fill="var(--d-ink)">{f1(T)}°C</text>
-    </g>
-  );
+  const Node = ({ x, y, label, T, hot }: { x: number; y: number; label: string; T: number; hot?: boolean }) => {
+    const side = !!hot && showBoard; // beside the node when the board rail is below, else underneath
+    return (
+      <g>
+        <circle cx={x} cy={y} r={hot ? 7 : 5} fill={hot ? (tone === 'bad' ? 'var(--d-red)' : tone === 'warn' ? 'var(--d-orange)' : 'var(--d-green)') : 'var(--d-ink)'} />
+        <text x={side ? x + 14 : hot ? x + 6 : x} y={side ? y - 2 : y + 22} textAnchor={side ? 'start' : hot ? 'start' : 'middle'} fontSize={11} fill="var(--d-muted)">{label}</text>
+        <text x={side ? x + 14 : hot ? x + 6 : x} y={side ? y + 13 : y + 35} textAnchor={side || hot ? 'start' : 'middle'} fontSize={12} fontWeight={700} fill="var(--d-ink)">{f1(T)}°C</text>
+      </g>
+    );
+  };
   const topColor = 'var(--d-orange)', botColor = 'var(--d-blue)';
   const dash = (q: number) => <animate attributeName="stroke-dashoffset" from="24" to="0" dur={`${Math.max(0.4, 2.4 - 2 * Math.min(1, q / Math.max(r.P, 1e-9)))}s`} repeatCount="indefinite" />;
 
   const diagram = (
     <svg viewBox="0 0 420 235" style={{ width: '100%', height: 'auto', display: 'block' }} role="img" aria-label="Thermal resistance network from junction to ambient">
-      {rail(55, r.Qtop, topColor)}{rail(175, r.Qb, botColor)}
+      {rail(55, r.Qtop, topColor)}{showBoard && rail(175, r.Qb, botColor)}
       {/* animated heat flow */}
       {r.P > 0 && (lumped
         ? <path d="M48,115 H385" fill="none" stroke={topColor} strokeWidth={2.5} strokeDasharray="6 18" strokeLinecap="round">{dash(r.P)}</path>
