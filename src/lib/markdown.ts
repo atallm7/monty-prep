@@ -45,7 +45,8 @@ export function splitSegments(src: string): Segment[] {
 const marked = new Marked({ gfm: true, breaks: false });
 
 function renderMath(tex: string, display: boolean) {
-  try { return katex.renderToString(tex.replace(/·/g, '⋅').replace(/µ/g, 'μ'), { displayMode: display, throwOnError: false, strict: 'ignore', trust: false, output: 'html' }); }
+  // Display equations can scroll sideways on narrow screens; tabindex makes that region keyboard-reachable.
+  try { const html = katex.renderToString(tex.replace(/·/g, '⋅').replace(/µ/g, 'μ'), { displayMode: display, throwOnError: false, strict: 'ignore', trust: false, output: 'html' }); return display ? html.replace('<span class="katex-display">', '<span class="katex-display" tabindex="0">') : html; }
   catch (e) { return `<code class="math-error">${tex}</code>`; }
 }
 

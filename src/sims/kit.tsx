@@ -66,7 +66,7 @@ export function Readouts({ children }: { children: ReactNode }) { return <div cl
 
 /** KaTeX math; display=true for block */
 export function TeX({ children, display }: { children: string; display?: boolean }) {
-  const html = useMemo(() => katex.renderToString(children.replace(/·/g, '⋅').replace(/µ/g, 'μ'), { displayMode: !!display, throwOnError: false, strict: 'ignore' }), [children, display]);
+  const html = useMemo(() => katex.renderToString(children.replace(/·/g, '⋅').replace(/µ/g, 'μ'), { displayMode: !!display, throwOnError: false, strict: 'ignore' }).replace('<span class="katex-display">', '<span class="katex-display" tabindex="0">'), [children, display]); // tabindex: keyboard-reachable when it scrolls
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 }
 export function EqBox({ children }: { children: string }) { return <div className="eq-box"><TeX display>{children}</TeX></div>; }
