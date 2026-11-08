@@ -47,3 +47,10 @@
 - Deploys automatically on every push via .github/workflows/deploy.yml: npm ci → npm run build → Chromium smoke test (scripts/smoke-dist.mjs) → Pages. First deploy 2026-11-07 succeeded.
 - 2026-11-07: fixed a production-only blank-page bug (entry ↔ sims chunk cycle; vendor chunk split in vite.config.ts). Full e2e against the production build: 1131/1131.
 - Preview artifact (claude.ai): https://claude.ai/artifact/ECQTxAqbRvf43Ko9DhoHoR (build with node scripts/build-artifact.mjs).
+
+## Site audit + readability pass (2026-11-08)
+- `node scripts/audit.mjs [--base URL] [--desktop] [--ids …]`: loads every question page (phone viewport) and reports sideways overflow, KaTeX/mermaid/figure errors, broken internal links and page errors. Full run on the production build: all 1005 pages clean after fixes.
+- Accessibility (axe-core, WCAG 2 A/AA) on dashboard, question, library, interview, quiz, sim and settings pages in light + dark: 0 violations.
+- Readability: 16.5px reading text, ~75-character measure (`max-width: 38em` on prose text), more spacing, darker muted text, A−/A/A+ text-size toggle (html[data-text]), sticky "Jump to section" menu under 1180px.
+- Fixed: KaTeX `\,^\circ` error (ldo-lab sim, q0397), long titles/link chips/dashboard heatmap overflowing on phones, q0898 mermaid labels starting with "+ ", q0368 long inline formula.
+- Not done: the claude.ai preview artifact still shows the pre-readability styling (rebuild with `node scripts/build-artifact.mjs` and republish if needed).
