@@ -79,7 +79,7 @@ export default function FloatExplorer({ params }: SimProps) {
         {text !== '' && typed === null ? null : text !== '' && !parseRational(text.trim()) && !/^(\+|-)?(inf|infinity|nan)$/i.test(text.trim()) ? <span style={{ color: 'var(--bad)', fontSize: 12 }}>Not a number: showing the last valid value.</span> : null}
       </label>
       <div style={{ margin: '6px 0 2px', fontSize: 12, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-        <span style={{ color: col.s }}>■ sign (1)</span><span style={{ color: col.e }}>■ exponent ({sp.eb})</span><span style={{ color: col.m }}>■ mantissa ({sp.mb})</span><span style={{ color: 'var(--text-3)' }}>click a bit to flip it</span>
+        <span><span style={{ color: col.s }}>■</span> sign (1)</span><span><span style={{ color: col.e }}>■</span> exponent ({sp.eb})</span><span><span style={{ color: col.m }}>■</span> mantissa ({sp.mb})</span><span style={{ color: 'var(--text-3)' }}>click a bit to flip it</span>
       </div>
       <div role="group" aria-label="Bit pattern" style={{ display: 'grid', gridTemplateColumns: `repeat(${perRow}, 1fr)`, gap: 2 }}>
         {bin.split('').map((b, i) => { const fld = fieldOf(i); const on = b === '1'; const gi = rows > 1 && i >= perRow ? 1 : 0; void gi; return (

@@ -197,7 +197,7 @@ export function MermaidBlock({ code, caption }: { code: string; caption?: string
     (async () => {
       try {
         const m = await loadMermaid();
-        m.initialize({ startOnLoad: false, theme: effective === 'dark' ? 'dark' : 'neutral', securityLevel: 'strict', fontFamily: 'Inter, sans-serif', flowchart: { curve: 'basis', htmlLabels: true }, themeVariables: effective === 'dark' ? { background: '#15161a', primaryColor: '#1c1e25', primaryBorderColor: '#8b8df9', lineColor: '#a6a7b0', primaryTextColor: '#ececf0' } : { primaryColor: '#f7f7fb', primaryBorderColor: '#4f46e5', lineColor: '#55555c' } });
+        m.initialize({ startOnLoad: false, theme: effective === 'dark' ? 'dark' : 'neutral', securityLevel: 'strict', fontFamily: 'Inter, sans-serif', flowchart: { curve: 'basis', htmlLabels: true }, themeVariables: effective === 'dark' ? { background: '#15161a', primaryColor: '#1c1e25', primaryBorderColor: '#8b8df9', lineColor: '#a6a7b0', primaryTextColor: '#ececf0', textColor: '#ececf0', edgeLabelBackground: '#23252b', tertiaryTextColor: '#ececf0' } : { primaryColor: '#f7f7fb', primaryBorderColor: '#4f46e5', lineColor: '#55555c' } });
         const { svg } = await m.render('mmd' + (++mermaidSeq), code);
         if (alive && ref.current) { ref.current.innerHTML = svg; setErr(null); }
       } catch (e) { if (alive) setErr((e as Error).message); }
