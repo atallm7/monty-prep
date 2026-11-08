@@ -41,7 +41,7 @@ export default function Dashboard() {
           </div>
           <div style={{ marginTop: 14, maxWidth: 560 }}><Segmented counts={o.counts} total={o.total} /></div>
           <div className="row-wrap small muted" style={{ marginTop: 10 }}>
-            <span className="legend-dot m" />Mastered {o.counts.mastered}<span className="legend-dot l" />Learning {o.counts.learning}<span className="legend-dot r" />Needs review {o.counts['needs-review']}<span className="legend-dot n" />Not started {o.counts['not-started']}
+            <span className="legend-item"><span className="legend-dot m" />Mastered {o.counts.mastered}</span><span className="legend-item"><span className="legend-dot l" />Learning {o.counts.learning}</span><span className="legend-item"><span className="legend-dot r" />Needs review {o.counts['needs-review']}</span><span className="legend-item"><span className="legend-dot n" />Not started {o.counts['not-started']}</span>
           </div>
         </div>
         <div className="dash-cta">

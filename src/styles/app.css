@@ -197,3 +197,7 @@
 @media (max-width: 520px) { .textsize button { padding: 0 7px; } }
 .search-trigger { min-width: 0; } .search-trigger span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .iv-q, .q-row, .next-row { overflow-wrap: anywhere; }
+.stat-grid > .card { min-width: 0; }
+@media (max-width: 720px) { .stat-grid > .card:has(.heatmap) { grid-column: 1 / -1; } }
+.heatmap { max-width: 100%; overflow-x: auto; }
+.legend-item { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; margin-right: 14px; }
