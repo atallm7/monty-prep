@@ -60,6 +60,12 @@ for (const f of files) {
 fs.writeFileSync(path.join(root, 'src/data/meta.generated.json'), JSON.stringify(meta));
 // Search-only fields live in their own file so they load with the search palette, not on every first visit.
 fs.writeFileSync(path.join(root, 'src/data/search.generated.json'), JSON.stringify(search));
+// Prerequisite graph must be acyclic, or the learning path can't order the questions.
+{ const color = {}; const seen = new Set();
+  const dfs = (u, stack) => { color[u] = 1; stack.push(u);
+    for (const v of meta[u]?.prereqs || []) { if (color[v] === 1) { const cyc = stack.slice(stack.indexOf(v)).concat(v).join(' → '); if (!seen.has(cyc)) { seen.add(cyc); nErr++; report.push(`\nprereqs: ERROR cycle ${cyc} (a question can't be its own prerequisite; move one link to "related")`); } } else if (!color[v]) dfs(v, stack); }
+    stack.pop(); color[u] = 2; };
+  for (const id of Object.keys(meta)) if (!color[id]) dfs(id, []); }
 const missing = index.questions.filter(q => !meta[q.id]).map(q => q.n);
 console.log(report.join('') || '');
 console.log(`\nValidated ${files.length} files: ${nErr} errors, ${nWarn} warnings. Missing content for ${missing.length}/${index.questions.length} questions.`);

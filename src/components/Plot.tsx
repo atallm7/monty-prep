@@ -34,7 +34,7 @@ export function Lbl({ t }: { t?: string }) {
     if ((c === '_' || c === '^') && i + 1 < t.length && t[i + 1] !== ' ') {
       let content: string;
       if (t[i + 1] === '{') { const j = t.indexOf('}', i + 2); content = t.slice(i + 2, j < 0 ? t.length : j); i = (j < 0 ? t.length : j) + 1; }
-      else { const m = t.slice(i + 1).match(/^[A-Za-z0-9]+/); content = m ? m[0] : t[i + 1]; i += 1 + content.length; }
+      else { const m = t.slice(i + 1).match(c === '_' ? /^[A-Za-z0-9]+(?:,[A-Za-z0-9]+)?/ : /^[A-Za-z0-9]+/); content = m ? m[0] : t[i + 1]; i += 1 + content.length; }
       if (buf) parts.push(buf); buf = ''; parts.push({ s: content, sub: c === '_' }); continue;
     }
     buf += c; i++;
@@ -180,7 +180,7 @@ export default function Plot(p: PlotProps) {
         </g>
         {(p.hlines || []).map((h, i) => { const y = ty(h.at); if (!h.label || y < M.t - 1 || y > M.t + ih + 1) return null; const below = y - M.t < 16; return <text key={'hl' + i} x={M.l + iw - 4} y={below ? y + 13 : y - 5} textAnchor="end" className="ann" style={h.color ? { fill: colorOf(h.color, 0) } : undefined}><Lbl t={h.label} /></text>; })}
         {(p.vlines || []).map((h, i) => { const x = tx(h.at); if (!h.label || x < M.l - 1 || x > M.l + iw + 1) return null; const right = x < M.l + iw - 120; return <text key={'vl' + i} x={right ? x + 4 : x - 4} y={M.t + 12 + (i % 2) * 13} textAnchor={right ? 'start' : 'end'} className="ann" style={h.color ? { fill: colorOf(h.color, 0) } : undefined}><Lbl t={h.label} /></text>; })}
-        {(p.points || []).map((a, i) => a.label ? <text key={'pl' + i} x={tx(a.x) + 7} y={ty(a.y) - 7} className="ann"><Lbl t={a.label} /></text> : null)}
+        {(p.points || []).map((a, i) => { const X = tx(a.x), Y = ty(a.y); if (!a.label || !isFinite(X) || !isFinite(Y) || X < M.l - 1 || X > M.l + iw + 1 || Y < M.t - 1 || Y > M.t + ih + 1) return null; const flip = X > M.l + iw - Math.min(140, a.label.length * 6.5 + 10); return <text key={'pl' + i} x={flip ? X - 7 : X + 7} y={Y - 7} textAnchor={flip ? 'end' : 'start'} className="ann"><Lbl t={a.label} /></text>; })}
         {hover && hv.length > 0 && <g>
           <line x1={hover.px} x2={hover.px} y1={M.t} y2={M.t + ih} className="cursor" />
           {hv.map(h => isFinite(h.y) && <circle key={h.i} cx={tx(h.x)} cy={ty(h.y)} r={3.6} fill={h.c} stroke="var(--d-bg)" strokeWidth={1.5} />)}

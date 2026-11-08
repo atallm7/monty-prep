@@ -1,5 +1,5 @@
 // Shared building blocks for every interactive simulation.
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useMemo, useState, useRef } from 'react';
 import katex from 'katex';
 import { si, num } from '../lib/units';
 
@@ -24,7 +24,12 @@ export function SimShell(p: { title: string; children: ReactNode; controls?: Rea
 }
 
 /** Slider with numeric entry. log=true makes the slider logarithmic. */
-export function Slider(p: { label: ReactNode; value: number; onChange: (v: number) => void; min: number; max: number; step?: number; unit?: string; log?: boolean; format?: (v: number) => string; disabled?: boolean }) {
+export function Slider(props: { label: ReactNode; value: number; onChange: (v: number) => void; min: number; max: number; step?: number; unit?: string; log?: boolean; format?: (v: number) => string; disabled?: boolean }) {
+  // If a page preset (or any state) puts the value outside [min, max], widen the range to include it — and keep it
+  // widened — so touching the slider never snaps a page's own example value back into range.
+  const ext = useRef({ lo: props.min, hi: props.max });
+  if (isFinite(props.value)) { if (props.value < ext.current.lo && (!props.log || props.value > 0)) ext.current.lo = props.value; if (props.value > ext.current.hi) ext.current.hi = props.value; }
+  const p = { ...props, min: Math.min(props.min, ext.current.lo), max: Math.max(props.max, ext.current.hi) };
   const toPos = (v: number) => p.log ? (Math.log10(v) - Math.log10(p.min)) / (Math.log10(p.max) - Math.log10(p.min)) * 1000 : v;
   const fromPos = (x: number) => {
     if (!p.log) return x;

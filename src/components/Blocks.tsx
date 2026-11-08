@@ -10,11 +10,14 @@ import { logspace, si } from '../lib/units';
 import SimErrorBoundary from './SimErrorBoundary';
 import { loadMermaid } from '../lib/mermaidLoader';
 
+/** Inline markdown that also renders plain-text subscripts (V_M, R_{th}, R_p,min) outside $math$ and `code`. */
+function subInline(text: string) {
+  const t = text.split(/(\$[^$]*\$|`[^`]*`)/).map(seg => seg.startsWith('$') || seg.startsWith('`') ? seg : seg.replace(/\b([A-Za-zΩτωφθλμ])_(?:\{([^}]+)\}|([A-Za-z0-9]{1,4}(?:,[A-Za-z0-9]{1,4})?))\b/g, (_, a, b, c) => `${a}<sub>${b || c}</sub>`)).join('');
+  return mdInline(t);
+}
 function Caption({ text }: { text?: string }) {
   if (!text) return null;
-  // captions often use plain-text subscripts (V_M, R_{th}); render them outside $math$ and `code`
-  const t = text.split(/(\$[^$]*\$|`[^`]*`)/).map(seg => seg.startsWith('$') || seg.startsWith('`') ? seg : seg.replace(/\b([A-Za-zΩτωφθλμ])_(?:\{([^}]+)\}|([A-Za-z0-9]{1,4}))\b/g, (_, a, b, c) => `${a}<sub>${b || c}</sub>`)).join('');
-  return <div className="figure-cap" dangerouslySetInnerHTML={{ __html: mdInline(t) }} />;
+  return <div className="figure-cap" dangerouslySetInnerHTML={{ __html: subInline(text) }} />;
 }
 function BlockError({ msg }: { msg: string }) { return <div className="figure"><div className="figure-error">{msg}</div></div>; }
 
@@ -91,14 +94,14 @@ function ParamControls({ params, vals, set, reset, readouts, vars }: { params: P
         const fromPos = (t: number) => { let x = p.log ? p.min * Math.pow(p.max / p.min, t / 1000) : p.min + (p.max - p.min) * t / 1000; if (p.step && !p.log) x = Math.round(x / p.step) * p.step; return Number(x.toPrecision(4)); };
         const id = `pp-${p.name}-${Math.round(p.min * 1e3)}`;
         return <label key={p.name} className="plot-param" htmlFor={id}>
-          <span className="plot-param-top"><span className="plot-param-name" dangerouslySetInnerHTML={{ __html: mdInline(p.label || p.name) }} /><b>{fmtVal(v, p.unit)}</b></span>
+          <span className="plot-param-top"><span className="plot-param-name" dangerouslySetInnerHTML={{ __html: subInline(p.label || p.name) }} /><b>{fmtVal(v, p.unit)}</b></span>
           <input id={id} type="range" min={0} max={1000} step={1} value={Math.round(toPos(v))} onChange={e => set(p.name, fromPos(+e.target.value))} aria-valuetext={fmtVal(v, p.unit)} />
         </label>;
       })}
     </div>
     {readouts && readouts.length > 0 && <div className="plot-readouts">
       {readouts.map((r, i) => { let val = NaN; try { val = evalNum(r.expr, vars); } catch { /* shown as — */ }
-        return <div key={i} className="plot-readout"><span className="muted small" dangerouslySetInnerHTML={{ __html: mdInline(r.label) }} /><b>{fmtVal(val, r.unit)}</b></div>; })}
+        return <div key={i} className="plot-readout"><span className="muted small" dangerouslySetInnerHTML={{ __html: subInline(r.label) }} /><b>{fmtVal(val, r.unit)}</b></div>; })}
     </div>}
   </div>;
 }
