@@ -3,6 +3,7 @@ import type { QuizItem } from '../lib/data';
 import { mdInline, mdToHtml } from '../lib/markdown';
 import { resolveQ } from '../lib/data';
 import { ICheck, IX } from './Icons';
+import { parseNumericAnswer } from '../lib/units';
 import { shuffleItem } from '../lib/quizShuffle';
 
 export function checkAnswer(item: QuizItem, resp: unknown): boolean {
@@ -11,7 +12,7 @@ export function checkAnswer(item: QuizItem, resp: unknown): boolean {
     case 'truefalse': return resp === item.answer;
     case 'multi': { const a = [...(item.answer as number[])].sort().join(','); const r = [...((resp as number[]) || [])].sort().join(','); return a === r; }
     case 'numeric': {
-      const v = typeof resp === 'number' ? resp : parseFloat(String(resp).replace(/[^\d.eE+-]/g, ''));
+      const v = typeof resp === 'number' ? resp : parseNumericAnswer(String(resp), item.unit);
       if (!isFinite(v)) return false;
       const ans = item.answer as number; const tol = item.tolerance ?? 0.02;
       return ans === 0 ? Math.abs(v) <= tol : Math.abs(v - ans) / Math.abs(ans) <= tol;

@@ -12,8 +12,49 @@ export type Store = { v: 1; q: Record<string, QState>; sessions: Session[]; last
 const KEY = 'mcp.progress.v1';
 const DAY = 86400000;
 function blank(): Store { return { v: 1, q: {}, sessions: [], activity: {} }; }
+const isObj = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x);
+const fin = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x);
+const posInt = (x: unknown, d = 0) => (fin(x) && x >= 0 ? Math.floor(x) : d);
+const MODES = ['self-check', 'interview', 'quiz'];
+function cleanAttempt(a: unknown): Attempt | null {
+  if (!isObj(a) || !fin(a.t)) return null;
+  const out: Attempt = { t: a.t, mode: MODES.includes(a.mode as string) ? (a.mode as Attempt['mode']) : 'self-check', covered: posInt(a.covered), total: posInt(a.total) };
+  if (fin(a.rating)) out.rating = a.rating;
+  if (Array.isArray(a.missed)) out.missed = a.missed.filter(fin);
+  if (fin(a.seconds)) out.seconds = a.seconds;
+  if (fin(a.followupsOk)) out.followupsOk = a.followupsOk;
+  if (fin(a.followupsTotal)) out.followupsTotal = a.followupsTotal;
+  return out;
+}
+function cleanQState(x: unknown): QState | null {
+  if (!isObj(x)) return null;
+  const q: QState = { attempts: [], quiz: {} };
+  if (fin(x.viewed)) q.viewed = x.viewed;
+  if (x.manual === 'needs-review' || x.manual === 'learning' || x.manual === null) q.manual = x.manual;
+  if (Array.isArray(x.attempts)) q.attempts = x.attempts.map(cleanAttempt).filter((a): a is Attempt => !!a);
+  if (isObj(x.quiz)) for (const [k, r] of Object.entries(x.quiz)) { if (isObj(r) && typeof r.c === 'boolean') q.quiz[k] = { c: r.c, t: fin(r.t) ? r.t : 0, n: posInt(r.n, 1) }; }
+  if (fin(x.due)) q.due = x.due;
+  if (fin(x.interval)) q.interval = x.interval;
+  if (typeof x.bookmarked === 'boolean') q.bookmarked = x.bookmarked;
+  if (typeof x.notes === 'string') q.notes = x.notes;
+  return q;
+}
+/** Coerce arbitrary parsed JSON into a valid Store; throws only if structurally not a progress export. */
+export function sanitize(raw: unknown): Store {
+  if (!isObj(raw) || raw.v !== 1) throw new Error('not a progress export (expected an object with "v": 1)');
+  if (!isObj(raw.q)) throw new Error('"q" must be an object mapping question ids to progress');
+  const out = blank();
+  for (const [id, v] of Object.entries(raw.q)) { const q = cleanQState(v); if (q) out.q[id] = q; }
+  if (Array.isArray(raw.sessions)) for (const s of raw.sessions) {
+    if (!isObj(s)) continue;
+    out.sessions.push({ t: fin(s.t) ? s.t : 0, mode: typeof s.mode === 'string' ? s.mode : 'interview', questions: Array.isArray(s.questions) ? s.questions.filter((x): x is string => typeof x === 'string') : [], score: fin(s.score) ? s.score : 0, seconds: fin(s.seconds) ? s.seconds : 0 });
+  }
+  if (typeof raw.last === 'string') out.last = raw.last;
+  if (isObj(raw.activity)) for (const [d, n] of Object.entries(raw.activity)) if (fin(n)) out.activity[d] = n;
+  return out;
+}
 function load(): Store {
-  try { const raw = localStorage.getItem(KEY); if (raw) { const s = JSON.parse(raw); if (s && s.v === 1) return { ...blank(), ...s }; } } catch { /* ignore */ }
+  try { const raw = localStorage.getItem(KEY); if (raw) return sanitize(JSON.parse(raw)); } catch { /* ignore */ }
   return blank();
 }
 let store: Store = load();
@@ -52,7 +93,13 @@ export const actions = {
   },
   recordSession(sess: Session) { mutate(s => { s.sessions.push(sess); if (s.sessions.length > 200) s.sessions.shift(); }); },
   reset() { store = blank(); save(); emit(); },
-  importJson(text: string) { const s = JSON.parse(text); if (!s || s.v !== 1 || typeof s.q !== 'object') throw new Error('Not a valid progress export'); store = { ...blank(), ...s }; save(); emit(); },
+  importJson(text: string) {
+    let parsed: unknown;
+    try { parsed = JSON.parse(text); } catch { throw new Error('file is not valid JSON. Your existing progress was kept.'); }
+    let next: Store;
+    try { next = sanitize(parsed); } catch (e) { throw new Error((e as Error).message + '. Your existing progress was kept.'); }
+    store = next; save(); emit();
+  },
   exportJson() { return JSON.stringify(store, null, 1); },
 };
 

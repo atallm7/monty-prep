@@ -59,6 +59,15 @@ export default function Interview({ reviewMode = false }: { reviewMode?: boolean
     for (const d of [0, 1, -1, 2, -2]) { const L = lv + d; if (L < 0 || L > 2) continue; const hit = left.find(id => META[id].difficulty === LEVELS[L]); if (hit) return hit; }
     return left[0];
   }
+  /** Prerequisite to revisit, restricted to the chosen level/scope (falls back to any in-scope unasked question). */
+  function pickRemedial(id: string): string | undefined {
+    const inScope = (p: string) => { const q = Q_BY_ID.get(p); const m = META[p]; if (!q || !m) return false;
+      if (setup.scope.length && !(setup.scope.includes(q.domainId) || setup.scope.includes(q.sectionId))) return false;
+      if (setup.level !== 'adaptive' && setup.level !== 'any' && m.difficulty !== setup.level) return false;
+      return true; };
+    const pre = (META[id].prereqs || []).find(p => inScope(p) && !asked.includes(p) && statusOf(p, getStore()).status !== 'mastered');
+    return pre; // undefined -> afterQuestion falls back to pickNext, which only draws from the in-scope pool
+  }
   function start() {
     const p = buildPool(setup, reviewMode);
     setPool(p); setResults([]); setAsked([]); setSessionStart(Date.now());
@@ -74,6 +83,7 @@ export default function Interview({ reviewMode = false }: { reviewMode?: boolean
     ask(nextId, !!remediate);
   }
   function finish(all: Result[]) {
+    if (!all.length) { setPhase('setup'); return; }
     const score = all.length ? all.reduce((a, r) => a + r.covered / Math.max(1, r.total), 0) / all.length : 0;
     actions.recordSession({ t: Date.now(), mode: reviewMode ? 'review' : 'interview', questions: all.map(r => r.id), score, seconds: Math.round((Date.now() - sessionStart) / 1000) });
     setPhase('summary');
@@ -135,7 +145,7 @@ export default function Interview({ reviewMode = false }: { reviewMode?: boolean
 
   if (!cur) return <div className="page"><div className="empty">Loading question…</div></div>;
   const q = Q_BY_ID.get(cur.id)!; const meta = META[cur.id]; const sec = SECTION_BY_ID.get(q.sectionId)!;
-  const limit = setup.seconds; const over = limit > 0 && secs >= limit;
+  const limit = phase === 'fu-ask' ? Math.round(setup.seconds / 2) : setup.seconds; const over = limit > 0 && secs >= limit;
   const progress = (results.length + (phase === 'ask' ? 0 : 0.5)) / setup.count;
 
   return <div className="page page-narrow fade-in" key={cur.id + phase}>
@@ -152,8 +162,8 @@ export default function Interview({ reviewMode = false }: { reviewMode?: boolean
       {(phase === 'fu-ask' || phase === 'fu-reveal') && fu && <><div className="eyebrow" style={{ color: 'var(--accent)' }}>Follow-up</div><h2 className="iv-q" dangerouslySetInnerHTML={{ __html: mdInline(fu.q, resolveQ) }} /></>}
 
       {(phase === 'ask' || phase === 'fu-ask') && <div className="stack" style={{ marginTop: 16 }}>
-        <div className={'timer-big' + (over ? ' over' : '')}><ITimer size={18} /> {mmss(secs)}{limit > 0 && <span className="small faint"> / {mmss(phase === 'fu-ask' ? Math.round(limit / 2) : limit)}</span>}{over && phase === 'ask' && <span className="small" style={{ color: 'var(--bad)' }}>Time's up. Wrap up your answer.</span>}</div>
-        {limit > 0 && <div className="progress"><i className={over ? 'pb-review' : 'pb-learning'} style={{ width: `${Math.min(1, secs / (phase === 'fu-ask' ? limit / 2 : limit)) * 100}%` }} /></div>}
+        <div className={'timer-big' + (over ? ' over' : '')}><ITimer size={18} /> {mmss(secs)}{limit > 0 && <span className="small faint"> / {mmss(limit)}</span>}{over && <span className="small" style={{ color: 'var(--bad)' }}>Time's up. Wrap up your answer.</span>}</div>
+        {limit > 0 && <div className="progress"><i className={over ? 'pb-review' : 'pb-learning'} style={{ width: `${Math.min(1, secs / limit) * 100}%` }} /></div>}
         <textarea className="input" placeholder="Answer out loud. Jot key points here if it helps you grade yourself honestly." value={notes} onChange={e => setNotes(e.target.value)} />
         <div className="row">
           {phase === 'ask' ? <button className="btn btn-accent" onClick={() => { setAnswerSecs(secs); setPhase('grade'); }}>Done: compare with model answer</button>
@@ -176,7 +186,7 @@ export default function Interview({ reviewMode = false }: { reviewMode?: boolean
           if (setup.followups && !poor && cur.content.followups.length) {
             setTimeout(() => { setFu(cur.content.followups[Math.floor(Math.random() * cur.content.followups.length)]); setNotes(''); setSecs(0); setPhase('fu-ask'); }, 50);
           } else {
-            const pre = poor ? (META[cur.id].prereqs || []).find(p => META[p] && !asked.includes(p) && statusOf(p, getStore()).status !== 'mastered') : undefined;
+            const pre = poor ? pickRemedial(cur.id) : undefined;
             setTimeout(() => afterQuestion(res, nextLevel, pre), 50);
           }
         }} />

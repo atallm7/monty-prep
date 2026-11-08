@@ -52,3 +52,52 @@ export function nearestE(v: number, series = E24) {
   for (const d of [dec / 10, dec, dec * 10]) for (const e of series) { const c = e * d; if (Math.abs(Math.log(c / v)) < Math.abs(Math.log(best / v))) best = c; }
   return best;
 }
+
+// ---- Free-text numeric answers (quiz) ----
+const PFX: Record<string, number> = { G: 1e9, M: 1e6, k: 1e3, K: 1e3, m: 1e-3, u: 1e-6, µ: 1e-6, n: 1e-9, p: 1e-12, f: 1e-15 };
+const BASE_UNITS = ['Hz', 'Ω', 'V', 'A', 's', 'W', 'F', 'H', 'm', 'g', 'J', 'N', 'S', 'Pa', 'dB', '°C', 'K', 'min', 'h', 'rpm', 'bits', 'x', '×', '%', '°'];
+function normUnit(u: string): string {
+  return u.replace(/\s+/g, '').replace(/μ/g, 'µ').replace(/[ΩΩ]/g, 'Ω').replace(/ohms?/gi, 'Ω').replace(/hertz/gi, 'Hz').replace(/^×$/, 'x').replace(/^°?C$/i, '°C').replace(/degrees?|deg/gi, '°');
+}
+const baseKey = (b: string) => normUnit(b).replace(/°/g, '').replace(/×/g, 'x').toLowerCase();
+/** Split a unit such as "kΩ" into SI scale and base unit ("Ω"). Compound or unknown units keep scale 1. */
+function splitUnit(raw: string): { scale: number; base: string } {
+  const u = normUnit(raw);
+  if (!u || u.includes('/')) return { scale: 1, base: u };
+  if (BASE_UNITS.some(b => baseKey(b) === baseKey(u)) && !(u in PFX && u.length > 1)) return { scale: 1, base: u };
+  if (u.length > 1 && PFX[u[0]] && BASE_UNITS.some(b => baseKey(b) === baseKey(u.slice(1)))) return { scale: PFX[u[0]], base: u.slice(1) };
+  return { scale: 1, base: u };
+}
+function parseDecimal(s: string): number {
+  const hasDot = s.includes('.'), hasCom = s.includes(',');
+  if (hasDot && hasCom) { const dec = s.lastIndexOf('.') > s.lastIndexOf(',') ? '.' : ','; const grp = dec === '.' ? ',' : '.'; return Number(s.split(grp).join('').replace(dec, '.')); }
+  if (hasCom) {
+    const parts = s.split(',');
+    if (parts.length > 2) return /^\d{1,3}(,\d{3})+$/.test(s) ? Number(parts.join('')) : NaN; // 1,234,567 only
+    return /^\d{1,3},\d{3}$/.test(s) ? Number(parts.join('')) : Number(parts[0] + '.' + parts[1]); // "1,500" thousands, "7,5" decimal
+  }
+  return Number(s);
+}
+/**
+ * Parse a typed answer into the scale of `unit` (the quiz item's unit). Accepts a Unicode minus, SI prefixes with or without a base unit
+ * ("1.59k", "7500 Ω" for a kΩ item -> 7.5), a trailing unit that must match the item's unit, comma decimals and scientific notation.
+ * Returns NaN when it cannot be understood or the unit does not match.
+ */
+export function parseNumericAnswer(input: string, unit = ''): number {
+  let s = String(input).trim().replace(/[−–—‒]/g, '-').replace(/ | /g, ' ');
+  const m = s.match(/^([+-]?)\s*((?:\d[\d.,]*|[.,]\d+))\s*(?:(?:[eE]\s*([+-]?\d+))|(?:[x×*]\s*10\s*\^?\s*([+-]?\d+)))?\s*(.*)$/);
+  if (!m) return NaN;
+  const mant = parseDecimal(m[2]);
+  if (!isFinite(mant)) return NaN;
+  const exp = Number(m[3] ?? m[4] ?? 0);
+  let v = (m[1] === '-' ? -1 : 1) * mant * 10 ** exp;
+  const rest = normUnit(m[5]);
+  const item = splitUnit(unit);
+  if (!rest) return v;
+  // trailing text: "<prefix>?<item base>" or a bare prefix
+  const whole = baseKey(rest) === baseKey(item.base) && item.base !== '';
+  if (whole) return v / item.scale;
+  if (rest.length > 1 && PFX[rest[0]] && item.base && baseKey(rest.slice(1)) === baseKey(item.base)) return v * PFX[rest[0]] / item.scale;
+  if (rest.length === 1 && PFX[rest]) return v * PFX[rest] / item.scale;
+  return NaN;
+}

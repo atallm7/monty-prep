@@ -66,6 +66,14 @@ export default function Library() {
   };
   const setAll = (v: boolean) => setOpen(Object.fromEntries(shown.map(x => [x.s.id, v])));
 
+  if ((sectionId && !section) || (domainId && !domain)) return (
+    <div className="page fade-in"><div className="empty">
+      <h1 className="page-title">Not found</h1>
+      <p>There is no {sectionId ? 'section' : 'topic'} called “{sectionId || domainId}”.</p>
+      <Link className="btn btn-primary" to="/library">Back to the question library</Link>
+    </div></div>
+  );
+
   return (
     <div className="page fade-in">
       <nav className="crumbs small" aria-label="Breadcrumb"><Link to="/library">Library</Link>{domain && <> › <Link to={`/d/${domain.id}`}>{domain.title}</Link></>}{section && <> › {section.path.slice(0, -1).join(' › ')}</>}</nav>

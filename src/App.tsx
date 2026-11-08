@@ -1,7 +1,7 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import { DOMAINS, SECTIONS, SECTION_BY_ID, questionsInDomain } from './lib/data';
-import { useStore, statusOf } from './lib/progress';
+import { useStore, statusOf, actions } from './lib/progress';
 import { useTheme } from './lib/theme';
 import { IHome, ILibrary, IMic, IQuiz, IReview, ISim, IPath, ISettings, ISearch, ISun, IMoon, IMenu, IChevron, ILogo, IBookmark } from './components/Icons';
 import Dashboard from './pages/Dashboard';
@@ -77,6 +77,28 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
+class ErrorBoundary extends Component<{ children: ReactNode }, { err: Error | null; confirming: boolean }> {
+  state = { err: null as Error | null, confirming: false };
+  static getDerivedStateFromError(err: Error) { return { err, confirming: false }; }
+  componentDidCatch(err: Error) { console.error('Route crashed:', err); }
+  render() {
+    const { err, confirming } = this.state;
+    if (!err) return this.props.children;
+    return <div className="page page-narrow"><div className="card stack" role="alert" style={{ marginTop: 24 }}>
+      <h1 className="page-title" style={{ margin: 0 }}>Something went wrong</h1>
+      <p className="small muted" style={{ margin: 0 }}>This page hit an unexpected error{err.message ? <>: <code>{err.message}</code></> : ''}. Your saved progress is untouched unless you reset it below.</p>
+      <div className="row-wrap">
+        <button className="btn btn-primary" onClick={() => window.location.reload()}>Reload page</button>
+        <button className="btn" onClick={() => { window.location.hash = '#/settings'; this.setState({ err: null, confirming: false }); }}>Go to Settings</button>
+        {!confirming && <button className="btn" style={{ color: 'var(--bad)' }} onClick={() => this.setState({ confirming: true })}>Reset progress</button>}
+      </div>
+      {confirming && <div className="callout callout-note"><p className="small" style={{ margin: '0 0 8px' }}>Erase all saved progress in this browser? This cannot be undone.</p>
+        <div className="row-wrap"><button className="btn" style={{ color: 'var(--bad)' }} onClick={() => { actions.reset(); this.setState({ err: null, confirming: false }); window.location.hash = '#/'; }}>Yes, erase progress</button>
+          <button className="btn" onClick={() => this.setState({ confirming: false })}>Cancel</button></div></div>}
+    </div></div>;
+  }
+}
+
 export default function App() {
   const [nav, setNav] = useState(false);
   const [search, setSearch] = useState(false);
@@ -111,6 +133,7 @@ export default function App() {
           <button className="icon-btn" aria-label="Toggle theme" title="Toggle light/dark" onClick={() => setMode(effective === 'dark' ? 'light' : 'dark')}>{effective === 'dark' ? <ISun /> : <IMoon />}</button>
         </header>
         <main id="main">
+        <ErrorBoundary key={loc.pathname}>
         <Suspense fallback={<div className="page"><div className="empty">Loading…</div></div>}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
@@ -118,8 +141,8 @@ export default function App() {
             <Route path="/d/:domainId" element={<Library />} />
             <Route path="/s/:sectionId" element={<Library />} />
             <Route path="/q/:id" element={<QuestionPage />} />
-            <Route path="/interview" element={<Interview />} />
-            <Route path="/review" element={<Interview reviewMode />} />
+            <Route path="/interview" element={<Interview key="interview" />} />
+            <Route path="/review" element={<Interview key="review" reviewMode />} />
             <Route path="/quiz" element={<QuizDrill />} />
             <Route path="/sims" element={<SimsLab />} />
             <Route path="/sims/:simId" element={<SimsLab />} />
@@ -129,6 +152,7 @@ export default function App() {
             <Route path="*" element={<div className="page"><div className="empty">Page not found. <Link to="/">Go home</Link></div></div>} />
           </Routes>
         </Suspense>
+        </ErrorBoundary>
         </main>
         <footer className="site-footer small muted">
           Questions are reproduced from Monty Choy's{' '}
