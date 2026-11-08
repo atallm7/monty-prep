@@ -8,9 +8,9 @@ Your page range is in your task. Goal: add each sim to the pages where it genuin
 
 For each embed:
 1. Place it in the section where it teaches (usually `deep`, sometimes `technical`), right after the paragraph that explains the idea it demonstrates — not dumped at the end.
-2. Format (see docs/AUTHORING.md §4.7):
+2. Format (see docs/AUTHORING.md §4.7). Params are FLAT keys next to `id` (not nested under "params"):
    ```sim
-   {"id":"wafer-yield","params":{"dieW":20,"dieH":20,"D0":0.1}}
+   {"id":"wafer-yield","dieW":20,"dieH":20,"D0":0.1}
    ```
    Figure: one or two sentences: what the default shows for THIS question, and one concrete thing to try ("Raise D0 to 0.3 and watch…").
    Set params so the default state matches the page's own example numbers where possible. Only use param names the impl reads.
