@@ -109,7 +109,7 @@ export default function QuestionPage() {
               {meta && <span className="chip">{meta.kind}</span>}
               <StatusChip status={st.status} title={st.reason} />
             </div>
-            <h1 className="q-title">{q.text}</h1>
+            <h1 className="q-title">{q.text.replace(/\//g, "/\u200B")}</h1>
             {q.subItems.length > 0 && <ul className="q-subitems">{q.subItems.map((s, i) => <li key={i}>{s}</li>)}</ul>}
             {sec.note && <p className="q-note small"><b>Source note for this section:</b> {sec.note}</p>}
             <p className="small muted" style={{ margin: '6px 0 0' }}>Question {q.n} from <a href="https://montychoy.com/blog/the_ultimate_list_of_hardware_engineering_internship_interview_questions" target="_blank" rel="noreferrer">Monty Choy's list</a>, quoted word for word.</p>

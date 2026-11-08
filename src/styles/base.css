@@ -320,3 +320,4 @@ text.ck-c-accent, .ck-fill-ink.ck-c-accent { fill: var(--d-accent); stroke: none
 /* Links inside running text are underlined, so they don't rely on colour alone (WCAG 1.4.1). */
 :where(.prose, p, li, td, .site-footer) a:not(.btn):not(.chip):not(.pager-card) { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2.5px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); }
 :where(.prose, p, li, td, .site-footer) a:not(.btn):not(.chip):not(.pager-card):hover { text-decoration-color: currentColor; }
+a.chip { max-width: 100%; white-space: normal; height: auto; min-height: 24px; padding-block: 3px; line-height: 1.35; }

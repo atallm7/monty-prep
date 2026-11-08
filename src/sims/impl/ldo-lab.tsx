@@ -67,7 +67,7 @@ export default function LdoLab({ params }: SimProps) {
       </>}>
       <div><RegionBadge label={region.l} color={region.c} /></div>
       <div className="figure-body" style={{ padding: 0 }} dangerouslySetInnerHTML={{ __html: svg }} />
-      <EqBox>{String.raw`\eta = \frac{V_{out}I_{out}}{V_{in}(I_{out}+I_q)} = ${(op.eff * 100).toFixed(1)}\%,\quad P_D = (V_{in}-V_{out})I_{out} + V_{in}I_q = ${si(op.pd, 'W')},\quad T_j = T_a + \theta_{JA}P_D = ${op.tj.toFixed(1)}\,^\circ\text{C}`}</EqBox>
+      <EqBox>{String.raw`\eta = \frac{V_{out}I_{out}}{V_{in}(I_{out}+I_q)} = ${(op.eff * 100).toFixed(1)}\%,\quad P_D = (V_{in}-V_{out})I_{out} + V_{in}I_q = ${si(op.pd, 'W')},\quad T_j = T_a + \theta_{JA}P_D = ${op.tj.toFixed(1)}\,{}^\circ\text{C}`}</EqBox>
       {s.view === 'vin' && <Plot series={[{ x: vinSweep.xs, y: vinSweep.vo, label: 'Vout', color: 'accent', width: 2.4 }, { x: vinSweep.xs, y: vinSweep.xs, label: 'Vin', color: 'muted', dashed: true }]}
         xUnit="V" yUnit="V" xLabel="Vin" yLabel="Vout" height={250} yRange={[0, Math.max(s.vout * 1.4, 1)]} xRange={[0, vinSweep.vmax]}
         xspans={[{ from: 0, to: Math.min(op.vinMin, vinSweep.vmax), label: 'dropout', color: 'orange' }]} vlines={[{ at: op.vinMin, label: 'Vout + VDO', color: 'orange' }]}

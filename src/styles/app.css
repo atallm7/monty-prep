@@ -24,7 +24,7 @@
 .q-main { min-width: 0; }
 .q-header { padding-bottom: 22px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
 .q-num { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-2); padding: 2px 8px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--border); }
-.q-title { font-size: 27px; font-weight: 680; letter-spacing: -0.022em; line-height: 1.28; }
+.q-title { overflow-wrap: anywhere; font-size: 27px; font-weight: 680; letter-spacing: -0.022em; line-height: 1.28; }
 .q-subitems { margin: 12px 0 0; padding-left: 20px; color: var(--text-2); }
 .q-note { color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; margin: 14px 0 0; }
 .q-section { padding: 28px 0 8px; scroll-margin-top: 70px; }
@@ -196,3 +196,4 @@
 .textsize button:nth-child(1) { font-size: 12px; } .textsize button:nth-child(2) { font-size: 14px; } .textsize button:nth-child(3) { font-size: 16px; }
 @media (max-width: 520px) { .textsize button { padding: 0 7px; } }
 .search-trigger { min-width: 0; } .search-trigger span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.iv-q, .q-row, .next-row { overflow-wrap: anywhere; }
