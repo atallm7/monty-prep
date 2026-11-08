@@ -94,8 +94,13 @@ export default function Plot(p: PlotProps) {
   // SI prefixes only make sense for SI units; anything else (%, °C, dB, rpm, "periods") prints plain numbers + unit
   const SI_UNITS = /^(V|A|W|Ω|F|H|Hz|s|J|C|T|Wb|S|N|N·m|N⋅m|m|Wh|Ah|VA|V\/s|A\/s|W\/K|K\/W|bit\/s|b\/s|B|Sa\/s|rad\/s|Ω·m|V\/A|A\/V|lx|Pa|kg·m²)$/;
   const fmtU = (v: number, u?: string) => u === undefined ? num(v, 3) : SI_UNITS.test(u) ? si(v, u, 3) : `${num(v, 3)}${u ? ' ' + u : ''}`;
-  const fx = p.xTickFormat ?? ((v: number) => fmtU(v, p.xUnit));
-  const fy = p.yTickFormat ?? ((v: number) => fmtU(v, p.yUnit));
+  // Long non-SI units (e.g. "(normalized)", "per cycle") go once into the axis title instead of on every tick.
+  const longUnit = (u?: string) => !!u && !SI_UNITS.test(u) && (/[\s()]/.test(u) || u.length > 6);
+  const xU = longUnit(p.xUnit) ? undefined : p.xUnit, yU = longUnit(p.yUnit) ? undefined : p.yUnit;
+  const withUnit = (label: string | undefined, u: string | undefined) => !label || !longUnit(u) || label.includes(u!.replace(/[()]/g, '')) ? label : `${label} ${/^\(.*\)$/.test(u!) ? u : `(${u})`}`;
+  const xLabel = withUnit(p.xLabel, p.xUnit), yLabel = withUnit(p.yLabel, p.yUnit);
+  const fx = p.xTickFormat ?? ((v: number) => fmtU(v, xU));
+  const fy = p.yTickFormat ?? ((v: number) => fmtU(v, yU));
   const xt = p.xLog ? logTicks(xr[0], xr[1]) : { major: linTicks(xr[0], xr[1], narrow ? 4 : 7), minor: [] as number[] };
   const yt = p.yLog ? logTicks(yr[0], yr[1]) : { major: linTicks(yr[0], yr[1], 5), minor: [] as number[] };
   // left margin grows with the widest y tick label so the rotated axis title never overlaps it
@@ -104,6 +109,17 @@ export default function Plot(p: PlotProps) {
   const iw = W - M.l - M.r, ih = H - M.t - M.b;
   const tx = (x: number) => p.xLog ? M.l + (Math.log10(x) - Math.log10(xr[0])) / (Math.log10(xr[1]) - Math.log10(xr[0])) * iw : M.l + (x - xr[0]) / (xr[1] - xr[0]) * iw;
   const ty = (y: number) => p.yLog ? M.t + ih - (Math.log10(y) - Math.log10(yr[0])) / (Math.log10(yr[1]) - Math.log10(yr[0])) * ih : M.t + ih - (y - yr[0]) / (yr[1] - yr[0]) * ih;
+  // Thin x tick labels so neighbours never collide (grid lines are kept for every tick).
+  const xLabelled = useMemo(() => {
+    const keep = new Set<number>(); let lastRight = -Infinity;
+    for (const v of xt.major) {
+      const w = fx(v).length * 6.3; const X = tx(v); const end = X > M.l + iw - 18;
+      const left = end ? X - w : X - w / 2, right = end ? X : X + w / 2;
+      if (left > lastRight + 16) { keep.add(v); lastRight = right; }
+    }
+    return keep;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xt.major.join(','), W, xr[0], xr[1], p.xLog, M.l, iw]);
   const invx = (px: number) => p.xLog ? 10 ** (Math.log10(xr[0]) + (px - M.l) / iw * (Math.log10(xr[1]) - Math.log10(xr[0]))) : xr[0] + (px - M.l) / iw * (xr[1] - xr[0]);
 
   const paths = p.series.map((s, si_) => {
@@ -137,13 +153,13 @@ export default function Plot(p: PlotProps) {
         {(p.yspans || []).map((s, i) => <g key={'ys' + i}><rect x={M.l} y={ty(s.to)} width={iw} height={Math.max(0, ty(s.from) - ty(s.to))} fill={colorOf(s.color || 'accent', 0)} opacity={0.08} />{s.label && <text x={M.l + iw - 4} y={ty(s.to) + 12} textAnchor="end" className="ann" style={{ fill: colorOf(s.color || 'accent', 0) }}>{s.label}</text>}</g>)}
         {xt.minor.map(v => <line key={'xm' + v} x1={tx(v)} x2={tx(v)} y1={M.t} y2={M.t + ih} className="gridl" opacity={0.5} />)}
         {yt.minor.map(v => <line key={'ym' + v} y1={ty(v)} y2={ty(v)} x1={M.l} x2={M.l + iw} className="gridl" opacity={0.5} />)}
-        {xt.major.map(v => <g key={'x' + v}><line x1={tx(v)} x2={tx(v)} y1={M.t} y2={M.t + ih} className="gridl" /><text x={tx(v)} y={M.t + ih + 15} textAnchor={tx(v) > M.l + iw - 18 ? 'end' : 'middle'} className="tick">{fx(v)}</text></g>)}
+        {xt.major.map(v => <g key={'x' + v}><line x1={tx(v)} x2={tx(v)} y1={M.t} y2={M.t + ih} className="gridl" />{xLabelled.has(v) && <text x={tx(v)} y={M.t + ih + 15} textAnchor={tx(v) > M.l + iw - 18 ? 'end' : 'middle'} className="tick">{fx(v)}</text>}</g>)}
         {yt.major.map(v => <g key={'y' + v}><line y1={ty(v)} y2={ty(v)} x1={M.l} x2={M.l + iw} className="gridl" /><text x={M.l - 6} y={ty(v) + 3.5} textAnchor="end" className="tick">{fy(v)}</text></g>)}
         <line x1={M.l} x2={M.l + iw} y1={M.t + ih} y2={M.t + ih} className="ax" />
         <line x1={M.l} x2={M.l} y1={M.t} y2={M.t + ih} className="ax" />
         {!p.yLog && yr[0] < 0 && yr[1] > 0 && <line x1={M.l} x2={M.l + iw} y1={ty(0)} y2={ty(0)} className="ax" opacity={0.6} />}
-        {p.xLabel && <text x={M.l + iw / 2} y={H - 8} textAnchor="middle" className="axlabel"><Lbl t={p.xLabel} /></text>}
-        {p.yLabel && <text transform={`translate(13 ${M.t + ih / 2}) rotate(-90)`} textAnchor="middle" className="axlabel"><Lbl t={p.yLabel} /></text>}
+        {xLabel && <text x={M.l + iw / 2} y={H - 8} textAnchor="middle" className="axlabel"><Lbl t={xLabel} /></text>}
+        {yLabel && <text transform={`translate(13 ${M.t + ih / 2}) rotate(-90)`} textAnchor="middle" className="axlabel"><Lbl t={yLabel} /></text>}
         <g clipPath={`url(#${clipId})`}>
           {paths.map(({ d, s, c }, i) => <g key={i}>
             {s.fill && <path d={`${d}L${tx(s.x[s.x.length - 1])},${ty(Math.max(yr[0], 0))}L${tx(s.x[0])},${ty(Math.max(yr[0], 0))}Z`} fill={c} opacity={0.12} stroke="none" />}
