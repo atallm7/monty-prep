@@ -8,6 +8,18 @@ import SearchPalette from './components/SearchPalette';
 import Dashboard from './pages/Dashboard';
 export const SOURCE_URL = 'https://montychoy.com/blog/the_ultimate_list_of_hardware_engineering_internship_interview_questions';
 
+type TextSize = 'small' | 'normal' | 'large';
+/** Reading text size, remembered per browser; applied as <html data-text>. */
+function useTextSize(): [TextSize, (t: TextSize) => void] {
+  const read = (): TextSize => { try { const v = localStorage.getItem('mcp.textSize'); return v === 'small' || v === 'large' ? v : 'normal'; } catch { return 'normal'; } };
+  const [size, setSize] = useState<TextSize>(read);
+  useEffect(() => {
+    if (size === 'normal') document.documentElement.removeAttribute('data-text'); else document.documentElement.setAttribute('data-text', size);
+    try { localStorage.setItem('mcp.textSize', size); } catch { /* storage unavailable */ }
+  }, [size]);
+  return [size, setSize];
+}
+
 const Library = lazy(() => import('./pages/Library'));
 const QuestionPage = lazy(() => import('./pages/QuestionPage'));
 const Interview = lazy(() => import('./pages/Interview'));
@@ -65,6 +77,7 @@ export default function App() {
   const [nav, setNav] = useState(false);
   const [search, setSearch] = useState(false);
   const { effective, setMode } = useTheme();
+  const [textSize, setTextSize] = useTextSize();
   const loc = useLocation();
   useEffect(() => { window.scrollTo({ top: 0 }); }, [loc.pathname]);
   useEffect(() => {
@@ -82,6 +95,9 @@ export default function App() {
           <button className="icon-btn menu-btn" aria-label="Open navigation" onClick={() => setNav(true)}><IMenu /></button>
           <button className="search-trigger" onClick={() => setSearch(true)}><ISearch size={16} /><span>Search questions, concepts…</span><kbd>Ctrl K</kbd></button>
           <span className="topbar-spacer" />
+          <div className="textsize" role="group" aria-label="Text size">
+            {(['small', 'normal', 'large'] as const).map((t, i) => <button key={t} className={textSize === t ? 'on' : ''} aria-pressed={textSize === t} title={['Smaller text', 'Normal text', 'Larger text'][i]} onClick={() => setTextSize(t)}>{['A−', 'A', 'A+'][i]}</button>)}
+          </div>
           <button className="icon-btn" aria-label="Toggle theme" title="Toggle light/dark" onClick={() => setMode(effective === 'dark' ? 'light' : 'dark')}>{effective === 'dark' ? <ISun /> : <IMoon />}</button>
         </header>
         <Suspense fallback={<div className="page"><div className="empty">Loading…</div></div>}>
