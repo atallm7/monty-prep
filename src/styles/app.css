@@ -201,3 +201,10 @@
 @media (max-width: 720px) { .stat-grid > .card:has(.heatmap) { grid-column: 1 / -1; } }
 .heatmap { max-width: 100%; overflow-x: auto; }
 .legend-item { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; margin-right: 14px; }
+/* Section jump menu: replaces the side contents panel on narrower screens. */
+.q-jump { display: none; }
+@media (max-width: 1180px) {
+  .q-jump { display: block; position: sticky; top: 56px; z-index: 15; margin: 0 -4px 8px; padding: 8px 4px; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); }
+  .q-jump select { width: 100%; height: 40px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 550; font-size: 15px; }
+  [id^="sec-"] { scroll-margin-top: 116px; }
+}
