@@ -63,3 +63,12 @@
 - 12 new sims (102 total, all model-tested): trace-ampacity, return-path, yield-coverage, reflow-profile, process-capability, wafer-yield, package-thermal (θ overrides), amdahl-roofline, memory-hierarchy, sort-visualizer, float-explorer, ring-buffer; embedded in ~49 pages (PCB, testing, packaging, architecture, coding, embedded).
 - Renderer: wrapping HTML plot titles, x-tick label thinning, long units in axis titles, subscripts in slider/readout/plot labels, off-plot point labels hidden; sim sliders widen to include preset values.
 - Accessibility: axe 0 WCAG A/AA violations on 13 key routes in light and dark.
+
+## "Start here" primer pass (2026-11-11)
+Reason: the user said pages go deep too quickly, before the simple ideas are in place.
+- Every page (1,005) has an optional `::: basics` section, rendered first as "Start here: the idea in plain words". Four `###` parts: In plain words / Picture it / Words you need / The simplest example. 180–330 words, no background assumed. Reference example: `content/questions/q0008.md`.
+- The card lists the page's prerequisites as "Shaky on this? Read these first" chips.
+- "Best next step on the learning path" card at the bottom of each page (`src/lib/pathOrder.ts`, topological order by prereqs within a domain). It exists because the source list order puts some topics before their foundations (e.g. RLC filters before capacitors).
+- Briefs: `docs/BASICS_PROMPT.md` (writer, includes lessons from the reviews), `docs/BASICS_QA_PROMPT.md` (reviewer). Page groups: `docs/basics/p00–p23.txt`. Review notes: `docs/reviews/basics-pNN.md`.
+- Review status: see `ls docs/reviews/basics-p*.md`; a group is reviewed only if its file exists. Reviewers changed roughly 80–95% of primers per group (undefined jargon, misleading analogies, wrong links, numbers not matching the page), so an unreviewed primer should be treated as a draft.
+- `basics` is not a required section in the validator.
