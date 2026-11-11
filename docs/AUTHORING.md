@@ -39,6 +39,8 @@ Difficulty: **fundamental** = explain a basic concept; **intermediate** = apply 
 
 ### Sections (all required unless noted). Use exactly these names, in this order.
 
+`basics` comes first: a 180–330 word plain-language primer ("In plain words", "Picture it", "Words you need", "The simplest example") for readers with no background. See docs/BASICS_PROMPT.md and the q0008 reference.
+
 | Section | What it must contain | Target length |
 |---|---|---|
 | `testing` | What the interviewer is really testing; the hidden sub-skills. | 60–150 words |

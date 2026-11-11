@@ -345,3 +345,11 @@ main#main { display: block; min-width: 0; }
 .toc-count { margin-left: 6px; font-size: 11px; color: var(--text-3); background: var(--surface-2); border-radius: 999px; padding: 0 6px; }
 @media (max-width: 1180px) { .q-section .prose h2 { scroll-margin-top: 120px; } }
 .plot-title { color: var(--text); font-size: 13px; font-weight: 600; line-height: 1.35; padding-right: 16px; margin: 2px 0 2px; text-wrap: balance; }
+
+/* "Start here" primer at the top of a question page */
+.basics-card { border: 1px solid color-mix(in srgb, var(--ok) 30%, var(--border)); background: color-mix(in srgb, var(--ok-soft) 55%, var(--surface)); border-radius: var(--radius); padding: 18px 20px; }
+.basics-card .prose { font-size: calc(17px * var(--text-scale, 1)); }
+.basics-card .prose h3 { font-size: .8em; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); margin: 20px 0 6px; font-weight: 700; }
+.basics-card .prose h3:first-child { margin-top: 0; }
+.basics-prereqs { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border-strong); display: flex; flex-direction: column; gap: 8px; }
+.basics-prereqs-t { font-size: 13.5px; font-weight: 600; color: var(--text-2); }

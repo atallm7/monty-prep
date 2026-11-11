@@ -2,6 +2,7 @@
 // A question file is Markdown with a small frontmatter block and `::: section` ... `:::` blocks.
 
 export const SECTION_DEFS = [
+  { key: 'basics', title: 'Start here: the idea in plain words', required: false },
   { key: 'testing', title: 'What the interviewer is really testing', required: true },
   { key: 'why', title: 'Why this question matters', required: true },
   { key: 'concepts', title: 'Concepts you need', required: true },

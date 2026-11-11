@@ -57,7 +57,7 @@ export default function QuestionPage() {
   const [tab, setTab] = useState<(typeof ANSWER_TABS)[number]['key']>('answer');
   const [hide, setHide] = usePref('mcp.hideAnswers', false);
   const [revealed, setRevealed] = useState(false);
-  const [active, setActive] = useState('question');
+  const [active, setActive] = useState('basics');
   const [activeSub, setActiveSub] = useState('');
 
   useEffect(() => { let live = true; setRevealed(false); setTab('answer'); if (q) { actions.view(q.id); const qid = q.id; loadQuestion(qid).then(c => { if (live) setLoaded({ id: qid, c }); }); } return () => { live = false; }; }, [id]);
@@ -105,7 +105,9 @@ export default function QuestionPage() {
 
   const toc = useMemo(() => {
     if (!content) return [];
-    const t = [{ id: 'question', label: 'The question' }];
+    const t: { id: string; label: string }[] = [];
+    if (content.sections.basics) t.push({ id: 'basics', label: 'Start here' });
+    t.push({ id: 'question', label: 'The question' });
     if (content.sections.interpretations) t.push({ id: 'interpretations', label: 'Interpretations' });
     t.push({ id: 'answer', label: 'Model answers' }, { id: 'terms', label: 'Terminology' }, { id: 'exceptional', label: 'Average vs exceptional' }, { id: 'mistakes', label: 'Mistakes to avoid' }, { id: 'deep', label: 'Deep dive' }, { id: 'applications', label: 'Applications' }, { id: 'assumptions', label: 'Assumptions' }, { id: 'followups', label: `Follow-ups (${content.followups.length})` }, { id: 'selfcheck', label: 'Self-check' }, { id: 'quiz', label: `Quiz (${content.quiz.length})` }, { id: 'references', label: 'References' });
     return t;
@@ -158,6 +160,12 @@ export default function QuestionPage() {
                 </Fragment>)}
               </select>
             </nav>
+            {content.sections.basics && <Section id="basics" title="Start here: the idea in plain words" eyebrow="No background assumed">
+              <div className="basics-card"><Markdown src={content.sections.basics} />
+                {(meta?.prereqs?.length || 0) > 0 && <div className="basics-prereqs"><span className="basics-prereqs-t">Shaky on this? Read these first:</span>
+                  <div className="row-wrap small">{meta!.prereqs.map(p => <Link key={p} className="chip" to={`/q/${p}`}>Q{Q_BY_ID.get(p)?.n}: {titleOf(p)}</Link>)}</div></div>}
+              </div>
+            </Section>}
             <Section id="question" title="Understand the question">
               <div className="q-cards">
                 <div className="q-card"><div className="q-card-t">{TITLE.testing}</div><Markdown src={content.sections.testing} /></div>
