@@ -1,0 +1,44 @@
+# Basics review: p05 (q0212–q0253)
+
+42 pages reviewed. All example numbers recomputed with node; all were correct. 2 OK (q0216, q0248), 40 fixed (mostly level: jargon defined or replaced).
+
+- q0212: stated the L and C rules in words before the formulas; replaced "saturation" jargon in the analogy caveat; defined "spec"; trimmed to stay under 330 words.
+- q0213: "FETs" glossed as switches.
+- q0214: replaced "gate charge" in the analogy caveat with plain words; glossed FETs.
+- q0215: "converter phases" in Interleaving explained (small converters side by side, staggered).
+- q0217: clearer relay analogy (one baton passed between two runners); dropped undefined $D$ in the example (27.5% on-time stated directly); plain definition of fixed losses.
+- q0218: "nominal", "1.0 V core", "spur", "ADCs and PLLs" made plain.
+- q0219: "nominal", "thermal time constant", "EMI", "DCM", "saturation" made plain; garbled cargo-ship sentence fixed.
+- q0220: on-time = D × period stated in words before the min-on-time formula; "passive parts" replaced; bridge now names the page's extremes (1 THz, 1 Hz). Confirmed the min-on-time example (12 V to 1.2 V, 50 ns, 2 MHz) matches the page's own answer. PAGE FIX (answer block): "the duty cycle is $D/f$" corrected to "the on-time is $D/f$".
+- q0221: fixed a false claim: "halve the inductor or capacitor and keep the same ripple" (halving C alone at 2f gives half the ripple, not the same); now "halve the inductor and keep the same ripple current, and the capacitor can shrink too".
+- q0222: defined "regulator"; pass transistor described as a controlled valve.
+- q0223: "compensation" explained; added Duty cycle term (used in the block, not defined) with [[q0179]].
+- q0224: "leakage" defined; removed undefined "pole" from the phase-margin term and bridge.
+- q0225: removed mismatched [[q0174]] link (pointed at "how a buck works" for a cycle-by-cycle limit); defined that limit in words; glossed FET.
+- q0226: analogy caveat replaced (old one was not a breakdown of the analogy).
+- q0227: duty cycle and slope compensation glossed; "power-stage/inner loop" made plain.
+- q0228: "diode" glossed in diode emulation.
+- q0229: FET glossed; "gain" in the bridge made plain.
+- q0230: "gate drive" glossed; undefined "phase shedding" removed from the bridge.
+- q0231: coulomb unit explained.
+- q0232: "spectrum" / "smeared spectrum" made plain.
+- q0233: Ripple current link changed from q0229 (DCM vs CCM) to q0194 (ripple from circuit analysis); "audio-band tones" made plain; µC explained.
+- q0234: FET glossed; saturation current defined correctly (inductance collapses) instead of "stops working properly".
+- q0235: µC explained.
+- q0236: FET glossed; "CPU rail" made plain.
+- q0237: rewrote the analogy caveat ("weight of engines ... I-squared-R ... silicon" was jargon and muddled) to match the page's same-total-silicon point; plainer fixed-losses definition.
+- q0238: clarified "loop between phases ... 4 mΩ" as path resistance.
+- q0239: "rails" and "derating" made plain.
+- q0240: "node" defined; saturation current corrected; FETs glossed.
+- q0241: confusing analogy caveat rewritten to the same-silicon comparison; fixed losses and "silicon" made plain.
+- q0242: example replaced with the page's own argument: same parts, 4 phases at 1.27 W each (5.08 W total) vs one stage at 8.75 W; 25 °C/W gives 32 °C vs 219 °C. Plain words now say total loss also falls at full load; analogy no longer claims equal total heat or a "not exactly 1/N" limit that contradicts the page (per-part drop is 6.9x, more than 4).
+- q0243: ESR glossed in the analogy; "interleaving" in the bridge made plain.
+- q0244: crossover (no "0 dB"), phase margin (degrees of spare delay) and Bode plot explained.
+- q0245: ringing defined without undefined "crossover".
+- q0246: "DC" and ESR "zero" made plain.
+- q0247: ESR zero, phase lag/lead, DC-bias derating made plain.
+- q0249: "frequency domain", "scope", "closed-loop output impedance", "corners" made plain.
+- q0250: DC, jitter, phase lead, dB made plain.
+- q0251: "clock" made plain.
+- q0252: "plant" defined; "blanking" replaced in the bridge.
+- q0253: slope compensation defined without "artificial ramp".
