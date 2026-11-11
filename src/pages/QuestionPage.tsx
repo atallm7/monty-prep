@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, Fragment } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { pathNeighbors } from '../lib/pathOrder';
 import { Q_BY_ID, SECTION_BY_ID, DOMAIN_BY_ID, META, loadQuestion, neighbors, titleOf, QContent, resolveQ } from '../lib/data';
 import { useStore, statusOf, actions } from '../lib/progress';
 import { SECTION_DEFS } from '../content/parse.mjs';
@@ -116,6 +117,7 @@ export default function QuestionPage() {
   if (!q) return <div className="page"><div className="empty">Question not found. <Link to="/library">Browse the library</Link></div></div>;
   const sec = SECTION_BY_ID.get(q.sectionId)!; const dom = DOMAIN_BY_ID.get(q.domainId)!;
   const { prev, next } = neighbors(q.id);
+  const pathNext = pathNeighbors(q.id).next;
   const st = statusOf(q.id, store); const qs = store.q[q.id];
   const meta = META[q.id];
   const answersHidden = hide && !revealed;
@@ -203,6 +205,8 @@ export default function QuestionPage() {
             <Section id="references" title={TITLE.references}><div className="refs"><Markdown src={content.sections.references} /></div></Section>
           </>}
 
+          {pathNext && pathNext.id !== next?.id && <Link className="pager-card path-next" to={`/q/${pathNext.id}`}>
+            <span className="faint small">Best next step on the learning path (prerequisites first) · Q{pathNext.n} <IArrowR size={12} /></span><span>{titleOf(pathNext.id)}</span></Link>}
           <div className="q-pager">
             {prev ? <Link className="pager-card" to={`/q/${prev.id}`}><span className="faint small"><IArrowL size={12} /> Previous · Q{prev.n}</span><span>{titleOf(prev.id)}</span></Link> : <span />}
             {next ? <Link className="pager-card right" to={`/q/${next.id}`}><span className="faint small">Next · Q{next.n} <IArrowR size={12} /></span><span>{titleOf(next.id)}</span></Link> : <span />}

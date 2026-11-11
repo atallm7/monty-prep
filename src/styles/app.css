@@ -353,3 +353,4 @@ main#main { display: block; min-width: 0; }
 .basics-card .prose h3:first-child { margin-top: 0; }
 .basics-prereqs { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border-strong); display: flex; flex-direction: column; gap: 8px; }
 .basics-prereqs-t { font-size: 13.5px; font-weight: 600; color: var(--text-2); }
+.pager-card.path-next { margin-top: 36px; border-color: color-mix(in srgb, var(--ok) 35%, var(--border)); background: color-mix(in srgb, var(--ok-soft) 50%, var(--surface)); } .pager-card.path-next + .q-pager { margin-top: 12px; }
