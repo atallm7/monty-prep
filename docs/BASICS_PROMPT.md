@@ -27,3 +27,11 @@ Total length 180–330 words. Short sentences. Active voice. American spelling.
 
 Final message: ids completed, validator summary line, and any page where the existing content looked wrong or the question was ambiguous (one line each).
 - Scratch files: create your own directory with `mktemp -d` and use only that (other agents write to shared /tmp paths and will overwrite your helpers).
+
+## Lessons from the first reviews (read these carefully)
+The first reviewed group needed fixes on 36 of 42 primers. Avoid the same mistakes:
+- **Undefined jargon is the main failure.** Before finishing each primer, list every technical word in it. Each one must be (a) everyday language, (b) defined in "Words you need", or (c) explained in passing in the same sentence. Words that slipped through: high-side switch, switch node, transient response, loop gain, phase lag, "zero" (control), derating, ESR, DC bias, R_DS(on), netlist, PTC, anode/cathode, gate, amp-hours, depth of discharge, duty. If you need more than 6 terms, the primer is aiming too high: simplify the explanation instead of adding terms.
+- **Check every `[[qNNNN]]` link**: open the linked file's frontmatter `title` and confirm the page is actually about that term. Wrong links were common. No link is better than a wrong one.
+- **Analogies must model the right behavior.** "A huge tub takes forever to fill" teaches slowness when the page's point is inrush current; "an inductor is a gate on the road" is simply wrong. Ask: does my analogy predict the same thing the page says? If not, change it.
+- **Numbers must be exact or say "about" correctly** (6.44/6.6 is 97.6%, not 97%), and example setups must be physically sensible (a switch "at full duty" isn't switching).
+- Count words without the headings; stay at or under 330.
