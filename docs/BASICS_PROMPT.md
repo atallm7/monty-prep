@@ -26,3 +26,4 @@ Total length 180–330 words. Short sentences. Active voice. American spelling.
 - Don't start servers and don't run `npm run build`. Other agents are editing other pages; touch only your ids.
 
 Final message: ids completed, validator summary line, and any page where the existing content looked wrong or the question was ambiguous (one line each).
+- Scratch files: create your own directory with `mktemp -d` and use only that (other agents write to shared /tmp paths and will overwrite your helpers).
