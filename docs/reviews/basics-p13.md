@@ -1,0 +1,45 @@
+# Basics review: p13 (q0548–q0589, PCB layout: switching loops, grounding, EMI, shielding, vias, bring-up)
+
+Method: I read each primer against the page's answer and technical sections, and for q0556–q0589 also the mistakes, assumptions, applications and follow-ups. I recomputed every number in "The simplest example" with node and checked each `[[link]]` target's title. Only the basics blocks were changed. `validate-content.mjs`: 0 errors. 39 fixed, 3 OK.
+
+- **q0548**: defined "DC" in passing.
+- **q0549**: repaired a broken sentence ("overstress ..., add radio noise").
+- **q0550**: "carries 5 A easily" changed to "wide enough for 5 A" (per IPC, 2 mm gives 5.4 A, so "easily" overstated it).
+- **q0551**: "0.8 V reference signal" was undefined; the sentence now says what the 0.8 V is.
+- **q0552**: added a definition of capacitance (it was used but never defined) and trimmed to stay under 330 words.
+- **q0553**: OK.
+- **q0554**: OK.
+- **q0555**: OK.
+- **q0556**: defined signal-to-noise ratio.
+- **q0557**: unclear bridge ("measure inside the current's path") reworded to "at the resistor itself, not along the current-carrying copper".
+- **q0558**: defined "12-bit" (0 to 4095) and "switching regulator".
+- **q0559**: "harmonic" definition corrected. "Rules that regulators test against" changed to "legal limits", because on a power page "regulators" reads as voltage regulators.
+- **q0560**: example used buck converter, switch node, inductance and capacitance without defining them; all now explained in passing.
+- **q0561**: added a dB definition; "FCC Class B" explained.
+- **q0562**: **arithmetic error**: "10 cm × 10 cm = 10 cm²". Fixed as a 1 cm return detour, which gives 10 cm² and keeps the page's 50:1 ratio. "A third of the energy" corrected to amplitude (the energy would be a ninth).
+- **q0563**: "diode-like junction", "DC shift" and "mains" replaced with plain wording.
+- **q0564**: removed the undefined "source impedance" and "low-inductance"; inductance explained in the TVS example.
+- **q0565**: mutual capacitance definition was circular; added the 1 ns edge time that the 81 mV figure depends on.
+- **q0566**: defined coupling; removed the undefined "20 dB"; explained "field solver".
+- **q0567**: defined clock and analog traces and the pF/fF units; dropped an unused "return current" term.
+- **q0568**, **q0570**: "log scale for ratios" replaced with a plain dB definition.
+- **q0569**: fixed the typo "dB,."; defined wavelength and vias.
+- **q0571**: defined capacitance and vias in passing.
+- **q0572**: defined vias, ferrite bead and "detune".
+- **q0573**: fixed the typo "wavelength,."; defined ground.
+- **q0574**: glossed resistance and capacitance (this is a fundamental page); "power rail" changed to "power".
+- **q0575**: glossed "enable signal" and "inductor".
+- **q0576**: explained "quarter-wave", "Gb/s" and "escape their wiring"; trimmed.
+- **q0577**: defined fab.
+- **q0578**: defined epoxy, barrel and solder ball.
+- **q0579**: defined soldermask, barrel and bridging.
+- **q0580**: defined resin and open circuit.
+- **q0581**: added inductance to "Words you need" (it was used but never defined); explained wicking.
+- **q0582**: changed the undefined K/W and K to °C per watt and °C (43 °C at 2 W is consistent with the page's 21 K/W); defined paste.
+- **q0583**: defined fab.
+- **q0584**: glossed inductance and 1 oz copper.
+- **q0585**: defined via, inductance and crosstalk; trimmed.
+- **q0586**: **physics error**: said that a current-limited supply into a 0.1 Ω short "delivers about 1 W". In fact the voltage collapses to about 0.03 V and the short gets about 0.01 W. Also defined clocks and spec.
+- **q0587**: defined DC, scope, nominal and peak-to-peak; removed the undefined "core".
+- **q0588**: defined probe capacitance, low-pass filter, corner frequency and BGA in plain words.
+- **q0589**: replaced "etch shorts", "plating voids", "divider", "parallel", "footprint" and "flux" with plain wording.
