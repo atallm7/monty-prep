@@ -2,7 +2,7 @@
 
 Method: I read each basics block against the page's short answer and key numbers. I recomputed every worked-example number with `node -e`, and all of them were correct. I also checked that each page builds only on earlier pages (in id order) and that the analogies agree. Voltage is always pressure, height or water level. Current is always flow. For inductors, current is motion or inertia and voltage is the push. `validate-content.mjs`: 0 errors.
 
-OK as written (8): q0002, q0018, q0019, q0030, q0036, q0040, q0043, plus q0035 apart from one word (listed below).
+OK as written (6): q0002, q0018, q0019, q0030, q0040, q0043. Fixed (36): listed below.
 
 - **q0001**: Defined "charge" (carried by electrons) and "diode" (a one-way valve), since both appeared with no explanation on the very first page.
 - **q0003**: KCL/KVL bullets now say "in equals out" and "rises and drops add to zero" instead of "sum to zero". Spelled out the Kirchhoff names. "Voltage drop" and "source" are glossed. The trail analogy now says outright that height stands for voltage.
@@ -34,6 +34,7 @@ OK as written (8): q0002, q0018, q0019, q0030, q0036, q0040, q0043, plus q0035 a
 - **q0033**: "Attenuated" became "weakened".
 - **q0034**: "Time domain" and "in shunt" are glossed. dB is explained without "log scale".
 - **q0035**: "Cascading" is glossed.
+- **q0036**: "Electrodes" (undefined) became "inner plates".
 - **q0037**: "Transient" is glossed. Replaced a garbled analogy caveat with a clear one: the rule assumes some resistance in the path.
 - **q0038**: Says what an inductor is first. **Fixed a contradiction with the page**: the primer said a ferrite bead is "drawn like an inductor", but the page says it usually gets its own rectangle symbol.
 - **q0039**: Explained di/dt and "induces".
