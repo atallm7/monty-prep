@@ -22,6 +22,9 @@ export default defineConfig(({ mode }) => {
     } : {
       chunkSizeWarningLimit: 8000, outDir: 'dist',
       rollupOptions: { output: {
+        // File-name prefix. Bump it to cut off browser tabs still running an older copy of the site:
+        // their page loads then fail and the tab reloads into the current version (see main.tsx).
+        chunkFileNames: 'assets/r2-[name]-[hash].js', entryFileNames: 'assets/r2-[name]-[hash].js',
         // Chunking: shared libraries in one vendor chunk; questions and sims stay as small per-file lazy chunks.
         manualChunks(id) {
           // Libraries (React, router, KaTeX…) get their own chunk; leaving them in the entry chunk created an
