@@ -1,4 +1,5 @@
 import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import AskClaude from './components/AskClaude';
 import { NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import { DOMAINS, SECTIONS, SECTION_BY_ID, questionsInDomain } from './lib/data';
 import { useStore, statusOf, actions } from './lib/progress';
@@ -160,6 +161,7 @@ export default function App() {
           {' '}Answers, explanations, diagrams, quizzes and simulations are original study material; verify anything you rely on. <Link to="/settings">About this site</Link>
         </footer>
       </div>
+      <AskClaude />
       {search && <Suspense fallback={null}><SearchPalette onClose={() => setSearch(false)} /></Suspense>}
     </div>
   );

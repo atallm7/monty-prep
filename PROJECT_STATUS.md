@@ -72,3 +72,8 @@ Reason: the user said pages go deep too quickly, before the simple ideas are in 
 - Briefs: `docs/BASICS_PROMPT.md` (writer, includes lessons from the reviews), `docs/BASICS_QA_PROMPT.md` (reviewer). Page groups: `docs/basics/p00–p23.txt`. Review notes: `docs/reviews/basics-pNN.md`.
 - Review status: see `ls docs/reviews/basics-p*.md`; a group is reviewed only if its file exists. Reviewers changed roughly 80–95% of primers per group (undefined jargon, misleading analogies, wrong links, numbers not matching the page), so an unreviewed primer should be treated as a draft.
 - `basics` is not a required section in the validator.
+
+## Ask Claude panel (2026-11-12)
+- `src/components/AskClaude.tsx`, mounted in `src/App.tsx`; styles at the end of `src/styles/app.css`.
+- The user chose a hand-off to claude.ai (no API key, no server). The button opens `https://claude.ai/new?q=…` with the question, any highlighted text, and as many page sections as fit in about 6,000 encoded characters; the full page text (figures stripped) is copied to the clipboard.
+- Not verified from the build container: that claude.ai prefills from `?q=` (claude.ai is unreachable here).

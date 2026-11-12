@@ -354,3 +354,33 @@ main#main { display: block; min-width: 0; }
 .basics-prereqs { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border-strong); display: flex; flex-direction: column; gap: 8px; }
 .basics-prereqs-t { font-size: 13.5px; font-weight: 600; color: var(--text-2); }
 .pager-card.path-next { margin-top: 36px; border-color: color-mix(in srgb, var(--ok) 35%, var(--border)); background: color-mix(in srgb, var(--ok-soft) 50%, var(--surface)); } .pager-card.path-next + .q-pager { margin-top: 12px; }
+
+/* ---------- Ask Claude (hand-off to claude.ai) ---------- */
+.ask-fab { position: fixed; right: max(18px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 30; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px 0 14px; border-radius: 22px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); font: 600 14px var(--font-ui); cursor: pointer; box-shadow: var(--shadow-2); }
+.ask-fab:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.ask-panel { position: fixed; right: max(18px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 60; width: min(380px, calc(100vw - 36px)); max-height: min(620px, calc(100vh - 90px)); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 14px; box-shadow: var(--shadow-2); animation: fadeIn .12s ease; }
+.ask-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 14px 12px 10px 16px; border-bottom: 1px solid var(--border); }
+.ask-title { font-weight: 650; font-size: 15px; }
+.ask-sub { font-size: 12.5px; color: var(--text-2); margin-top: 2px; overflow-wrap: anywhere; }
+.ask-body { padding: 14px 16px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.ask-label { font-size: 12px; font-weight: 600; color: var(--text-2); letter-spacing: .02em; }
+.ask-box { width: 100%; resize: vertical; min-height: 84px; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); font: 15px/1.45 var(--font-ui); }
+.ask-box:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ask-send { width: 100%; height: 40px; background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.ask-send:hover:not(:disabled) { background: var(--accent-2); border-color: var(--accent-2); }
+.ask-starters { display: flex; flex-direction: column; gap: 6px; }
+.ask-chip { text-align: left; padding: 8px 11px; border-radius: 9px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font: 13.5px/1.35 var(--font-ui); cursor: pointer; }
+.ask-chip:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.ask-chip:disabled { opacity: .5; cursor: default; }
+.ask-quote { font-size: 13px; line-height: 1.45; color: var(--text-2); padding: 8px 11px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; overflow-wrap: anywhere; }
+.ask-quote-t { display: block; font-size: 11.5px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.ask-link { background: none; border: 0; padding: 0; margin-left: 6px; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
+.ask-sent { font-size: 13.5px; line-height: 1.5; padding: 10px 12px; border-radius: 9px; background: var(--ok-soft); color: var(--text); border: 1px solid color-mix(in srgb, var(--ok) 35%, transparent); }
+.ask-sent .ask-link { margin-left: 0; }
+.ask-hint { margin-top: 6px; font-size: 12.5px; color: var(--text-2); }
+.ask-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--text-3); }
+@media (max-width: 640px) {
+  .ask-fab { height: 42px; padding: 0 13px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .ask-panel { right: 8px; left: 8px; width: auto; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); max-height: calc(100vh - 72px); }
+}
+@media print { .ask-fab, .ask-panel { display: none; } }
