@@ -49,7 +49,7 @@ export default function Settings() {
         <div style={{ minWidth: 0, flex: 1 }}><div style={{ fontWeight: 600 }}>{auth.user.name}</div><div className="small muted" style={{ overflowWrap: 'anywhere' }}>{auth.user.email}</div></div>
         <button className="btn" onClick={auth.signOut}>Sign out</button>
       </div>
-      <p className="small muted" style={{ margin: 0 }}>The site owner can see this name and email address and when you last signed in. Your study progress is stored only in this browser.</p>
+      <p className="small muted" style={{ margin: 0 }}>Your study progress is stored only in this browser.</p>
     </div>}
     <div className="card stack" style={{ marginTop: 16 }}>
       <h3 className="h3">About the content</h3>

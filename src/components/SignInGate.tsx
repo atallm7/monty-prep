@@ -18,7 +18,7 @@ export default function SignInGate({ children }: { children: ReactNode }) {
         </button>
         {error && <div className="gate-error" role="alert">{error}</div>}
       </>}
-      <p className="gate-note">Signing in is free. The site owner can see the name and email address of the Google account you sign in with, and when you signed in. Your study progress stays in this browser.</p>
+      <p className="gate-note">Signing in is free. Your study progress stays in this browser.</p>
     </div>
   </div>;
 }
