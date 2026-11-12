@@ -78,7 +78,7 @@ Reason: the user said pages go deep too quickly, before the simple ideas are in 
 - The user chose a hand-off to claude.ai (no API key, no server). The button opens `https://claude.ai/new?q=…` with the question, any highlighted text, and as many page sections as fit in about 6,000 encoded characters; the full page text (figures stripped) is copied to the clipboard.
 - Not verified from the build container: that claude.ai prefills from `?q=` (claude.ai is unreachable here).
 
-## Google sign-in gate (2026-11-12) — built, OFF until configured
+## Google sign-in gate (2026-11-12) — ON (Firebase project `monty-prep`)
 - The user wants to know who uses the site and chose a required sign-in.
 - `src/lib/authConfig.ts` holds the Firebase web config. While `apiKey` is empty the gate is off and the site is open. Filling in the four values turns the gate on.
 - `src/lib/auth.tsx` (lazy-loaded Firebase Auth, Google pop-up sign-in), `src/components/SignInGate.tsx` (wraps the app in `src/main.tsx`), Account card with Sign out in Settings.
