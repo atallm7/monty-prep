@@ -86,3 +86,5 @@ Reason: the user said pages go deep too quickly, before the simple ideas are in 
 - The user sees their users in Firebase console → Authentication → Users.
 - Soft gate only: the repo and the page files are public, so it identifies normal visitors but does not protect the content.
 - Not yet tested with a real Firebase project (only the gate screen with placeholder settings).
+- Email-and-password sign-in added next to Google. New email accounts must click a confirmation link before the gate opens (status `verify`); password reset by email. Needs the Email/Password provider enabled in Firebase.
+- Old tabs are cut off by the `r2-` file-name prefix in `vite.config.ts`; `main.tsx` reloads a stale tab once on `vite:preloadError`.
