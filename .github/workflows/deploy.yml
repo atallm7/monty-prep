@@ -21,9 +21,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
       # Load the built site in a real browser before publishing (catches production-only bundling bugs).
+      # First a build with the sign-in gate off, so the pages behind it are tested; then the real build.
       - run: npm i --no-save playwright && npx playwright install --with-deps chromium
+      - run: npm run build
+        env:
+          VITE_AUTH_OFF: '1'
+      - run: node scripts/smoke-dist.mjs
+      - run: npx vite build
       - run: node scripts/smoke-dist.mjs
       - run: touch dist/.nojekyll
       - uses: actions/upload-pages-artifact@v3

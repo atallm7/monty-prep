@@ -9,7 +9,12 @@ await new Promise(ok => srv.listen(0, ok)); const base = `http://localhost:${srv
 const b = await chromium.launch(); const p = await b.newPage(); const errors = [];
 p.on('pageerror', e => errors.push(e.message));
 let ok = true;
-for (const [route, expect] of [['', '1,005'], ['#/q/q0008', 'voltage divider'], ['#/sims/divider', 'Divider'], ['#/library', 'Fundamentals']]) {
+// A build with the sign-in gate on shows only the sign-in screen: check it renders, then stop.
+await p.goto(base, { waitUntil: 'networkidle' }); await p.waitForTimeout(800);
+const gated = (await p.evaluate(() => document.body.innerText)).includes('Sign in with Google');
+if (gated) console.log('ok   sign-in gate is on and renders');
+if (process.argv.includes('--expect-gate') && !gated) { ok = false; console.log('FAIL expected the sign-in gate'); }
+for (const [route, expect] of gated ? [] : [['', '1,005'], ['#/q/q0008', 'voltage divider'], ['#/sims/divider', 'Divider'], ['#/library', 'Fundamentals']]) {
   await p.goto(base + route, { waitUntil: 'networkidle' }); await p.waitForTimeout(800);
   const txt = await p.evaluate(() => document.body.innerText);
   const pass = txt.toLowerCase().includes(expect.toLowerCase()); ok &&= pass; console.log(`${pass ? 'ok  ' : 'FAIL'} /${route} contains "${expect}"`);

@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
         manualChunks(id) {
           // Libraries (React, router, KaTeX…) get their own chunk; leaving them in the entry chunk created an
           // entry ↔ sims chunk cycle where jsx-runtime was still undefined when the sim chunks evaluated.
-          if (id.includes('node_modules')) return /mermaid|cytoscape|dagre|d3-|elkjs|khroma|lodash-es|dompurify/.test(id) ? undefined : 'vendor';
+          if (id.includes('node_modules')) return /mermaid|cytoscape|dagre|d3-|elkjs|khroma|lodash-es|dompurify|firebase/.test(id) ? undefined : 'vendor';
           // Question pages: no manual grouping, so each question is its own small lazy chunk (~20–40 KB) instead of a 50-question bundle.
           // Sims: also left to Rollup, so a page that embeds one sim loads only that sim (+ shared kit).
           return undefined;

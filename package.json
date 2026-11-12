@@ -13,6 +13,7 @@
     "test": "bash scripts/run-sim-tests.sh"
   },
   "dependencies": {
+    "firebase": "^11.10.0",
     "katex": "^0.16.11",
     "marked": "^14.1.4",
     "mermaid": "^11.4.1",

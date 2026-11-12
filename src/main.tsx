@@ -6,13 +6,19 @@ import './styles/base.css';
 import './styles/app.css';
 import App from './App';
 import { ThemeProvider } from './lib/theme';
+import { AuthProvider } from './lib/auth';
+import SignInGate from './components/SignInGate';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      <HashRouter>
-        <App />
-      </HashRouter>
+      <AuthProvider>
+        <SignInGate>
+          <HashRouter>
+            <App />
+          </HashRouter>
+        </SignInGate>
+      </AuthProvider>
     </ThemeProvider>
   </StrictMode>
 );

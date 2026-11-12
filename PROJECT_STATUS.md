@@ -77,3 +77,12 @@ Reason: the user said pages go deep too quickly, before the simple ideas are in 
 - `src/components/AskClaude.tsx`, mounted in `src/App.tsx`; styles at the end of `src/styles/app.css`.
 - The user chose a hand-off to claude.ai (no API key, no server). The button opens `https://claude.ai/new?q=…` with the question, any highlighted text, and as many page sections as fit in about 6,000 encoded characters; the full page text (figures stripped) is copied to the clipboard.
 - Not verified from the build container: that claude.ai prefills from `?q=` (claude.ai is unreachable here).
+
+## Google sign-in gate (2026-11-12) — built, OFF until configured
+- The user wants to know who uses the site and chose a required sign-in.
+- `src/lib/authConfig.ts` holds the Firebase web config. While `apiKey` is empty the gate is off and the site is open. Filling in the four values turns the gate on.
+- `src/lib/auth.tsx` (lazy-loaded Firebase Auth, Google pop-up sign-in), `src/components/SignInGate.tsx` (wraps the app in `src/main.tsx`), Account card with Sign out in Settings.
+- The gate is also off in the artifact build and when `VITE_AUTH_OFF=1` (used by CI: the deploy workflow smoke-tests a gate-off build, then builds and checks the real one).
+- The user sees their users in Firebase console → Authentication → Users.
+- Soft gate only: the repo and the page files are public, so it identifies normal visitors but does not protect the content.
+- Not yet tested with a real Firebase project (only the gate screen with placeholder settings).
