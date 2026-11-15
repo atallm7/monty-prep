@@ -98,3 +98,7 @@ Reason: the user said pages go deep too quickly, before the simple ideas are in 
 ## Listen + Find a video (2026-11-15)
 - `src/components/ListenBar.tsx`: a "Listen" bar on each question page that reads "Start here", the spoken answer, or the 30-second / 2-minute versions aloud with the browser's own voice (Web Speech API; no service). Speed choice is remembered. `speakable()` turns LaTeX into words (fractions, powers, Greek letters, integrals).
 - "Find a video" opens a YouTube search for the page title + "explained". No hand-picked videos yet.
+
+## Watch the lesson (2026-11-15)
+- `src/components/Lesson.tsx`: "Watch the 2-minute lesson" button on every question page with a primer. Full-screen narrated slideshow built from existing content: title → In plain words → Picture it → key diagram (first figure on the page) → Words you need → Simplest example → 30-second answer → one quiz question. Browser voice (Web Speech API) with on-screen captions; auto-advances; voice can be turned off (timed advance). Rendered through a portal to `document.body`.
+- Research on real video (2026-11): AI video models (Veo, Kling, Runway) can't draw accurate schematics/equations and would cost ~$6k–48k for 1,005 videos; Sora API is shut down; NotebookLM has no video API (3–20/day by hand). Best route if real MP4s are wanted: template videos (Manim or Remotion) from the existing primers/LaTeX/diagrams + Kokoro (free) or Gemini/Chirp TTS (~$30–55), hosted on YouTube (unlisted) or Cloudflare R2. Not started.

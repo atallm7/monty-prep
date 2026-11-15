@@ -1,3 +1,4 @@
+import Lesson from '../components/Lesson';
 import ListenBar, { videoSearchUrl } from '../components/ListenBar';
 import { useEffect, useMemo, useState, Fragment } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -59,6 +60,8 @@ export default function QuestionPage() {
   const [tab, setTab] = useState<(typeof ANSWER_TABS)[number]['key']>('answer');
   const [hide, setHide] = usePref('mcp.hideAnswers', false);
   const [revealed, setRevealed] = useState(false);
+  const [lesson, setLesson] = useState(false);
+  useEffect(() => { setLesson(false); }, [id]);
   const [active, setActive] = useState('basics');
   const [activeSub, setActiveSub] = useState('');
 
@@ -142,6 +145,11 @@ export default function QuestionPage() {
             {q.subItems.length > 0 && <ul className="q-subitems">{q.subItems.map((s, i) => <li key={i}>{s}</li>)}</ul>}
             {sec.note && <p className="q-note small"><b>Source note for this section:</b> {sec.note}</p>}
             <p className="small muted" style={{ margin: '6px 0 0' }}>Question {q.n} from <a href="https://montychoy.com/blog/the_ultimate_list_of_hardware_engineering_internship_interview_questions" target="_blank" rel="noreferrer">Monty Choy's list</a>, quoted word for word.</p>
+            {content && content.sections.basics && <button className="lesson-cta" onClick={() => setLesson(true)}>
+              <span className="lesson-cta-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z" /></svg></span>
+              <span><b>Watch the 2-minute lesson</b><span className="lesson-cta-sub">Narrated slides with just the key ideas, a diagram and a quick check</span></span>
+            </button>}
+            {lesson && content && <Lesson content={content} title={meta?.title || q.text} question={q.text} onClose={() => setLesson(false)} />}
             {content && <div className="q-media">
               <ListenBar content={content} title={meta?.title || q.text} />
               <a className="btn btn-sm" href={videoSearchUrl(meta?.title || q.text)} target="_blank" rel="noreferrer">
