@@ -143,6 +143,7 @@ export default function QuestionPage() {
             <p className="small muted" style={{ margin: '6px 0 0' }}>Question {q.n} from <a href="https://montychoy.com/blog/the_ultimate_list_of_hardware_engineering_internship_interview_questions" target="_blank" rel="noreferrer">Monty Choy's list</a>, quoted word for word.</p>
             <div className="row-wrap" style={{ marginTop: 14 }}>
               <button className="btn btn-sm btn-accent" onClick={() => scrollTo('sec-selfcheck')}>Practice answering</button>
+              {(meta?.prereqs?.length || 0) > 0 && <Link className="btn btn-sm" to={`/plan/${q.id}`}>What to read first</Link>}
               <button className={'btn btn-sm' + (qs?.bookmarked ? ' btn-primary' : '')} onClick={() => actions.bookmark(q.id, !qs?.bookmarked)}><IBookmark size={14} />{qs?.bookmarked ? 'Bookmarked' : 'Bookmark'}</button>
               <button className={'btn btn-sm' + (qs?.manual === 'needs-review' ? ' btn-primary' : '')} title="Flag for your review queue" onClick={() => actions.setManual(q.id, qs?.manual === 'needs-review' ? null : 'needs-review')}><IFlag size={14} />{qs?.manual === 'needs-review' ? 'Flagged for review' : 'Flag for review'}</button>
               <span style={{ flex: 1 }} />

@@ -4,7 +4,7 @@ import { NavLink, Route, Routes, useLocation, Link } from 'react-router-dom';
 import { DOMAINS, SECTIONS, SECTION_BY_ID, questionsInDomain } from './lib/data';
 import { useStore, statusOf, actions } from './lib/progress';
 import { useTheme } from './lib/theme';
-import { IHome, ILibrary, IMic, IQuiz, IReview, ISim, IPath, ISettings, ISearch, ISun, IMoon, IMenu, IChevron, ILogo, IBookmark } from './components/Icons';
+import { IHome, ILibrary, IMic, IQuiz, IReview, ISim, IPath, ISettings, ISearch, ISun, IMoon, IMenu, IChevron, ILogo, IBookmark, IFlag } from './components/Icons';
 import Dashboard from './pages/Dashboard';
 // Search (MiniSearch + search index data) loads the first time the palette opens.
 const SearchPalette = lazy(() => import('./components/SearchPalette'));
@@ -29,6 +29,7 @@ const Interview = lazy(() => import('./pages/Interview'));
 const QuizDrill = lazy(() => import('./pages/QuizDrill'));
 const SimsLab = lazy(() => import('./pages/SimsLab'));
 const LearningPath = lazy(() => import('./pages/LearningPath'));
+const ReadingPlan = lazy(() => import('./pages/ReadingPlan'));
 const Saved = lazy(() => import('./pages/Saved'));
 const Settings = lazy(() => import('./pages/Settings'));
 
@@ -48,6 +49,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         <NavLink to="/" end onClick={onClose}><IHome />Dashboard</NavLink>
         <NavLink to="/library" onClick={onClose}><ILibrary />Question library</NavLink>
         <NavLink to="/path" onClick={onClose}><IPath />Learning path</NavLink>
+        <NavLink to="/plan" onClick={onClose}><IFlag />What to read first</NavLink>
         <NavLink to="/saved" onClick={onClose}><IBookmark />Saved</NavLink>
         <NavLink to="/interview" onClick={onClose}><IMic />Interview simulator</NavLink>
         <NavLink to="/quiz" onClick={onClose}><IQuiz />Quiz drill</NavLink>
@@ -148,6 +150,8 @@ export default function App() {
             <Route path="/sims" element={<SimsLab />} />
             <Route path="/sims/:simId" element={<SimsLab />} />
             <Route path="/path" element={<LearningPath />} />
+            <Route path="/plan" element={<ReadingPlan />} />
+            <Route path="/plan/:id" element={<ReadingPlan />} />
             <Route path="/saved" element={<Saved />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<div className="page"><div className="empty">Page not found. <Link to="/">Go home</Link></div></div>} />

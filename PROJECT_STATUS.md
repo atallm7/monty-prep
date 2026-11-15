@@ -88,3 +88,9 @@ Reason: the user said pages go deep too quickly, before the simple ideas are in 
 - Not yet tested with a real Firebase project (only the gate screen with placeholder settings).
 - Email-and-password sign-in added next to Google. New email accounts must click a confirmation link before the gate opens (status `verify`); password reset by email. Needs the Email/Password provider enabled in Firebase.
 - Old tabs are cut off by the `r2-` file-name prefix in `vite.config.ts`; `main.tsx` reloads a stale tab once on `vite:preloadError`.
+
+## "What to read first" reading plan (2026-11-15)
+- `src/pages/ReadingPlan.tsx`, routes `/plan` and `/plan/:id`, sidebar link, and a "What to read first" button on every question page that has prerequisites.
+- Type a question, topic or number → pick a match → ordered list of the pages it builds on (from `prereqs` in the page frontmatter, transitive, foundations first). Chains longer than 8 pages start on "Essentials" (direct prerequisites) with a switch to "Everything from zero".
+- Search index moved to `src/lib/searchIndex.ts` (shared with the search palette).
+- Local testing with the sign-in gate on needs `VITE_AUTH_OFF=1` (e.g. `VITE_AUTH_OFF=1 npx vite --port 5174`).

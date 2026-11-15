@@ -412,3 +412,20 @@ main#main { display: block; min-width: 0; }
 .gate-switch { margin: 14px 0 0; font-size: 13.5px; color: var(--text-2); }
 .gate-link { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
 .gate-link:disabled { opacity: .6; cursor: default; }
+
+/* ---------- Reading plan (what to read first) ---------- */
+.plan-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+.plan-input { height: 44px; font-size: 16px; }
+.plan-results { margin-top: 8px; }
+.plan-num { flex: none; width: 46px; }
+.plan-target { margin-top: 16px; border-color: var(--accent); }
+.plan-target-t { font-size: 19px; font-weight: 650; margin: 4px 0 2px; overflow-wrap: anywhere; }
+.plan-summary { margin-top: 12px; padding: 10px 12px; border-radius: 9px; background: var(--accent-soft); font-size: 14.5px; line-height: 1.55; }
+.plan-toggle { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 20px 0 0; }
+.plan-h { margin: 24px 0 10px; }
+.plan-done { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+.plan-time { white-space: nowrap; }
+.plan-sub { flex: none; color: var(--accent); text-decoration: underline; }
+@media (max-width: 640px) { .plan-time { display: none; } }
+.plan-rel { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+.plan-rel:hover { color: var(--accent); text-decoration: none; }
