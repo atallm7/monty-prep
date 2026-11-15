@@ -94,3 +94,7 @@ Reason: the user said pages go deep too quickly, before the simple ideas are in 
 - Type a question, topic or number → pick a match → ordered list of the pages it builds on (from `prereqs` in the page frontmatter, transitive, foundations first). Chains longer than 8 pages start on "Essentials" (direct prerequisites) with a switch to "Everything from zero".
 - Search index moved to `src/lib/searchIndex.ts` (shared with the search palette).
 - Local testing with the sign-in gate on needs `VITE_AUTH_OFF=1` (e.g. `VITE_AUTH_OFF=1 npx vite --port 5174`).
+
+## Listen + Find a video (2026-11-15)
+- `src/components/ListenBar.tsx`: a "Listen" bar on each question page that reads "Start here", the spoken answer, or the 30-second / 2-minute versions aloud with the browser's own voice (Web Speech API; no service). Speed choice is remembered. `speakable()` turns LaTeX into words (fractions, powers, Greek letters, integrals).
+- "Find a video" opens a YouTube search for the page title + "explained". No hand-picked videos yet.

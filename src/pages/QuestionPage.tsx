@@ -1,3 +1,4 @@
+import ListenBar, { videoSearchUrl } from '../components/ListenBar';
 import { useEffect, useMemo, useState, Fragment } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { pathNeighbors } from '../lib/pathOrder';
@@ -141,6 +142,12 @@ export default function QuestionPage() {
             {q.subItems.length > 0 && <ul className="q-subitems">{q.subItems.map((s, i) => <li key={i}>{s}</li>)}</ul>}
             {sec.note && <p className="q-note small"><b>Source note for this section:</b> {sec.note}</p>}
             <p className="small muted" style={{ margin: '6px 0 0' }}>Question {q.n} from <a href="https://montychoy.com/blog/the_ultimate_list_of_hardware_engineering_internship_interview_questions" target="_blank" rel="noreferrer">Monty Choy's list</a>, quoted word for word.</p>
+            {content && <div className="q-media">
+              <ListenBar content={content} title={meta?.title || q.text} />
+              <a className="btn btn-sm" href={videoSearchUrl(meta?.title || q.text)} target="_blank" rel="noreferrer">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="3.5" /><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor" /></svg>
+                Find a video<span className="sr-only"> (opens YouTube in a new tab)</span></a>
+            </div>}
             <div className="row-wrap" style={{ marginTop: 14 }}>
               <button className="btn btn-sm btn-accent" onClick={() => scrollTo('sec-selfcheck')}>Practice answering</button>
               {(meta?.prereqs?.length || 0) > 0 && <Link className="btn btn-sm" to={`/plan/${q.id}`}>What to read first</Link>}

@@ -429,3 +429,13 @@ main#main { display: block; min-width: 0; }
 @media (max-width: 640px) { .plan-time { display: none; } }
 .plan-rel { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
 .plan-rel:hover { color: var(--accent); text-decoration: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- Listen + video ---------- */
+.q-media { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); }
+.listen { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; }
+.listen-play { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); min-width: 84px; }
+.listen-play:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.listen-sel { height: 30px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: 13px var(--font-ui); max-width: 100%; }
+.listen-prog { flex: 1 1 60px; min-width: 60px; max-width: 160px; height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; }
+.listen-prog > span { display: block; height: 100%; background: var(--accent); transition: width .3s; }
