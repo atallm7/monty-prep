@@ -1,0 +1,80 @@
+# Records lesson narration with the free Kokoro voice, commits the audio into public/lessons/,
+# then redeploys the site. Runs when lessons/scripts.json changes (only changed lessons are re-recorded).
+name: Lesson audio
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['lessons/scripts.json']
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: lesson-audio
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q kokoro-onnx soundfile
+      - uses: actions/cache@v4
+        with:
+          path: kokoro
+          key: kokoro-v1.0-int8
+      - name: Voice model
+        run: |
+          mkdir -p kokoro
+          [ -f kokoro/model.onnx ] || curl -sSL -o kokoro/model.onnx https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx
+          [ -f kokoro/voices.bin ] || curl -sSL -o kokoro/voices.bin https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+      - run: python scripts/lesson-audio/render.py --model kokoro/model.onnx --voices kokoro/voices.bin --shard ${{ matrix.shard }} --of 20 --out out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lessons-${{ matrix.shard }}
+          path: out
+          if-no-files-found: ignore
+          retention-days: 3
+  commit:
+    needs: render
+    if: always() && needs.render.result != 'cancelled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: lessons-*
+          path: public/lessons
+          merge-multiple: true
+      - name: Drop recordings that no lesson uses any more
+        run: |
+          python3 - <<'PY'
+          import json, os, glob
+          ids = {s["id"] for s in json.load(open("lessons/scripts.json"))}
+          keep = set()
+          for p in glob.glob("public/lessons/*.json"):
+              i = os.path.basename(p)[:-5]
+              if i not in ids: os.remove(p); continue
+              keep.add(json.load(open(p))["url"])
+          for p in glob.glob("public/lessons/*.mp3"):
+              if os.path.basename(p) not in keep: os.remove(p)
+          print(len(keep), "recordings kept")
+          PY
+      - name: Commit and redeploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898499+github-actions[bot]@users.noreply.github.com"
+          git add -A public/lessons
+          if git diff --cached --quiet; then echo "No new recordings"; exit 0; fi
+          git commit -q -m "Update lesson audio"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 5; done
+          gh workflow run deploy.yml --ref main

@@ -16,7 +16,7 @@ const SPEEDS = [0.85, 1, 1.25, 1.5];
 export function speakable(md: string): string {
   let s = plainText(md);
   s = s.replace(/\$\$([\s\S]*?)\$\$/g, (_m, x) => ' ' + math(x) + '. ').replace(/\$([^$\n]+)\$/g, (_m, x) => math(x));
-  return s
+  return units(s)
     .replace(/^#{1,6}\s*(.*)$/gm, '$1.')            // headings become their own sentence
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')        // links keep their words
     .replace(/[*_`>|]/g, ' ')
@@ -24,6 +24,13 @@ export function speakable(md: string): string {
     .replace(/\s*\n\s*\n\s*/g, '. ').replace(/\s*\n\s*/g, ' ')
     .replace(/\.\s*\./g, '.').replace(/\s{2,}/g, ' ').trim();
 }
+// Spoken units after a number: "5 mA" → "5 milliamps".
+const UNIT: Record<string, string> = { V: 'volts', mV: 'millivolts', kV: 'kilovolts', A: 'amps', mA: 'milliamps', 'µA': 'microamps', uA: 'microamps', nA: 'nanoamps',
+  'Ω': 'ohms', 'kΩ': 'kilohms', 'MΩ': 'megohms', 'mΩ': 'milliohms', W: 'watts', mW: 'milliwatts', kW: 'kilowatts', Hz: 'hertz', kHz: 'kilohertz', MHz: 'megahertz', GHz: 'gigahertz',
+  F: 'farads', 'µF': 'microfarads', uF: 'microfarads', nF: 'nanofarads', pF: 'picofarads', H: 'henries', mH: 'millihenries', 'µH': 'microhenries', uH: 'microhenries', nH: 'nanohenries',
+  s: 'seconds', ms: 'milliseconds', 'µs': 'microseconds', us: 'microseconds', ns: 'nanoseconds', ps: 'picoseconds', dB: 'decibels', 'mAh': 'milliamp hours', Wh: 'watt hours', 'V/µs': 'volts per microsecond', '°C': 'degrees Celsius' };
+const UNIT_RE = new RegExp('(\\d(?:[\\d.,]*\\d)?)[ \\u00a0]{0,3}(' + Object.keys(UNIT).sort((a, b) => b.length - a.length).map(k => k.replace(/[/]/g, '\\/')).join('|') + ')(?![A-Za-z0-9µΩ])', 'g');
+function units(t: string): string { return t.replace(UNIT_RE, (_m, n, u) => `${n} ${UNIT[u]}`).replace(/\b(\d[\d.,]*)\s+([kMm])\s+ohms\b/g, (_m, n, p) => `${n} ${p === 'k' ? 'kilohms' : p === 'M' ? 'megohms' : 'milliohms'}`).replace(/−/g, 'minus ').replace(/×/g, ' times ').replace(/≈/g, ' about ').replace(/→/g, ' to '); }
 function math(x: string): string {
   const words: Record<string, string> = { Omega: ' ohms', omega: ' omega', mu: ' micro', pi: ' pi', tau: ' tau', theta: ' theta', alpha: ' alpha', beta: ' beta', Delta: ' change in ', delta: ' delta', approx: ' about ', times: ' times ', cdot: ' times ', le: ' at most ', ge: ' at least ', leq: ' at most ', geq: ' at least ', neq: ' not equal to ', to: ' to ', infty: ' infinity', sqrt: ' square root of ', circ: ' degrees', pm: ' plus or minus ', propto: ' proportional to ', ll: ' much less than ', gg: ' much greater than ', int: ' the integral of ', sum: ' the sum of ', partial: ' partial ', ln: ' log ', log: ' log ', sin: ' sine ', cos: ' cosine ' };
   let s = x;

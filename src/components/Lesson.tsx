@@ -84,8 +84,27 @@ function chunks(t: string): string[] {
   for (const r of raw) { const x = r.trim(); if (!x) continue; if (out.length && (out[out.length - 1] + ' ' + x).length < 180) out[out.length - 1] += ' ' + x; else out.push(x); }
   return out;
 }
+/** What the narrator says, slide by slide, sentence group by sentence group. Recordings are made from exactly this. */
+export const narration = (slides: Slide[]) => slides.map(s => chunks(speakable(s.say)));
+/** Short fingerprint of the narration: a recording is used only if it was made from the same words. */
+export function narrationHash(n: string[][]): string {
+  let h = 0x811c9dc5; const str = JSON.stringify(n);
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, '0');
+}
+/** Build the lesson script for a question id (used by the recording script). */
+export async function lessonScriptFor(id: string) {
+  const { loadQuestion, META, Q_BY_ID } = await import('../lib/data');
+  const c = await loadQuestion(id); const q = Q_BY_ID.get(id);
+  if (!c || !q || !c.sections.basics) return null;
+  const n = narration(buildSlides(c, META[id]?.title || q.text, q.text));
+  return { id, hash: narrationHash(n), slides: n };
+}
 
-export default function Lesson({ content, title, question, onClose }: { content: QContent; title: string; question: string; onClose: () => void }) {
+type Recording = { hash: string; url: string; dur: number; slides: { start: number; chunks: [number, string][] }[] };
+const AUDIO_BASE = import.meta.env.BASE_URL + 'lessons/';
+
+export default function Lesson({ id, content, title, question, onClose }: { id: string; content: QContent; title: string; question: string; onClose: () => void }) {
   const slides = useMemo(() => buildSlides(content, title, question), [content, title, question]);
   const [i, setI] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -96,9 +115,38 @@ export default function Lesson({ content, title, question, onClose }: { content:
   const rate = (() => { try { return +(localStorage.getItem('mcp.speechRate') || 1) || 1; } catch { return 1; } })();
   const s = slides[i];
 
+  // Recorded narration (natural voice), when a recording made from these exact words exists.
+  const [rec, setRec] = useState<Recording | null | undefined>(undefined);
+  const audio = useRef<HTMLAudioElement | null>(null);
+  const seeking = useRef(false);
+  useEffect(() => {
+    let live = true; const want = narrationHash(narration(slides));
+    fetch(AUDIO_BASE + id + '.json').then(r => r.ok ? r.json() : null).then((r: Recording | null) => { if (live) setRec(r && r.hash === want && r.url ? r : null); })
+      .catch(() => { if (live) setRec(null); });
+    return () => { live = false; };
+  }, [id, slides]);
+  const useRec = !!rec && voice;
+  // Keep slide and caption in step with the recording.
+  const onTime = () => {
+    const a = audio.current; if (!a || !rec || seeking.current) return; const t = a.currentTime;
+    let k = 0; while (k + 1 < rec.slides.length && rec.slides[k + 1].start <= t + 0.05) k++;
+    if (k !== i) setI(k);
+    const cs = rec.slides[k].chunks; let c = ''; for (const [ct, txt] of cs) if (ct <= t + 0.05) c = txt; setCaption(c);
+  };
+  useEffect(() => {
+    const a = audio.current; if (!useRec || !a || !rec) return;
+    // a slide change made by the learner (Back/Next/keys): jump the recording there
+    const st = rec.slides[i]?.start ?? 0;
+    if (Math.abs(a.currentTime - st) > 0.4 && (a.currentTime < st - 0.4 || a.currentTime >= (rec.slides[i + 1]?.start ?? rec.dur))) { seeking.current = true; a.currentTime = st; setTimeout(() => { seeking.current = false; }, 60); }
+    if (playing) { const p = a.play(); if (p) p.catch(() => setPlaying(false)); } else a.pause();
+  }, [i, playing, useRec, rec]);
+
   // Narrate the current slide, then move on (quiz slides wait for the learner).
   useEffect(() => {
-    const my = ++run.current; synth?.cancel(); setCaption('');
+    const my = ++run.current; synth?.cancel();
+    if (rec === undefined && voice) return;          // still checking for a recording
+    if (useRec) return;                               // the recording drives the slides
+    setCaption('');
     if (!playing) return;
     if (!voice || !synth) {
       if (s.kind === 'quiz') return;
@@ -118,8 +166,8 @@ export default function Lesson({ content, title, question, onClose }: { content:
     };
     const t = setTimeout(() => next(0), 350);
     return () => { clearTimeout(t); };
-  }, [i, playing, voice]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => () => { run.current++; synth?.cancel(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [i, playing, voice, rec]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => { run.current++; synth?.cancel(); audio.current?.pause(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -132,7 +180,7 @@ export default function Lesson({ content, title, question, onClose }: { content:
   useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }, []);
 
   const go = (k: number) => { setI(Math.max(0, Math.min(slides.length - 1, k))); setPlaying(true); };
-  const toggleVoice = () => { const v = !voice; setVoice(v); try { localStorage.setItem('mcp.lessonVoice', v ? '1' : '0'); } catch { /* ignore */ } };
+  const toggleVoice = () => { const v = !voice; setVoice(v); if (!v) audio.current?.pause(); try { localStorage.setItem('mcp.lessonVoice', v ? '1' : '0'); } catch { /* ignore */ } };
 
   return createPortal(<div className="lesson" role="dialog" aria-modal="true" aria-label={`Lesson: ${title}`}>
     <div className="lesson-top">
@@ -148,6 +196,7 @@ export default function Lesson({ content, title, question, onClose }: { content:
       {s.kind === 'terms' && <ul className="lesson-terms">{s.terms!.map(t => <li key={t.t}><b>{t.t}</b><Html md={t.d} className="lesson-inline" /></li>)}</ul>}
       {s.kind === 'quiz' && s.quiz && <><Html md={s.show} className="lesson-big lesson-qq" /><Quiz item={s.quiz} /></>}
     </div>
+    {rec && <audio ref={audio} src={AUDIO_BASE + rec.url} preload="auto" onTimeUpdate={onTime} onEnded={() => { setPlaying(false); setCaption(''); }} />}
     <div className="lesson-cap" aria-live="polite">{voice && caption ? caption : ' '}</div>
     <div className="lesson-ctrl">
       <button className="btn" onClick={() => go(i - 1)} disabled={i === 0} aria-label="Previous slide">‹ Back</button>

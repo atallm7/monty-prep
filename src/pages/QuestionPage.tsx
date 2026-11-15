@@ -149,7 +149,7 @@ export default function QuestionPage() {
               <span className="lesson-cta-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z" /></svg></span>
               <span><b>Watch the 2-minute lesson</b><span className="lesson-cta-sub">Narrated slides with just the key ideas, a diagram and a quick check</span></span>
             </button>}
-            {lesson && content && <Lesson content={content} title={meta?.title || q.text} question={q.text} onClose={() => setLesson(false)} />}
+            {lesson && content && <Lesson id={q.id} content={content} title={meta?.title || q.text} question={q.text} onClose={() => setLesson(false)} />}
             {content && <div className="q-media">
               <ListenBar content={content} title={meta?.title || q.text} />
               <a className="btn btn-sm" href={videoSearchUrl(meta?.title || q.text)} target="_blank" rel="noreferrer">
