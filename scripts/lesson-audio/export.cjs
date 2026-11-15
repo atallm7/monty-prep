@@ -6,13 +6,15 @@ const { chromium } = require('playwright'); const fs=require('fs');
   await p.goto('http://localhost:5174/#/library'); await p.waitForTimeout(2500);
   const out = await p.evaluate(async () => {
     const L = await import('/src/components/Lesson.tsx'); const D = await import('/src/lib/data.ts');
-    const LB = await import('/src/components/ListenBar.tsx');
+    const LB = await import('/src/components/ListenBar.tsx'); const N = await import('/src/lib/narration.ts');
     const test = LB.speakable('It drops $0.5\\text{ mA} \\times 10\\text{ k}\\Omega = 5$ V, about 5 mA at 3.3 V and 10 kΩ, 100 nF, 1 kHz, −5 V, 25°C.');
     const res = []; for (const q of D.QUESTIONS) { const r = await L.lessonScriptFor(q.id); if (r) res.push(r); }
+    // Spoken answers (Listen bar → "The answer"), recorded as <id>.answer
+    for (const q of D.QUESTIONS) { const r = await N.answerScriptFor(q.id); if (r) res.push(r); }
     return { test, res };
   });
   console.log('units test:', out.test);
   fs.writeFileSync('lessons/scripts.json', JSON.stringify(out.res));
   const chars = out.res.reduce((a,r)=>a+r.slides.flat().join(' ').length,0);
-  console.log('lessons', out.res.length, 'chunks', out.res.reduce((a,r)=>a+r.slides.flat().length,0), 'chars', chars, '≈ min audio', Math.round(chars/15/60));
+  console.log('tracks', out.res.length, 'chunks', out.res.reduce((a,r)=>a+r.slides.flat().length,0), 'chars', chars, '≈ min audio', Math.round(chars/15/60));
   await b.close(); })();

@@ -4,7 +4,7 @@ import type { QContent, QuizItem } from '../lib/data';
 import { splitSegments, mdToHtml } from '../lib/markdown';
 import { resolveQ } from '../lib/data';
 import { CircuitBlock, TimingBlock, PlotBlock, BodeBlock, MermaidBlock, SvgBlock } from './Blocks';
-import { speakable } from './ListenBar';
+import { speakable, chunks, narrationHash, fetchRecording, AUDIO_BASE, type Recording } from '../lib/narration';
 import { shuffleItem } from '../lib/quizShuffle';
 import { IX } from './Icons';
 
@@ -79,19 +79,8 @@ function Quiz({ item }: { item: QuizItem }) {
   </div>;
 }
 
-function chunks(t: string): string[] {
-  const raw = t.match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || [t]; const out: string[] = [];
-  for (const r of raw) { const x = r.trim(); if (!x) continue; if (out.length && (out[out.length - 1] + ' ' + x).length < 180) out[out.length - 1] += ' ' + x; else out.push(x); }
-  return out;
-}
 /** What the narrator says, slide by slide, sentence group by sentence group. Recordings are made from exactly this. */
 export const narration = (slides: Slide[]) => slides.map(s => chunks(speakable(s.say)));
-/** Short fingerprint of the narration: a recording is used only if it was made from the same words. */
-export function narrationHash(n: string[][]): string {
-  let h = 0x811c9dc5; const str = JSON.stringify(n);
-  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
-  return h.toString(16).padStart(8, '0');
-}
 /** Build the lesson script for a question id (used by the recording script). */
 export async function lessonScriptFor(id: string) {
   const { loadQuestion, META, Q_BY_ID } = await import('../lib/data');
@@ -101,8 +90,6 @@ export async function lessonScriptFor(id: string) {
   return { id, hash: narrationHash(n), slides: n };
 }
 
-type Recording = { hash: string; url: string; dur: number; slides: { start: number; chunks: [number, string][] }[] };
-const AUDIO_BASE = import.meta.env.BASE_URL + 'lessons/';
 
 export default function Lesson({ id, content, title, question, onClose }: { id: string; content: QContent; title: string; question: string; onClose: () => void }) {
   const slides = useMemo(() => buildSlides(content, title, question), [content, title, question]);
@@ -121,8 +108,7 @@ export default function Lesson({ id, content, title, question, onClose }: { id: 
   const seeking = useRef(false);
   useEffect(() => {
     let live = true; const want = narrationHash(narration(slides));
-    fetch(AUDIO_BASE + id + '.json').then(r => r.ok ? r.json() : null).then((r: Recording | null) => { if (live) setRec(r && r.hash === want && r.url ? r : null); })
-      .catch(() => { if (live) setRec(null); });
+    fetchRecording(id, want).then(r => { if (live) setRec(r); });
     return () => { live = false; };
   }, [id, slides]);
   const useRec = !!rec && voice;

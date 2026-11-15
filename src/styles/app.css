@@ -480,3 +480,4 @@ main#main { display: block; min-width: 0; }
 .lesson-play:hover { background: var(--accent-2); }
 .lesson-voice.off { color: var(--text-3); }
 @media (max-width: 640px) { .lesson-ctrl .btn { flex: 1 1 auto; padding: 0 10px; } .lesson-cap { font-size: 14px; } }
+.listen-note { white-space: nowrap; }

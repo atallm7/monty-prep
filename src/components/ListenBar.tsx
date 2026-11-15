@@ -1,76 +1,63 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { QContent } from '../lib/data';
-import { plainText } from './AskClaude';
+import { speakable, chunks, narrationHash, fetchRecording, answerNarration, AUDIO_BASE, type Recording } from '../lib/narration';
+import { buildSlides, narration } from './Lesson';
 
-// Reads the page aloud with the browser's built-in voice (Web Speech API): no service, no cost.
+export { speakable } from '../lib/narration';
+
+// Reads parts of the page aloud. Uses the recorded natural voice when a recording exists
+// (the lesson recording covers "Start here" and the 30-second version; "The answer" has its own),
+// otherwise the browser's built-in voice.
 
 const PARTS = [
   { key: 'basics', label: 'Start here' },
   { key: 'answer', label: 'The answer' },
   { key: 'short', label: '30-second version' },
-  { key: 'long', label: '2-minute version' },
 ] as const;
 const SPEEDS = [0.85, 1, 1.25, 1.5];
+type Seg = { src: string; start: number; end: number; rec: Recording };
 
-/** Markdown + LaTeX → something a voice can say. */
-export function speakable(md: string): string {
-  let s = plainText(md);
-  s = s.replace(/\$\$([\s\S]*?)\$\$/g, (_m, x) => ' ' + math(x) + '. ').replace(/\$([^$\n]+)\$/g, (_m, x) => math(x));
-  return units(s)
-    .replace(/^#{1,6}\s*(.*)$/gm, '$1.')            // headings become their own sentence
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')        // links keep their words
-    .replace(/[*_`>|]/g, ' ')
-    .replace(/^\s*[-+]\s+/gm, '')
-    .replace(/\s*\n\s*\n\s*/g, '. ').replace(/\s*\n\s*/g, ' ')
-    .replace(/\.\s*\./g, '.').replace(/\s{2,}/g, ' ').trim();
-}
-// Spoken units after a number: "5 mA" → "5 milliamps".
-const UNIT: Record<string, string> = { V: 'volts', mV: 'millivolts', kV: 'kilovolts', A: 'amps', mA: 'milliamps', 'µA': 'microamps', uA: 'microamps', nA: 'nanoamps',
-  'Ω': 'ohms', 'kΩ': 'kilohms', 'MΩ': 'megohms', 'mΩ': 'milliohms', W: 'watts', mW: 'milliwatts', kW: 'kilowatts', Hz: 'hertz', kHz: 'kilohertz', MHz: 'megahertz', GHz: 'gigahertz',
-  F: 'farads', 'µF': 'microfarads', uF: 'microfarads', nF: 'nanofarads', pF: 'picofarads', H: 'henries', mH: 'millihenries', 'µH': 'microhenries', uH: 'microhenries', nH: 'nanohenries',
-  s: 'seconds', ms: 'milliseconds', 'µs': 'microseconds', us: 'microseconds', ns: 'nanoseconds', ps: 'picoseconds', dB: 'decibels', 'mAh': 'milliamp hours', Wh: 'watt hours', 'V/µs': 'volts per microsecond', '°C': 'degrees Celsius' };
-const UNIT_RE = new RegExp('(\\d(?:[\\d.,]*\\d)?)[ \\u00a0]{0,3}(' + Object.keys(UNIT).sort((a, b) => b.length - a.length).map(k => k.replace(/[/]/g, '\\/')).join('|') + ')(?![A-Za-z0-9µΩ])', 'g');
-function units(t: string): string { return t.replace(UNIT_RE, (_m, n, u) => `${n} ${UNIT[u]}`).replace(/\b(\d[\d.,]*)\s+([kMm])\s+ohms\b/g, (_m, n, p) => `${n} ${p === 'k' ? 'kilohms' : p === 'M' ? 'megohms' : 'milliohms'}`).replace(/−/g, 'minus ').replace(/×/g, ' times ').replace(/≈/g, ' about ').replace(/→/g, ' to '); }
-function math(x: string): string {
-  const words: Record<string, string> = { Omega: ' ohms', omega: ' omega', mu: ' micro', pi: ' pi', tau: ' tau', theta: ' theta', alpha: ' alpha', beta: ' beta', Delta: ' change in ', delta: ' delta', approx: ' about ', times: ' times ', cdot: ' times ', le: ' at most ', ge: ' at least ', leq: ' at most ', geq: ' at least ', neq: ' not equal to ', to: ' to ', infty: ' infinity', sqrt: ' square root of ', circ: ' degrees', pm: ' plus or minus ', propto: ' proportional to ', ll: ' much less than ', gg: ' much greater than ', int: ' the integral of ', sum: ' the sum of ', partial: ' partial ', ln: ' log ', log: ' log ', sin: ' sine ', cos: ' cosine ' };
-  let s = x;
-  const grp = (t: string) => /[+\-−]|\\(?:pm|cdot|times)/.test(t.trim().replace(/^-/, '')) ? ` the quantity ${t}, ` : ` ${t} `;
-  for (let i = 0; i < 4; i++) s = s.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, (_m, a, b) => `${grp(a)} over ${grp(b)}`);
-  s = s.replace(/\\[dt]?frac\s*([A-Za-z0-9])\s*([A-Za-z0-9])/g, ' $1 over $2 ');
-  s = s.replace(/\\(?:text|mathrm|mathbf|operatorname)\{([^{}]*)\}/g, ' $1 ')
-    .replace(/\\([A-Za-z]+)/g, (_m, w) => words[w] ?? ' ')
-    .replace(/_\{([^{}]*)\}/g, ' $1').replace(/_([A-Za-z0-9])/g, ' $1')
-    .replace(/\^\{2\}|\^2\b/g, ' squared').replace(/\^\{([^{}]*)\}/g, ' to the $1').replace(/\^([A-Za-z0-9])/g, ' to the $1')
-    .replace(/=/g, ' equals ').replace(/\+/g, ' plus ').replace(/(\s)-(\s)/g, ' minus ').replace(/\//g, ' over ')
-    .replace(/[{}\\,;]/g, ' ');
-  return ' ' + s.replace(/\s{2,}/g, ' ').trim() + ' ';
-}
-function sentences(t: string): string[] {
-  // Chrome stops long utterances after ~15 s, so speak one or two sentences at a time.
-  const raw = t.match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || [t]; const out: string[] = [];
-  for (const r of raw) { const x = r.trim(); if (!x) continue; if (out.length && (out[out.length - 1] + ' ' + x).length < 180) out[out.length - 1] += ' ' + x; else out.push(x); }
-  return out;
-}
-
-export default function ListenBar({ content, title }: { content: QContent; title: string }) {
-  const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
+export default function ListenBar({ id, content, title, question }: { id: string; content: QContent; title: string; question: string }) {
   const available = PARTS.filter(p => content.sections[p.key]);
   const [part, setPart] = useState<string>(available[0]?.key || 'answer');
   const [state, setState] = useState<'idle' | 'playing' | 'paused'>('idle');
   const [speed, setSpeed] = useState(() => { try { return +(localStorage.getItem('mcp.speechRate') || 1) || 1; } catch { return 1; } });
-  const [idx, setIdx] = useState(0);
-  const queue = useRef<string[]>([]); const run = useRef(0);
+  const [pct, setPct] = useState(0);
+  const queue = useRef<string[]>([]); const idx = useRef(0); const run = useRef(0);
+  const audio = useRef<HTMLAudioElement | null>(null);
+  const [lessonRec, setLessonRec] = useState<Recording | null>(null);
+  const [answerRec, setAnswerRec] = useState<Recording | null>(null);
 
-  const stop = () => { run.current++; window.speechSynthesis?.cancel(); setState('idle'); setIdx(0); };
-  useEffect(() => stop, []);                 // stop talking when leaving the page
-  useEffect(() => { stop(); }, [content]);   // or when moving to another question
+  const slides = useMemo(() => (content.sections.basics ? buildSlides(content, title, question) : []), [content, title, question]);
+  useEffect(() => {
+    let live = true; setLessonRec(null); setAnswerRec(null);
+    if (slides.length) fetchRecording(id, narrationHash(narration(slides))).then(r => { if (live) setLessonRec(r); });
+    if (content.sections.answer) fetchRecording(id + '.answer', narrationHash(answerNarration(content.sections.answer))).then(r => { if (live) setAnswerRec(r); });
+    return () => { live = false; };
+  }, [id, slides, content]);
+
+  /** Where in a recording each part lives. */
+  const segment = (key: string): Seg | null => {
+    if (key === 'answer' && answerRec) return { src: answerRec.url, start: 0, end: answerRec.dur, rec: answerRec };
+    if (!lessonRec) return null;
+    const at = (k: number) => lessonRec.slides[k]?.start ?? lessonRec.dur;
+    const interview = slides.findIndex(s => s.eyebrow === 'Say this in the interview');
+    if (key === 'basics') { const end = interview > 0 ? interview : slides.findIndex(s => s.kind === 'quiz'); return { src: lessonRec.url, start: at(1), end: end > 0 ? at(end) - 0.5 : lessonRec.dur, rec: lessonRec }; }
+    if (key === 'short' && interview > 0) return { src: lessonRec.url, start: at(interview), end: at(interview + 1) - 0.5, rec: lessonRec };
+    return null;
+  };
+  const seg = useRef<Seg | null>(null);
+
+  const stop = () => { run.current++; window.speechSynthesis?.cancel(); audio.current?.pause(); seg.current = null; setState('idle'); setPct(0); };
+  useEffect(() => stop, []);
+  useEffect(() => { stop(); }, [content]);
 
   const speakFrom = (i: number, rate = speed) => {
     const synth = window.speechSynthesis; synth.cancel(); const my = ++run.current;
     const next = (k: number) => {
       if (my !== run.current) return;
-      if (k >= queue.current.length) { setState('idle'); setIdx(0); return; }
-      setIdx(k);
+      if (k >= queue.current.length) { setState('idle'); setPct(0); return; }
+      idx.current = k; setPct(Math.round((k / queue.current.length) * 100));
       const u = new SpeechSynthesisUtterance(queue.current[k]); u.rate = rate; u.lang = 'en-US';
       const v = synth.getVoices().find(v => /en[-_]US/i.test(v.lang) && /natural|google|samantha|aria|jenny/i.test(v.name)) || synth.getVoices().find(v => /^en/i.test(v.lang));
       if (v) u.voice = v;
@@ -80,22 +67,44 @@ export default function ListenBar({ content, title }: { content: QContent; title
     setState('playing'); next(i);
   };
   const play = (key = part) => {
+    stop();
+    const sg = segment(key);
+    if (sg && audio.current) {
+      const a = audio.current; seg.current = sg;
+      if (!a.src.endsWith(AUDIO_BASE + sg.src) && a.getAttribute('src') !== AUDIO_BASE + sg.src) a.src = AUDIO_BASE + sg.src;
+      a.playbackRate = speed; a.currentTime = sg.start;
+      a.play().then(() => setState('playing')).catch(() => { seg.current = null; browserPlay(key); });
+      return;
+    }
+    browserPlay(key);
+  };
+  const browserPlay = (key: string) => {
+    if (!('speechSynthesis' in window)) return;
     const label = PARTS.find(p => p.key === key)?.label || '';
-    queue.current = sentences(`${label}. ${speakable(content.sections[key] || '')}`);
+    queue.current = chunks(`${label}. ${speakable(content.sections[key] || '')}`);
     if (key === available[0]?.key) queue.current.unshift(title + '.');
     speakFrom(0);
   };
   const toggle = () => {
+    if (state === 'idle') return play();
+    if (seg.current && audio.current) { if (state === 'playing') { audio.current.pause(); setState('paused'); } else { audio.current.play(); setState('playing'); } return; }
     const synth = window.speechSynthesis;
-    if (state === 'idle') play();
-    else if (state === 'playing') { synth.pause(); setState('paused'); }
-    else { synth.resume(); setState('playing'); }
+    if (state === 'playing') { synth.pause(); setState('paused'); } else { synth.resume(); setState('playing'); }
   };
-  const changeSpeed = (r: number) => { setSpeed(r); try { localStorage.setItem('mcp.speechRate', String(r)); } catch { /* ignore */ } if (state !== 'idle') speakFrom(idx, r); };
+  const onTime = () => {
+    const a = audio.current, sg = seg.current; if (!a || !sg) return;
+    if (a.currentTime >= sg.end) { stop(); return; }
+    setPct(Math.round(((a.currentTime - sg.start) / Math.max(1, sg.end - sg.start)) * 100));
+  };
+  const changeSpeed = (r: number) => {
+    setSpeed(r); try { localStorage.setItem('mcp.speechRate', String(r)); } catch { /* ignore */ }
+    if (seg.current && audio.current) audio.current.playbackRate = r; else if (state !== 'idle') speakFrom(idx.current, r);
+  };
 
-  if (!supported || !available.length) return null;
-  const pct = state === 'idle' || !queue.current.length ? 0 : Math.round((idx / queue.current.length) * 100);
+  const natural = (key: string) => !!segment(key);
+  if (!available.length) return null;
   return <div className="listen" role="group" aria-label="Listen to this page">
+    <audio ref={audio} preload="none" onTimeUpdate={onTime} onEnded={() => { seg.current = null; setState('idle'); setPct(0); }} />
     <button className="btn btn-sm listen-play" onClick={toggle} aria-label={state === 'playing' ? 'Pause' : state === 'paused' ? 'Resume' : 'Listen'}>
       {state === 'playing'
         ? <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
@@ -112,6 +121,7 @@ export default function ListenBar({ content, title }: { content: QContent; title
       <span className="listen-prog" aria-hidden="true"><span style={{ width: pct + '%' }} /></span>
       <button className="btn btn-sm" onClick={stop}>Stop</button>
     </>}
+    {state === 'idle' && !natural(part) && <span className="listen-note small faint">natural voice coming soon for this part</span>}
   </div>;
 }
 
